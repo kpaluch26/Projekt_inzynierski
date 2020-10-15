@@ -1,0 +1,7 @@
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Serwer\bin\Debug\Serwer.exe.config
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Serwer\bin\Debug\Serwer.exe
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Serwer\bin\Debug\Serwer.pdb
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Serwer\obj\Debug\Serwer.csprojAssemblyReference.cache
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Serwer\obj\Debug\Serwer.csproj.CoreCompileInputs.cache
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Serwer\obj\Debug\Serwer.exe
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Serwer\obj\Debug\Serwer.pdb
