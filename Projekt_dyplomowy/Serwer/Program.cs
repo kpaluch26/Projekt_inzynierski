@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Serwer
 {
@@ -13,62 +14,50 @@ namespace Serwer
         private static Config config;
 
         [STAThread]
-        static void Main(string[] args)
+        static void Main(string[] args) //główna funckja programu
         {
             Menu();
-            //InfoDisplay();
         }
 
-        private static void Menu()
+        private static void Menu() //wybór funkcji użytkownika
         {
-            bool flags = false;
-            string caseSwitch="";
-
-                if (config == null)
+            string caseSwitch="";           
+            do
+            {
+                try
                 {
-                    do
+                    Console.WriteLine("Witaj użytkowniku " + Environment.UserName);
+                    Console.WriteLine("Wybierz spoósb konfiguracji serwera:");
+                    Console.Write("1) automatyczny z pliku .txt/.xml   2) ręczna konfiguracja");
+                    ConsoleKeyInfo cki;
+                    cki = Console.ReadKey();
+                    caseSwitch = (cki.Key.ToString());
+
+                    switch (caseSwitch)
                     {
-                        try
-                        {
-                            Console.WriteLine("Witaj użytkowniku " + Environment.UserName);
-                            Console.WriteLine("Wybierz spoósb konfiguracji serwera:");
-                            Console.Write("1) automatyczny z pliku .txt/.xml   2) ręczna konfiguracja");
-                            ConsoleKeyInfo cki;
-                            cki = Console.ReadKey();
-                            caseSwitch = (cki.Key.ToString());
-                            flags = false;
-
-                            switch (caseSwitch)
-                            {
-                                case "D1":
-                                    Console.Clear();
-                                    ImportConfig();
-                                    break;
-                                case "D2":
-                                    Console.Clear();
-                                    SetConfig();
-                                    break;
-                                default:
-                                    throw new Exception();
-                            }
-                        }
-                        catch
-                        {
-                            Console.WriteLine("Nie ma takiej opcji, proszę wybrać poprawną opcję.");
-                            Console.Read();
+                        case "D1":
                             Console.Clear();
-                            flags = true;
-
-                        }
-                    } while (flags);
+                            ImportConfig();
+                            break;
+                        case "D2":
+                            Console.Clear();
+                            SetConfig();
+                            break;
+                        default:
+                            throw new FormatException();
+                    }
                 }
-                else
+                catch (FormatException)
                 {
-                InfoDisplay();
+                    Console.WriteLine("Nie ma takiej opcji, proszę wybrać poprawną opcję.");
+                    Console.Read();
+                    Console.Clear();
                 }
-        }
+            } while (config == null);
+            InfoDisplay();
+    }
 
-        private static void SetConfig()
+        private static void SetConfig() //funkcja ręcznej konfiguracji serwera
         {
             string username = Environment.UserName; //odczyt nazwy konta użytkownika
             string hostName = Dns.GetHostName(); //odczyt hostname
@@ -115,7 +104,6 @@ namespace Serwer
 
             config = new Config(username, hostName, ip_address, port, buffer_size);//utworzenie configa
             Console.WriteLine("Poprawna konfiguracja serwera.");
-            //Console.WriteLine(ip_address);
             Console.ReadKey();
             Console.Clear();
         }
@@ -135,14 +123,60 @@ namespace Serwer
             Console.WriteLine();
         }
 
-        private static void ImportConfig()
+        private static void ImportConfig() //funkcja do automatycznej konfiguracji serwera
         {
-            string filePath;
+            StreamReader file;
+            string[] result = new string[2];
+            string filePath, line;
+            int port=0, buffer_size=0, counterp=0,counterb=0;
+            string username = Environment.UserName; //odczyt nazwy konta użytkownika
+            string hostName = Dns.GetHostName(); //odczyt hostname
+            string ip_address = Dns.GetHostByName(hostName).AddressList[0].ToString(); // odczyt adresu IPv4
 
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "txt files (*.txt)|*.txt|xml files (*.xml)|*.xml";
-            ofd.ShowDialog();
-            filePath = ofd.FileName;
+            OpenFileDialog ofd = new OpenFileDialog(); //utworzenie okna do przeglądania plików konfiguracji
+            ofd.Filter = "txt files (*.txt)|*.txt|xml files (*.xml)|*.xml"; //filtry na pliki txt i xml
+            ofd.ShowDialog(); //wyświetlenie okna
+            filePath = ofd.FileName; //przypisanie ścieżki wybranego pliku do zmiennej
+            try
+            {
+                file = new StreamReader(filePath); //utworzenie odczytu pliku
+                while ((line = file.ReadLine()) != null)
+                {
+                    line = String.Concat(line.Where(x => !Char.IsWhiteSpace(x))); //usunięcie wszelkich znaków białych z linii
+                    result = line.Split(':'); //podzielenie odczytanej linii wykorzystując separator
+                    switch (result[0])
+                    {
+                        case "port":
+                            port = Convert.ToInt32(result[1].TrimEnd(':')); //przypisanie numeru portu odczytanego z pliku txt
+                            counterp=1;
+                            break;
+                        case "buffer_size":
+                            buffer_size = Convert.ToInt32(result[1].TrimEnd(':')); //przypisanie rozmiaru buffera odczytanego z pliku txt
+                            counterb=1;
+                            break;
+                    }
+                    if (counterp+counterb == 2)
+                    {
+                        break;
+                    }
+                }
+                file.Close(); //zamknięcie pliku
+                if (counterp + counterb != 2)
+                {
+                    file.Close(); //zamknięcie pliku
+                    throw new FileLoadException();
+                }
+                config = new Config(username, hostName, ip_address, port, buffer_size);//utworzenie configa
+                Console.WriteLine("Poprawna konfiguracja serwera.");
+                Console.ReadKey();
+                Console.Clear();        
+            }
+            catch (FileLoadException)
+            {
+                Console.WriteLine("Plik konfiguracyjny jest uszkodzony! Spróbuj z innym plikiem lub skorzystaj z ręcznej konfiguracji!");
+                Console.ReadKey();
+                Console.Clear();
+            }
         }
 
     }
