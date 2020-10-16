@@ -16,20 +16,75 @@ namespace Serwer
         [STAThread]
         static void Main(string[] args) //główna funckja programu
         {
-            Menu();
+            InitConfig();
+            OptionsMenu();
         }
 
-        private static void Menu() //wybór funkcji użytkownika
+        private static void OptionsMenu()
         {
-            string caseSwitch = "";
+            bool work = true;
+            while (work)
+            {
+                InfoDisplay();
+                try
+                {
+                    string caseSwitch;
+                    ConsoleKeyInfo cki;
+
+                    Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
+                    Console.WriteLine("2) Wyjście");
+                    cki = Console.ReadKey(true);
+                    caseSwitch = (cki.Key.ToString());
+
+                    switch (caseSwitch)
+                    {
+                        case "D1":
+                            ExportConfig();
+                            Console.Clear();
+                            break;
+                        case "D2":
+                            work = false;
+                            break;
+                        default:
+                            throw new Exception();
+                    }
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Nie ma takiej opcji, proszę wybrać poprawną opcję.");
+                    Console.ReadKey(true);
+                    Console.Clear();
+                }
+            }
+        }
+
+        private static void InfoDisplay() //ramka do wyświetlania informacji o konfiguracji użytkownika
+        {
+            for (int i = 0; i < config.ToString().Length + 2; i++)
+            {
+                Console.Write("*");
+            }
+            Console.WriteLine();
+            Console.WriteLine("*" + config + "*");
+            for (int i = 0; i < config.ToString().Length + 2; i++)
+            {
+                Console.Write("*");
+            }
+            Console.WriteLine();
+        }
+
+        private static void InitConfig() //wybór funkcji użytkownika
+        {           
             do
             {
                 try
                 {
+                    string caseSwitch;
+                    ConsoleKeyInfo cki;
+
                     Console.WriteLine("Witaj użytkowniku " + Environment.UserName);
                     Console.WriteLine("Wybierz spoósb konfiguracji serwera:");
-                    Console.WriteLine("1) automatyczny z pliku .txt/.xml   2) ręczna konfiguracja");
-                    ConsoleKeyInfo cki;
+                    Console.WriteLine("1) Automatyczny z pliku .txt/.xml   2) Ręczna konfiguracja   3) Wyjście");
                     cki = Console.ReadKey(true);
                     caseSwitch = (cki.Key.ToString());
 
@@ -43,6 +98,9 @@ namespace Serwer
                             Console.Clear();
                             SetConfig();
                             break;
+                        case "D3":
+                            Environment.Exit(0);
+                            break;
                         default:
                             throw new FormatException();
                     }
@@ -50,11 +108,10 @@ namespace Serwer
                 catch (FormatException)
                 {
                     Console.WriteLine("Nie ma takiej opcji, proszę wybrać poprawną opcję.");
-                    Console.Read();
+                    Console.ReadKey(true);
                     Console.Clear();
                 }
             } while (config == null);
-            InfoDisplay();
         }
 
         private static void SetConfig() //funkcja ręcznej konfiguracji serwera
@@ -108,21 +165,6 @@ namespace Serwer
             Console.Clear();
         }
 
-        private static void InfoDisplay() //ramka do wyświetlania informacji o konfiguracji użytkownika
-        {
-            for (int i = 0; i < config.ToString().Length + 2; i++)
-            {
-                Console.Write("*");
-            }
-            Console.WriteLine();
-            Console.WriteLine("*" + config + "*");
-            for (int i = 0; i < config.ToString().Length + 2; i++)
-            {
-                Console.Write("*");
-            }
-            Console.WriteLine();
-        }
-
         private static void ImportConfig() //funkcja do automatycznej konfiguracji serwera
         {
             StreamReader file;
@@ -134,7 +176,7 @@ namespace Serwer
             string ip_address = Dns.GetHostByName(hostName).AddressList[0].ToString(); // odczyt adresu IPv4
 
             OpenFileDialog ofd = new OpenFileDialog(); //utworzenie okna do przeglądania plików konfiguracji
-            ofd.Filter = "txt files (*.txt)|*.txt|xml files (*.xml)|*.xml"; //filtry na pliki txt i xml
+            ofd.Filter = "txt files (*.txt)|*.txt|xml files (*.xml)|*.xml"; //ustawienie filtrów okna na pliki txt i xml
             ofd.FilterIndex = 1; //ustawienie domyślnego filtru na plik txt
             ofd.RestoreDirectory = true; //przywracanie wcześniej zamkniętego katalogu
 
@@ -250,6 +292,39 @@ namespace Serwer
             else
             {
                 Console.WriteLine("Nie wybrano pliku. Powrót do menu głównego.");
+                Console.ReadKey(true);
+                Console.Clear();
+            }
+        }
+
+        private static void ExportConfig()
+        {
+            Stream file;
+            SaveFileDialog sfg = new SaveFileDialog(); //utworzenie okna do przeglądania plików
+            sfg.Filter = "txt files (*.txt)|*.txt|xml files (*.xml)|*.xml"; //ustawienie filtrów okna na pliki txt i xml
+            sfg.FilterIndex = 1; //ustawienie domyślnego filtru na plik txt
+            sfg.RestoreDirectory = true; //przywracanie wcześniej zamkniętego katalogu
+
+            if (sfg.ShowDialog() == DialogResult.OK)//wyświetlenie okna ze sprawdzeniem, czy plik został zapisany
+            {
+                if (sfg.FilterIndex == 1) //zapis dla pliku txt
+                {
+                    File.WriteAllText(sfg.FileName, "port_tcp=" + '"' + config.Port() + '"' + 
+                        Environment.NewLine + "buffer_size=" + '"' + config.BufferSize() + '"'); //stworzenie lub nadpisanie pliku        
+                }
+                else if (sfg.FilterIndex == 2)
+                {
+                    File.WriteAllText(sfg.FileName, "<serwer>" + 
+                        Environment.NewLine + "    <configure>" + 
+                        Environment.NewLine + "        port_tcp=" + '"' + config.Port() + '"' + 
+                        Environment.NewLine + "        buffer_size=" + '"' + config.BufferSize() + '"' + 
+                        Environment.NewLine + "    </configure>" + 
+                        Environment.NewLine + "</serwer>"); //stworzenie lub nadpisanie pliku 
+                }
+            }
+            else
+            {
+                Console.WriteLine("Nie zapisano pliku. Powrót do menu głównego.");
                 Console.ReadKey(true);
                 Console.Clear();
             }

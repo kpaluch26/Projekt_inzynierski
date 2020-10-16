@@ -9,11 +9,11 @@ namespace Serwer
 {
     class Config
     {
-        string username;
-        string hostname;
-        string ip_address;
-        int port;
-        int buffer_size;
+        private string username;
+        private string hostname;
+        private string ip_address;
+        private int port;
+        private int buffer_size;
 
         public Config(string u, string h, string i, int p, int b)
         {
@@ -24,9 +24,19 @@ namespace Serwer
             this.hostname = h;  
         }
 
+        public int Port()
+        {
+            return this.port;
+        }
+
+        public int BufferSize()
+        {
+            return this.buffer_size;
+        }
+
         public override string ToString()
         {
-            return $" Użytkownik: {username} || Port: {port} || Rozmiar bufera: {buffer_size} ";
+            return $" Użytkownik: {username} || AdresIPv4: {ip_address} || Port: {port} || Rozmiar bufera: {buffer_size} || Hostname: {hostname}";
         }
     }
 }
