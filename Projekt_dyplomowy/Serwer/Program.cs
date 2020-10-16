@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Serwer
 {
-    class Program :Form
+    class Program : Form
     {
         private static Config config;
 
@@ -21,16 +21,16 @@ namespace Serwer
 
         private static void Menu() //wybór funkcji użytkownika
         {
-            string caseSwitch="";           
+            string caseSwitch = "";
             do
             {
                 try
                 {
                     Console.WriteLine("Witaj użytkowniku " + Environment.UserName);
                     Console.WriteLine("Wybierz spoósb konfiguracji serwera:");
-                    Console.Write("1) automatyczny z pliku .txt/.xml   2) ręczna konfiguracja");
+                    Console.WriteLine("1) automatyczny z pliku .txt/.xml   2) ręczna konfiguracja");
                     ConsoleKeyInfo cki;
-                    cki = Console.ReadKey();
+                    cki = Console.ReadKey(true);
                     caseSwitch = (cki.Key.ToString());
 
                     switch (caseSwitch)
@@ -55,7 +55,7 @@ namespace Serwer
                 }
             } while (config == null);
             InfoDisplay();
-    }
+        }
 
         private static void SetConfig() //funkcja ręcznej konfiguracji serwera
         {
@@ -77,7 +77,7 @@ namespace Serwer
                 catch
                 {
                     Console.WriteLine("Niepoprawny numer portu!");
-                    Console.ReadKey(); //czekanie na potwierdzenie błedu
+                    Console.ReadKey(true); //czekanie na potwierdzenie błedu
                     Console.Clear();
                     next = true;
                 }
@@ -94,7 +94,7 @@ namespace Serwer
                 catch
                 {
                     Console.WriteLine("Niepoprawny rozmiar bufera!");
-                    Console.ReadKey(); //czekanie na potwierdzenie błedu
+                    Console.ReadKey(true); //czekanie na potwierdzenie błedu
                     Console.Clear();
                     Console.WriteLine("Witaj użytkowniku " + username + "!");
                     Console.WriteLine("Proszę podaj port, po którym odbywać się będzię komunikacja: " + port);
@@ -128,56 +128,74 @@ namespace Serwer
             StreamReader file;
             string[] result = new string[2];
             string filePath, line;
-            int port=0, buffer_size=0, counterp=0,counterb=0;
+            int port = 0, buffer_size = 0, counterp = 0, counterb = 0;
             string username = Environment.UserName; //odczyt nazwy konta użytkownika
             string hostName = Dns.GetHostName(); //odczyt hostname
             string ip_address = Dns.GetHostByName(hostName).AddressList[0].ToString(); // odczyt adresu IPv4
 
             OpenFileDialog ofd = new OpenFileDialog(); //utworzenie okna do przeglądania plików konfiguracji
             ofd.Filter = "txt files (*.txt)|*.txt|xml files (*.xml)|*.xml"; //filtry na pliki txt i xml
-            ofd.ShowDialog(); //wyświetlenie okna
-            filePath = ofd.FileName; //przypisanie ścieżki wybranego pliku do zmiennej
-            try
-            {
-                file = new StreamReader(filePath); //utworzenie odczytu pliku
-                while ((line = file.ReadLine()) != null)
+            ofd.FilterIndex = 1; //ustawienie domyślnego filtru na plik txt
+            ofd.RestoreDirectory = true; //przywracanie wcześniej zamkniętego katalogu
+
+            if (ofd.ShowDialog() == DialogResult.OK) //wyświetlenie okna ze sprawdzeniem, czy plik został wybrany
+            {                
+                filePath = ofd.FileName; //przypisanie ścieżki wybranego pliku do zmiennej
+
+                if (ofd.FilterIndex == 1)//odczyt dla pliku txt
                 {
-                    line = String.Concat(line.Where(x => !Char.IsWhiteSpace(x))); //usunięcie wszelkich znaków białych z linii
-                    result = line.Split(':'); //podzielenie odczytanej linii wykorzystując separator
-                    switch (result[0])
+                    try
                     {
-                        case "port":
-                            port = Convert.ToInt32(result[1].TrimEnd(':')); //przypisanie numeru portu odczytanego z pliku txt
-                            counterp=1;
-                            break;
-                        case "buffer_size":
-                            buffer_size = Convert.ToInt32(result[1].TrimEnd(':')); //przypisanie rozmiaru buffera odczytanego z pliku txt
-                            counterb=1;
-                            break;
+                        file = new StreamReader(filePath); //utworzenie odczytu pliku
+                        while ((line = file.ReadLine()) != null)
+                        {
+                            line = String.Concat(line.Where(x => !Char.IsWhiteSpace(x))); //usunięcie wszelkich znaków białych z linii
+                            result = line.Split(':'); //podzielenie odczytanej linii wykorzystując separator
+                            switch (result[0])
+                            {
+                                case "port":
+                                    port = Convert.ToInt32(result[1].TrimEnd(':')); //przypisanie numeru portu odczytanego z pliku txt
+                                    counterp = 1;
+                                    break;
+                                case "buffer_size":
+                                    buffer_size = Convert.ToInt32(result[1].TrimEnd(':')); //przypisanie rozmiaru buffera odczytanego z pliku txt
+                                    counterb = 1;
+                                    break;
+                            }
+                            if (counterp + counterb == 2)
+                            {
+                                break;
+                            }
+                        }
+                        file.Close(); //zamknięcie pliku
+                        if (counterp + counterb != 2)
+                        {
+                            file.Close(); //zamknięcie pliku
+                            throw new FileLoadException();
+                        }
+                        config = new Config(username, hostName, ip_address, port, buffer_size);//utworzenie configa
+                        Console.WriteLine("Poprawna konfiguracja serwera.");
+                        Console.ReadKey(true);
+                        Console.Clear();
                     }
-                    if (counterp+counterb == 2)
+                    catch (FileLoadException)
                     {
-                        break;
+                        Console.WriteLine("Plik konfiguracyjny jest uszkodzony! Spróbuj z innym plikiem lub skorzystaj z ręcznej konfiguracji!");
+                        Console.ReadKey(true);
+                        Console.Clear();
                     }
                 }
-                file.Close(); //zamknięcie pliku
-                if (counterp + counterb != 2)
+                else if (ofd.FilterIndex == 2)
                 {
-                    file.Close(); //zamknięcie pliku
-                    throw new FileLoadException();
+
                 }
-                config = new Config(username, hostName, ip_address, port, buffer_size);//utworzenie configa
-                Console.WriteLine("Poprawna konfiguracja serwera.");
-                Console.ReadKey();
-                Console.Clear();        
             }
-            catch (FileLoadException)
+            else
             {
-                Console.WriteLine("Plik konfiguracyjny jest uszkodzony! Spróbuj z innym plikiem lub skorzystaj z ręcznej konfiguracji!");
-                Console.ReadKey();
+                Console.WriteLine("Nie wybrano pliku. Powrót do menu głównego.");
+                Console.ReadKey(true);
                 Console.Clear();
             }
         }
-
     }
 }
