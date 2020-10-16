@@ -150,15 +150,15 @@ namespace Serwer
                         while ((line = file.ReadLine()) != null)
                         {
                             line = String.Concat(line.Where(x => !Char.IsWhiteSpace(x))); //usunięcie wszelkich znaków białych z linii
-                            result = line.Split(':'); //podzielenie odczytanej linii wykorzystując separator
-                            switch (result[0])
+                            result = line.Split('='); //podzielenie odczytanej linii wykorzystując separator
+                            switch (result[0].ToLower())
                             {
-                                case "port":
-                                    port = Convert.ToInt32(result[1].TrimEnd(':')); //przypisanie numeru portu odczytanego z pliku txt
+                                case "port_tcp":
+                                    port = Convert.ToInt32(result[1].Substring(1,result[1].Length-2)); //przypisanie numeru portu odczytanego z pliku txt
                                     counterp = 1;
                                     break;
                                 case "buffer_size":
-                                    buffer_size = Convert.ToInt32(result[1].TrimEnd(':')); //przypisanie rozmiaru buffera odczytanego z pliku txt
+                                    buffer_size = Convert.ToInt32(result[1].Substring(1, result[1].Length - 2)); //przypisanie rozmiaru buffera odczytanego z pliku txt
                                     counterb = 1;
                                     break;
                             }
@@ -185,9 +185,66 @@ namespace Serwer
                         Console.Clear();
                     }
                 }
-                else if (ofd.FilterIndex == 2)
+                else if (ofd.FilterIndex == 2)//odczyt dla pliku xml
                 {
-
+                    try
+                    {
+                        bool serwer = false; 
+                        bool configure = false;
+                        file = new StreamReader(filePath); //utworzenie odczytu pliku
+                        while ((line = file.ReadLine()) != null)
+                        {
+                            line = String.Concat(line.Where(x => !Char.IsWhiteSpace(x))); //usunięcie wszelkich znaków białych z linii
+                            if (line.ToLower() == "<serwer>")
+                            {
+                                serwer = true;
+                            }
+                            else if (line.ToLower() == "</serwer>")
+                            {
+                                serwer = false;
+                                break;
+                            }
+                            else if(line.ToLower() == "<configure>" && serwer)
+                            {
+                                configure = true;
+                            }
+                            else if(line.ToLower() == "</configure>" && serwer)
+                            {
+                                configure = false;
+                            }
+                            else if(serwer && configure)
+                            {
+                                result = line.Split('='); //podzielenie odczytanej linii wykorzystując separator
+                                switch (result[0].ToLower())
+                                {
+                                    case "port_tcp":
+                                        port = Convert.ToInt32(result[1].Substring(1, result[1].Length - 2)); //przypisanie numeru portu odczytanego z pliku xml
+                                        counterp = 1;
+                                        break;
+                                    case "buffer_size":
+                                        buffer_size = Convert.ToInt32(result[1].Substring(1, result[1].Length - 2)); //przypisanie numeru portu odczytanego z pliku xml
+                                        counterb = 1;
+                                        break;
+                                }
+                            }
+                        }
+                        file.Close(); //zamknięcie pliku
+                        if (counterp + counterb != 2)
+                        {
+                            file.Close(); //zamknięcie pliku
+                            throw new FileLoadException();
+                        }
+                        config = new Config(username, hostName, ip_address, port, buffer_size);//utworzenie configa
+                        Console.WriteLine("Poprawna konfiguracja serwera.");
+                        Console.ReadKey(true);
+                        Console.Clear();
+                    }
+                    catch (FileLoadException)
+                    {
+                        Console.WriteLine("Plik konfiguracyjny jest uszkodzony! Spróbuj z innym plikiem lub skorzystaj z ręcznej konfiguracji!");
+                        Console.ReadKey(true);
+                        Console.Clear();
+                    }
                 }
             }
             else
