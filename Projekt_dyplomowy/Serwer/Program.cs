@@ -7,21 +7,30 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.IO.Compression;
+using System.ComponentModel;
+using System.Net.Sockets;
+using System.Windows.Forms.VisualStyles;
 
 namespace Serwer
 {
     class Program : Form
     {
+        //zmienne globalne
         private static Config config;
+        private static BackgroundWorker m_oBackgroundWorker = null;
+        private static string filename = "C:\\Users\\kamil\\Desktop\\";
+        private static int active_clients = 0;
 
         [STAThread]
         static void Main(string[] args) //główna funckja programu
         {
             InitConfig();
+            //Console.WriteLine(IPAddress.Any);
+            ConnectionListen();
             OptionsMenu();
         }
 
-        private static void OptionsMenu()
+        private static void OptionsMenu() //wybór funkcji programu
         {
             bool work = true;
             while (work)
@@ -33,8 +42,9 @@ namespace Serwer
                     ConsoleKeyInfo cki;
 
                     Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
-                    Console.WriteLine("2) Stwórz archiwum .zip i wyślij aktywnym klientom.");
-                    Console.WriteLine("3) Wyjście");
+                    Console.WriteLine("2) Stwórz archiwum .zip.");
+                    Console.WriteLine("3) Wyślij archiwum .zip aktywnym klientom.");
+                    Console.WriteLine("4) Wyjście");
                     cki = Console.ReadKey(true);
                     caseSwitch = (cki.Key.ToString());
 
@@ -49,6 +59,9 @@ namespace Serwer
                             Console.Clear();
                             break;
                         case "D3":
+                            Console.Clear();
+                            break;
+                        case "D4":
                             work = false;
                             break;
                         default:
@@ -77,6 +90,25 @@ namespace Serwer
                 Console.Write("*");
             }
             Console.WriteLine();
+            InfoUsers();
+        }
+
+        private static void InfoUsers() //ramka do wyświetlania aktywnych użytkowników
+        {
+            string info = "Aktywni użytkownicy: ";
+            Console.Write("|");
+            for(int i = 0; i < active_clients.ToString().Length+info.Length+2; i++)
+            {
+                Console.Write("-");
+            }
+            Console.WriteLine("|");
+            Console.WriteLine("| " + info + active_clients + " |");
+            Console.Write("|");
+            for (int i = 0; i < active_clients.ToString().Length + info.Length + 2; i++)
+            {
+                Console.Write("-");
+            }
+            Console.WriteLine("|");
         }
 
         private static void InitConfig() //wybór funkcji użytkownika
@@ -97,12 +129,12 @@ namespace Serwer
                     switch (caseSwitch)
                     {
                         case "D1":
-                            Console.Clear();
                             ImportConfig();
+                            Console.Clear();
                             break;
                         case "D2":
-                            Console.Clear();
                             SetConfig();
+                            Console.Clear();
                             break;
                         case "D3":
                             Environment.Exit(0);
@@ -314,15 +346,15 @@ namespace Serwer
             {
                 if (sfg.FilterIndex == 1) //zapis dla pliku txt
                 {
-                    File.WriteAllText(sfg.FileName, "port_tcp=" + '"' + config.Port() + '"' + 
-                        Environment.NewLine + "buffer_size=" + '"' + config.BufferSize() + '"'); //stworzenie lub nadpisanie pliku        
+                    File.WriteAllText(sfg.FileName, "port_tcp=" + '"' + config.GetPort() + '"' + 
+                        Environment.NewLine + "buffer_size=" + '"' + config.GetBufferSize() + '"'); //stworzenie lub nadpisanie pliku        
                 }
                 else if (sfg.FilterIndex == 2)
                 {
                     File.WriteAllText(sfg.FileName, "<serwer>" + 
                         Environment.NewLine + "    <configure>" + 
-                        Environment.NewLine + "        port_tcp=" + '"' + config.Port() + '"' + 
-                        Environment.NewLine + "        buffer_size=" + '"' + config.BufferSize() + '"' + 
+                        Environment.NewLine + "        port_tcp=" + '"' + config.GetPort() + '"' + 
+                        Environment.NewLine + "        buffer_size=" + '"' + config.GetBufferSize() + '"' + 
                         Environment.NewLine + "    </configure>" + 
                         Environment.NewLine + "</serwer>"); //stworzenie lub nadpisanie pliku 
                 }
@@ -388,6 +420,77 @@ namespace Serwer
                 Console.ReadKey(true);
             }
 
+        }
+
+        private static void ConnectionListen() //funkcja do nasłuchiwania połączeń w tle
+        {
+            if (null == m_oBackgroundWorker) //sprawdzanie czy obiekt istnieje
+            {
+                m_oBackgroundWorker = new BackgroundWorker(); //utworzenie obiektu
+                m_oBackgroundWorker.DoWork += new DoWorkEventHandler(m_oBackgroundWorker_DoWork);
+            }
+            m_oBackgroundWorker.RunWorkerAsync(config.GetPort());
+        }
+
+        private static void m_oBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            TcpListener listener = new TcpListener(IPAddress.Any, config.GetPort());
+            System.Text.Decoder decoder = System.Text.Encoding.UTF8.GetDecoder();
+            byte[] receive_data = new byte[config.GetBufferSize()];
+            int receive_bytes;
+            listener.Start();
+
+            while(true){
+                TcpClient client = null;
+                NetworkStream stream = null;
+
+                if (listener.Pending())
+                {
+                    client = listener.AcceptTcpClient();
+                    updateCounterOfActiveUsers(true);
+                    stream = client.GetStream();
+          
+                    int dec_data = stream.Read(receive_data, 0, receive_data.Length);
+                    char[] chars = new char[dec_data];
+                    decoder.GetChars(receive_data, 0, dec_data, chars, 0);
+                    System.String enc_data = new System.String(chars);
+                    FileStream filestream = new FileStream(filename+enc_data, FileMode.OpenOrCreate, FileAccess.Write);
+                    while ((receive_bytes = stream.Read(receive_data, 0, receive_data.Length)) > 0)
+                    {
+                        filestream.Write(receive_data, 0, receive_bytes);
+                    }
+                    filestream.Close();
+                    stream.Close();
+                    client.Close();
+                    updateCounterOfActiveUsers(false);
+                }
+            }
+        }
+
+
+        private static void updateCounterOfActiveUsers(bool x) //funkcja do aktualizowania aktywnych połączeń
+        {
+            if (x)
+            {
+                active_clients++;
+                Console.Clear();
+                InfoDisplay();
+                Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
+                Console.WriteLine("2) Stwórz archiwum .zip.");
+                Console.WriteLine("3) Wyślij archiwum .zip aktywnym klientom.");
+                Console.WriteLine("4) Wyjście");
+
+            }
+            else
+            {
+                active_clients--;
+                Console.Clear();
+                InfoDisplay();
+                Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
+                Console.WriteLine("2) Stwórz archiwum .zip.");
+                Console.WriteLine("3) Wyślij archiwum .zip aktywnym klientom.");
+                Console.WriteLine("4) Wyjście");
+            }
         }
     }
 }

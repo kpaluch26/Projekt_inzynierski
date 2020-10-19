@@ -24,12 +24,12 @@ namespace Serwer
             this.hostname = h;  
         }
 
-        public int Port()
+        public int GetPort()
         {
             return this.port;
         }
 
-        public int BufferSize()
+        public int GetBufferSize()
         {
             return this.buffer_size;
         }
