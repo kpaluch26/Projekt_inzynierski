@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.IO.Compression;
 
 namespace Serwer
 {
@@ -32,7 +33,8 @@ namespace Serwer
                     ConsoleKeyInfo cki;
 
                     Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
-                    Console.WriteLine("2) Wyjście");
+                    Console.WriteLine("2) Stwórz archiwum .zip i wyślij aktywnym klientom.");
+                    Console.WriteLine("3) Wyjście");
                     cki = Console.ReadKey(true);
                     caseSwitch = (cki.Key.ToString());
 
@@ -43,6 +45,10 @@ namespace Serwer
                             Console.Clear();
                             break;
                         case "D2":
+                            CreateZIP();
+                            Console.Clear();
+                            break;
+                        case "D3":
                             work = false;
                             break;
                         default:
@@ -297,9 +303,8 @@ namespace Serwer
             }
         }
 
-        private static void ExportConfig()
+        private static void ExportConfig() //funkcja do eskportu konfiguracji serwera do pliku
         {
-            Stream file;
             SaveFileDialog sfg = new SaveFileDialog(); //utworzenie okna do przeglądania plików
             sfg.Filter = "txt files (*.txt)|*.txt|xml files (*.xml)|*.xml"; //ustawienie filtrów okna na pliki txt i xml
             sfg.FilterIndex = 1; //ustawienie domyślnego filtru na plik txt
@@ -321,6 +326,8 @@ namespace Serwer
                         Environment.NewLine + "    </configure>" + 
                         Environment.NewLine + "</serwer>"); //stworzenie lub nadpisanie pliku 
                 }
+                Console.WriteLine("Wyeksportowano konfiguracja: "+sfg.FileName);
+                Console.ReadKey(true);
             }
             else
             {
@@ -328,6 +335,59 @@ namespace Serwer
                 Console.ReadKey(true);
                 Console.Clear();
             }
+        }
+
+        private static void CreateZIP() //funkcja do tworzenia archiwum zip
+        {
+            OpenFileDialog ofd = new OpenFileDialog(); //utworzenie okna do przeglądania plików
+            ofd.Filter = "all files (*.*)|*.*"; //ustawienie filtrów okna na dowolne pliki
+            ofd.FilterIndex = 1; //ustawienie domyślnego filtru
+            ofd.RestoreDirectory = true; //przywracanie wcześniej zamkniętego katalogu
+            ofd.Multiselect = true; //ustawienie możliwości wyboru wielu plików z poziomu okna
+
+            SaveFileDialog sfg = new SaveFileDialog(); //utworzenie okna do przeglądania plików
+            sfg.Filter = "zip file(*.zip)|*.zip"; //ustawienie filtrów okna na pliki .zip
+            sfg.FilterIndex = 1; //ustawienie domyślnego filtru na plik .zip
+            sfg.RestoreDirectory = true; //przywracanie wcześniej zamkniętego katalogu
+
+            try
+            {
+                if (ofd.ShowDialog() == DialogResult.OK && sfg.ShowDialog() == DialogResult.OK)//sprawdzenie czy otworzone okna zwracają prawidłowe dane
+                {
+                    int counter = 0; //licznik do odczytywania odpowiednich nazw plików
+
+                    if (File.Exists(sfg.FileName)) //sprawdzanie czy archiwum o takiej nazwie istnieje
+                    {
+                        File.Delete(sfg.FileName); //usuwanie istniejącego archiwum
+                    }
+
+                    var zip = ZipFile.Open(sfg.FileName, ZipArchiveMode.Create); //utworzenie archiwum
+                    foreach (string file in ofd.FileNames)
+                    {
+                        zip.CreateEntryFromFile(file, ofd.SafeFileNames[counter], CompressionLevel.Optimal); //zapis do utworzonego archiwum plików wybranych przez użytkownika
+                        counter++;
+                    }
+                    zip.Dispose(); //zwolnienie zasobu
+                    Console.WriteLine("Zarchiwizowano pliki.");
+                    Console.ReadKey(true);
+                }
+                else if(ofd.ShowDialog()!=DialogResult.OK)
+                {
+                    Console.WriteLine("Nie wybrano plików do zarchiwizowania.");
+                    Console.ReadKey(true);
+                }
+                else
+                {
+                    Console.WriteLine("Nie podano nazwy archiwum.");
+                    Console.ReadKey(true);
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+                Console.ReadKey(true);
+            }
+
         }
     }
 }
