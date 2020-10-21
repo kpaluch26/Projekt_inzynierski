@@ -41,6 +41,12 @@ namespace Serwer
             return this.archive_address;
         }
 
+        public string GetArchiveAddress(string a)
+        {
+            this.archive_address = a;
+            return this.archive_address;
+        }
+
         public override string ToString()
         {
             return $" Użytkownik: {username} || AdresIPv4: {ip_address} || Hostname: {hostname} ||  Port: {port} || Rozmiar bufera: {buffer_size} || Ścieżka: {archive_address} ";

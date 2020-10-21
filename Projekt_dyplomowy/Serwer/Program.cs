@@ -44,7 +44,7 @@ namespace Serwer
                     Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
                     Console.WriteLine("2) Stwórz archiwum .zip.");
                     Console.WriteLine("3) Wyślij archiwum .zip aktywnym klientom.");
-/*                    Console.WriteLine("4) Czekaj na archiwa .zip od aktywnych klientów.");*/
+                    Console.WriteLine("4) Zmień ścieżkę dostępu.");
                     Console.WriteLine("5) Wyjście");
                     cki = Console.ReadKey(true);
                     caseSwitch = (cki.Key.ToString());
@@ -62,9 +62,10 @@ namespace Serwer
                         case "D3":
                             Console.Clear();
                             break;
-/*                        case "D4":                            
+                        case "D4":
+                            ChangeFilePath();
                             Console.Clear();
-                            break;*/
+                            break;
                         case "D5":
                             work = false;
                             break;
@@ -204,12 +205,15 @@ namespace Serwer
 
             do
             {
-                Console.Write("Proszę podaj ścieżkę dla odebranych plików: ");
+                Console.Write("Proszę podaj ścieżkę dostępu: ");
                 FolderBrowserDialog fbd = new FolderBrowserDialog();
+                fbd.Description = "Wybierz ścieżkę dostępu.";
+                fbd.ShowNewFolderButton = true;
 
                 if (fbd.ShowDialog() == DialogResult.OK)
                 {
                     archive_address = fbd.SelectedPath;
+                    Console.Write(archive_address);
                     next = false;
                 }
                 else
@@ -463,6 +467,18 @@ namespace Serwer
 
         }
 
+        private static void ChangeFilePath()//funkcja do zmiany ścieżki dostepu
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            fbd.Description = "Wybierz nową ścieżkę dostępu.";
+            fbd.ShowNewFolderButton = true;
+
+            if (fbd.ShowDialog() == DialogResult.OK)
+            {
+                file_path=config.GetArchiveAddress(fbd.SelectedPath);//przypisanie nowej ścieżki                
+            }
+        }
+
         private static void ConnectionListen() //funkcja do nasłuchiwania połączeń w tle
         {
             if (null == m_oBackgroundWorker) //sprawdzanie czy obiekt istnieje
@@ -530,9 +546,14 @@ namespace Serwer
             {
                 NetworkStream stream = null; //utworzenie kanału do odbioru
 
+                if (Directory.Exists(file_path) == false)
+                {
+                    Directory.CreateDirectory(file_path);
+                }
+
                 updateCounterOfActiveUsers(true); //aktualizacja aktywnych użytkowników
                 stream = client.GetStream(); //określenie rodzaju połączenia na odbiór danych
-                int dec_data = stream.Read(receive_data, 0, receive_data.Length);//oczekiwanie na nazwę pliku klienta
+                int dec_data = stream.Read(receive_data, 0, receive_data.Length);//oczekiwanie na nazwę pliku klienta                
                 char[] chars = new char[dec_data]; //zmienna pomocnicza do odkodowania nazwy pliku
                 decoder.GetChars(receive_data, 0, dec_data, chars, 0); //dekodowanie otrzymanej nazwy pliku
                 System.String enc_data = new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej
@@ -558,6 +579,7 @@ namespace Serwer
                 Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
                 Console.WriteLine("2) Stwórz archiwum .zip.");
                 Console.WriteLine("3) Wyślij archiwum .zip aktywnym klientom.");
+                Console.WriteLine("4) Zmień ścieżkę dostępu.");
                 Console.WriteLine("5) Wyjście");
 
             }
@@ -569,6 +591,7 @@ namespace Serwer
                 Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
                 Console.WriteLine("2) Stwórz archiwum .zip.");
                 Console.WriteLine("3) Wyślij archiwum .zip aktywnym klientom.");
+                Console.WriteLine("4) Zmień ścieżkę dostępu.");
                 Console.WriteLine("5) Wyjście");
             }
         }
