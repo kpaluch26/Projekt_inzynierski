@@ -10,6 +10,7 @@ using System.IO.Compression;
 using System.ComponentModel;
 using System.Net.Sockets;
 using System.Windows.Forms.VisualStyles;
+using System.Threading;
 
 namespace Serwer
 {
@@ -18,14 +19,13 @@ namespace Serwer
         //zmienne globalne
         private static Config config;
         private static BackgroundWorker m_oBackgroundWorker = null;
-        private static string filename = "C:\\Users\\kamil\\Desktop\\";
+        private static string filename;
         private static int active_clients = 0;
 
         [STAThread]
         static void Main(string[] args) //główna funckja programu
         {
             InitConfig();
-            //Console.WriteLine(IPAddress.Any);
             ConnectionListen();
             OptionsMenu();
         }
@@ -44,7 +44,8 @@ namespace Serwer
                     Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
                     Console.WriteLine("2) Stwórz archiwum .zip.");
                     Console.WriteLine("3) Wyślij archiwum .zip aktywnym klientom.");
-                    Console.WriteLine("4) Wyjście");
+/*                    Console.WriteLine("4) Czekaj na archiwa .zip od aktywnych klientów.");*/
+                    Console.WriteLine("5) Wyjście");
                     cki = Console.ReadKey(true);
                     caseSwitch = (cki.Key.ToString());
 
@@ -61,7 +62,10 @@ namespace Serwer
                         case "D3":
                             Console.Clear();
                             break;
-                        case "D4":
+/*                        case "D4":                            
+                            Console.Clear();
+                            break;*/
+                        case "D5":
                             work = false;
                             break;
                         default:
@@ -81,7 +85,7 @@ namespace Serwer
         {
             for (int i = 0; i < config.ToString().Length + 2; i++)
             {
-                Console.Write("*");
+                Console.Write("*");                
             }
             Console.WriteLine();
             Console.WriteLine("*" + config + "*");
@@ -157,6 +161,7 @@ namespace Serwer
             string username = Environment.UserName; //odczyt nazwy konta użytkownika
             string hostName = Dns.GetHostName(); //odczyt hostname
             string ip_address = Dns.GetHostByName(hostName).AddressList[0].ToString(); // odczyt adresu IPv4
+            string archive_address = "";
             int port = 0, buffer_size = 0;
             bool next = false; //pomocnicza flaga do sprawdzania poprawności formatu
 
@@ -197,7 +202,31 @@ namespace Serwer
                 }
             } while (next);
 
-            config = new Config(username, hostName, ip_address, port, buffer_size);//utworzenie configa
+            do
+            {
+                Console.Write("Proszę podaj ścieżkę dla odebranych plików: ");
+                FolderBrowserDialog fbd = new FolderBrowserDialog();
+
+                if (fbd.ShowDialog() == DialogResult.OK)
+                {
+                    archive_address = fbd.SelectedPath;
+                    next = false;
+                }
+                else
+                {
+                    Console.WriteLine("Niepoprawny rozmiar bufera!");
+                    Console.ReadKey(true); //czekanie na potwierdzenie błedu
+                    Console.Clear();
+                    Console.WriteLine("Witaj użytkowniku " + username + "!");
+                    Console.WriteLine("Proszę podaj port, po którym odbywać się będzię komunikacja: " + port);
+                    Console.WriteLine("Proszę podaj rozmiar buforowania: " + buffer_size);
+                    next = true;
+                }
+            } while (next);
+
+            config = new Config(username, hostName, ip_address,archive_address, port, buffer_size);//utworzenie configa
+            filename = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
+            Console.WriteLine();
             Console.WriteLine("Poprawna konfiguracja serwera.");
             Console.ReadKey();
             Console.Clear();
@@ -207,8 +236,8 @@ namespace Serwer
         {
             StreamReader file;
             string[] result = new string[2];
-            string filePath, line;
-            int port = 0, buffer_size = 0, counterp = 0, counterb = 0;
+            string filePath, line,archive_address="";
+            int port = 0, buffer_size = 0, counterp = 0, counterb = 0,countera=0;
             string username = Environment.UserName; //odczyt nazwy konta użytkownika
             string hostName = Dns.GetHostName(); //odczyt hostname
             string ip_address = Dns.GetHostByName(hostName).AddressList[0].ToString(); // odczyt adresu IPv4
@@ -241,19 +270,24 @@ namespace Serwer
                                     buffer_size = Convert.ToInt32(result[1].Substring(1, result[1].Length - 2)); //przypisanie rozmiaru buffera odczytanego z pliku txt
                                     counterb = 1;
                                     break;
+                                case "archive_address":
+                                    archive_address = Convert.ToString(result[1].Substring(1, result[1].Length - 2)); //przypisanie ścieżki zapisu otrzymanych plików
+                                    countera = 1;
+                                    break;
                             }
-                            if (counterp + counterb == 2)
+                            if (counterp + counterb + countera == 3)
                             {
                                 break;
                             }
                         }
                         file.Close(); //zamknięcie pliku
-                        if (counterp + counterb != 2)
+                        if (counterp + counterb +countera != 3)
                         {
                             file.Close(); //zamknięcie pliku
                             throw new FileLoadException();
                         }
-                        config = new Config(username, hostName, ip_address, port, buffer_size);//utworzenie configa
+                        config = new Config(username, hostName, ip_address,archive_address, port, buffer_size);//utworzenie configa
+                        filename = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
                         Console.WriteLine("Poprawna konfiguracja serwera.");
                         Console.ReadKey(true);
                         Console.Clear();
@@ -305,16 +339,21 @@ namespace Serwer
                                         buffer_size = Convert.ToInt32(result[1].Substring(1, result[1].Length - 2)); //przypisanie numeru portu odczytanego z pliku xml
                                         counterb = 1;
                                         break;
+                                    case "archive_address":
+                                        archive_address = Convert.ToString(result[1].Substring(1, result[1].Length - 2)); //przypisanie ścieżki zapisu otrzymanych plików
+                                        countera = 1;
+                                        break;
                                 }
                             }
                         }
                         file.Close(); //zamknięcie pliku
-                        if (counterp + counterb != 2)
+                        if (counterp + counterb + countera != 3)
                         {
                             file.Close(); //zamknięcie pliku
                             throw new FileLoadException();
                         }
-                        config = new Config(username, hostName, ip_address, port, buffer_size);//utworzenie configa
+                        config = new Config(username, hostName, ip_address,archive_address, port, buffer_size);//utworzenie configa
+                        filename = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
                         Console.WriteLine("Poprawna konfiguracja serwera.");
                         Console.ReadKey(true);
                         Console.Clear();
@@ -347,14 +386,16 @@ namespace Serwer
                 if (sfg.FilterIndex == 1) //zapis dla pliku txt
                 {
                     File.WriteAllText(sfg.FileName, "port_tcp=" + '"' + config.GetPort() + '"' + 
-                        Environment.NewLine + "buffer_size=" + '"' + config.GetBufferSize() + '"'); //stworzenie lub nadpisanie pliku        
+                        Environment.NewLine + "buffer_size=" + '"' + config.GetBufferSize() + '"' +
+                        Environment.NewLine + "archive_address=" + '"' + config.GetArchiveAddress() + '"'); //stworzenie lub nadpisanie pliku        
                 }
                 else if (sfg.FilterIndex == 2)
                 {
                     File.WriteAllText(sfg.FileName, "<serwer>" + 
                         Environment.NewLine + "    <configure>" + 
                         Environment.NewLine + "        port_tcp=" + '"' + config.GetPort() + '"' + 
-                        Environment.NewLine + "        buffer_size=" + '"' + config.GetBufferSize() + '"' + 
+                        Environment.NewLine + "        buffer_size=" + '"' + config.GetBufferSize() + '"' +
+                        Environment.NewLine + "        archive_address=" + '"' + config.GetArchiveAddress() + '"' +
                         Environment.NewLine + "    </configure>" + 
                         Environment.NewLine + "</serwer>"); //stworzenie lub nadpisanie pliku 
                 }
@@ -434,7 +475,7 @@ namespace Serwer
 
         private static void m_oBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            TcpListener listener = new TcpListener(IPAddress.Any, config.GetPort());
+            /*TcpListener listener = new TcpListener(IPAddress.Any, config.GetPort());
             System.Text.Decoder decoder = System.Text.Encoding.UTF8.GetDecoder();
             byte[] receive_data = new byte[config.GetBufferSize()];
             int receive_bytes;
@@ -464,9 +505,48 @@ namespace Serwer
                     client.Close();
                     updateCounterOfActiveUsers(false);
                 }
+            }*/
+
+            TcpListener listener = new TcpListener(IPAddress.Any, config.GetPort()); //ustawienie nasłuchiwania na porcie z konfiguracji i dla dowolnego adresu IP
+            TcpClient client = null; //utworzenie pustego klienta
+            listener.Start(); //rozpoczęcie nasłuchiwania
+
+            while (true) 
+            {
+                client = listener.AcceptTcpClient(); //zaakceptowanie przychodzącego połączenia
+                ThreadPool.QueueUserWorkItem(TransferThread, client); //Dodanie do kolejki klienta
             }
+
         }
 
+        private static void TransferThread(object obj) //nasłuchiwanie dla jednego klienta 
+        {
+            TcpClient client = (TcpClient)obj; //przejęcie kontroli nad klientem
+            System.Text.Decoder decoder = System.Text.Encoding.UTF8.GetDecoder(); //zmienna pomocnicza do odkodowania nazwy pliku
+            byte[] receive_data = new byte[config.GetBufferSize()]; //ustawienie rozmiaru bufera
+            int receive_bytes; //zmienna do odbierania plików
+
+            while (client.Connected)
+            {
+                NetworkStream stream = null; //utworzenie kanału do odbioru
+
+                updateCounterOfActiveUsers(true); //aktualizacja aktywnych użytkowników
+                stream = client.GetStream(); //określenie rodzaju połączenia na odbiór danych
+                int dec_data = stream.Read(receive_data, 0, receive_data.Length);//oczekiwanie na nazwę pliku klienta
+                char[] chars = new char[dec_data]; //zmienna pomocnicza do odkodowania nazwy pliku
+                decoder.GetChars(receive_data, 0, dec_data, chars, 0); //dekodowanie otrzymanej nazwy pliku
+                System.String enc_data = new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej
+                FileStream filestream = new FileStream(filename + enc_data, FileMode.OpenOrCreate, FileAccess.Write); //utworzenie pliku do zapisu archiwum 
+                while ((receive_bytes = stream.Read(receive_data, 0, receive_data.Length)) > 0)
+                {
+                    filestream.Write(receive_data, 0, receive_bytes); //kopiowanie danych do pliku
+                }
+                filestream.Close();
+                stream.Close();
+            }
+            client.Close();
+            updateCounterOfActiveUsers(false); //aktualizacja aktywnych użytkowników
+        }
 
         private static void updateCounterOfActiveUsers(bool x) //funkcja do aktualizowania aktywnych połączeń
         {
