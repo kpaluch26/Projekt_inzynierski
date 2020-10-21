@@ -19,7 +19,7 @@ namespace Serwer
         //zmienne globalne
         private static Config config;
         private static BackgroundWorker m_oBackgroundWorker = null;
-        private static string filename;
+        private static string file_path;
         private static int active_clients = 0;
 
         [STAThread]
@@ -225,7 +225,7 @@ namespace Serwer
             } while (next);
 
             config = new Config(username, hostName, ip_address,archive_address, port, buffer_size);//utworzenie configa
-            filename = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
+            file_path = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
             Console.WriteLine();
             Console.WriteLine("Poprawna konfiguracja serwera.");
             Console.ReadKey();
@@ -287,7 +287,7 @@ namespace Serwer
                             throw new FileLoadException();
                         }
                         config = new Config(username, hostName, ip_address,archive_address, port, buffer_size);//utworzenie configa
-                        filename = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
+                        file_path = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
                         Console.WriteLine("Poprawna konfiguracja serwera.");
                         Console.ReadKey(true);
                         Console.Clear();
@@ -353,7 +353,7 @@ namespace Serwer
                             throw new FileLoadException();
                         }
                         config = new Config(username, hostName, ip_address,archive_address, port, buffer_size);//utworzenie configa
-                        filename = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
+                        file_path = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
                         Console.WriteLine("Poprawna konfiguracja serwera.");
                         Console.ReadKey(true);
                         Console.Clear();
@@ -495,7 +495,7 @@ namespace Serwer
                     char[] chars = new char[dec_data];
                     decoder.GetChars(receive_data, 0, dec_data, chars, 0);
                     System.String enc_data = new System.String(chars);
-                    FileStream filestream = new FileStream(filename+enc_data, FileMode.OpenOrCreate, FileAccess.Write);
+                    FileStream filestream = new FileStream(file_path+enc_data, FileMode.OpenOrCreate, FileAccess.Write);
                     while ((receive_bytes = stream.Read(receive_data, 0, receive_data.Length)) > 0)
                     {
                         filestream.Write(receive_data, 0, receive_bytes);
@@ -536,7 +536,7 @@ namespace Serwer
                 char[] chars = new char[dec_data]; //zmienna pomocnicza do odkodowania nazwy pliku
                 decoder.GetChars(receive_data, 0, dec_data, chars, 0); //dekodowanie otrzymanej nazwy pliku
                 System.String enc_data = new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej
-                FileStream filestream = new FileStream(filename + enc_data, FileMode.OpenOrCreate, FileAccess.Write); //utworzenie pliku do zapisu archiwum 
+                FileStream filestream = new FileStream(file_path + @"\" + enc_data, FileMode.OpenOrCreate, FileAccess.Write); //utworzenie pliku do zapisu archiwum 
                 while ((receive_bytes = stream.Read(receive_data, 0, receive_data.Length)) > 0)
                 {
                     filestream.Write(receive_data, 0, receive_bytes); //kopiowanie danych do pliku
@@ -558,7 +558,7 @@ namespace Serwer
                 Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
                 Console.WriteLine("2) Stwórz archiwum .zip.");
                 Console.WriteLine("3) Wyślij archiwum .zip aktywnym klientom.");
-                Console.WriteLine("4) Wyjście");
+                Console.WriteLine("5) Wyjście");
 
             }
             else
@@ -569,7 +569,7 @@ namespace Serwer
                 Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
                 Console.WriteLine("2) Stwórz archiwum .zip.");
                 Console.WriteLine("3) Wyślij archiwum .zip aktywnym klientom.");
-                Console.WriteLine("4) Wyjście");
+                Console.WriteLine("5) Wyjście");
             }
         }
     }
