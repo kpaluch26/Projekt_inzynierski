@@ -11,23 +11,44 @@ using System.ComponentModel;
 using System.Net.Sockets;
 using System.Windows.Forms.VisualStyles;
 using System.Threading;
+using System.Runtime.CompilerServices;
+using System.Security;
 
 namespace Serwer
 {
     class Program : Form
     {
+        enum ServerOptions
+        {
+            locked,
+            wait,
+            send,
+            receive
+        }
+
         //zmienne globalne
         private static Config config;
         private static BackgroundWorker m_oBackgroundWorker = null;
         private static string file_path;
         private static int active_clients = 0;
+        private static ServerOptions server_option = ServerOptions.locked;
 
         [STAThread]
         static void Main(string[] args) //główna funckja programu
         {
+            
             InitConfig();
-            ConnectionListen();
             OptionsMenu();
+        }
+
+        private static void SetFont()
+        {
+            Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
+            Console.WriteLine("2) Stwórz archiwum .zip.");
+            Console.WriteLine("3) Wyślij archiwum .zip aktywnym klientom.");
+            Console.WriteLine("4) Zmień ścieżkę dostępu.");
+            Console.WriteLine("5) Zmień tryb pracy serwera.");
+            Console.WriteLine("6) Wyjście");
         }
 
         private static void OptionsMenu() //wybór funkcji programu
@@ -40,12 +61,7 @@ namespace Serwer
                 {
                     string caseSwitch;
                     ConsoleKeyInfo cki;
-
-                    Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
-                    Console.WriteLine("2) Stwórz archiwum .zip.");
-                    Console.WriteLine("3) Wyślij archiwum .zip aktywnym klientom.");
-                    Console.WriteLine("4) Zmień ścieżkę dostępu.");
-                    Console.WriteLine("5) Wyjście");
+                    SetFont();
                     cki = Console.ReadKey(true);
                     caseSwitch = (cki.Key.ToString());
 
@@ -67,6 +83,10 @@ namespace Serwer
                             Console.Clear();
                             break;
                         case "D5":
+                            SetServerOptions();
+                            Console.Clear();
+                            break;
+                        case "D6":
                             work = false;
                             break;
                         default:
@@ -100,16 +120,27 @@ namespace Serwer
 
         private static void InfoUsers() //ramka do wyświetlania aktywnych użytkowników
         {
-            string info = "Aktywni użytkownicy: ";
+            string users_info = "Aktywni użytkownicy: ";
+            string server_info = "Tryb pracy serwera:  ";
             Console.Write("|");
-            for(int i = 0; i < active_clients.ToString().Length+info.Length+2; i++)
+            for(int i = 0; i < active_clients.ToString().Length+ users_info.Length+2; i++)
+            {
+                Console.Write("-");
+            }
+            Console.Write("||");
+            for (int i=0; i<server_info.Length+2 + server_option.ToString().Length; i++)
             {
                 Console.Write("-");
             }
             Console.WriteLine("|");
-            Console.WriteLine("| " + info + active_clients + " |");
+            Console.WriteLine("| " + users_info + active_clients + " || " + server_info + server_option + " |");
             Console.Write("|");
-            for (int i = 0; i < active_clients.ToString().Length + info.Length + 2; i++)
+            for (int i = 0; i < active_clients.ToString().Length + users_info.Length + 2; i++)
+            {
+                Console.Write("-");
+            }
+            Console.Write("||");
+            for (int i = 0; i < server_info.Length + 2 + server_option.ToString().Length; i++)
             {
                 Console.Write("-");
             }
@@ -484,6 +515,7 @@ namespace Serwer
             if (null == m_oBackgroundWorker) //sprawdzanie czy obiekt istnieje
             {
                 m_oBackgroundWorker = new BackgroundWorker(); //utworzenie obiektu
+                m_oBackgroundWorker.WorkerSupportsCancellation = true;
                 m_oBackgroundWorker.DoWork += new DoWorkEventHandler(m_oBackgroundWorker_DoWork);
             }
             m_oBackgroundWorker.RunWorkerAsync(config.GetPort());
@@ -522,17 +554,29 @@ namespace Serwer
                     updateCounterOfActiveUsers(false);
                 }
             }*/
-
             TcpListener listener = new TcpListener(IPAddress.Any, config.GetPort()); //ustawienie nasłuchiwania na porcie z konfiguracji i dla dowolnego adresu IP
             TcpClient client = null; //utworzenie pustego klienta
-            listener.Start(); //rozpoczęcie nasłuchiwania
+            listener.Start(); //rozpoczęcie nasłuchiwania     
+            bool do_work = true; //zmienna określające prace wątka w tle
 
-            while (true) 
+            while (do_work)
             {
-                client = listener.AcceptTcpClient(); //zaakceptowanie przychodzącego połączenia
-                ThreadPool.QueueUserWorkItem(TransferThread, client); //Dodanie do kolejki klienta
+                if (server_option == ServerOptions.wait) //działa jesli tryb pracy serwera jest ustawiony na oczekiwanie
+                {
+                    if (listener.Pending())
+                    {
+                        client = listener.AcceptTcpClient(); //zaakceptowanie przychodzącego połączenia                        
+                        ThreadPool.QueueUserWorkItem(TransferThread, client); //Dodanie do kolejki klienta
+                    }
+                }
+                if (m_oBackgroundWorker.CancellationPending)
+                {
+                    listener.Stop();
+                    e.Cancel = true;
+                    do_work = false;
+                    return;
+                }
             }
-
         }
 
         private static void TransferThread(object obj) //nasłuchiwanie dla jednego klienta 
@@ -541,34 +585,76 @@ namespace Serwer
             System.Text.Decoder decoder = System.Text.Encoding.UTF8.GetDecoder(); //zmienna pomocnicza do odkodowania nazwy pliku
             byte[] receive_data = new byte[config.GetBufferSize()]; //ustawienie rozmiaru bufera
             int receive_bytes; //zmienna do odbierania plików
+            NetworkStream stream = null; //utworzenie kanału do odbioru
+            bool help = true;
 
-            while (client.Connected)
+            try
             {
-                NetworkStream stream = null; //utworzenie kanału do odbioru
-
-                if (Directory.Exists(file_path) == false)
+                while (client.Connected)
                 {
-                    Directory.CreateDirectory(file_path);
-                }
+                    if (server_option != ServerOptions.wait && help)
+                    {
+                        client.Close();
+                    }
+                    else if (server_option == ServerOptions.wait && help)
+                    {
+                        updateCounterOfActiveUsers(true); //aktualizacja aktywnych użytkowników
+                        help = false;
+                    }
+                    else if (server_option == ServerOptions.receive && !help) //sprawdzanie czy serwer jest ustawiony na odbiór plików
+                    {
+                        if (Directory.Exists(file_path) == false) //sprawdzanie czy ścieżka dostępu z pliku konfiguracyjnego istnieje
+                        {
+                            Directory.CreateDirectory(file_path); //utworzenie ścieżki dostępu z pliku konfiguracyjnego
+                        }
 
-                updateCounterOfActiveUsers(true); //aktualizacja aktywnych użytkowników
-                stream = client.GetStream(); //określenie rodzaju połączenia na odbiór danych
-                int dec_data = stream.Read(receive_data, 0, receive_data.Length);//oczekiwanie na nazwę pliku klienta                
-                char[] chars = new char[dec_data]; //zmienna pomocnicza do odkodowania nazwy pliku
-                decoder.GetChars(receive_data, 0, dec_data, chars, 0); //dekodowanie otrzymanej nazwy pliku
-                System.String enc_data = new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej
-                FileStream filestream = new FileStream(file_path + @"\" + enc_data, FileMode.OpenOrCreate, FileAccess.Write); //utworzenie pliku do zapisu archiwum 
-                while ((receive_bytes = stream.Read(receive_data, 0, receive_data.Length)) > 0)
-                {
-                    filestream.Write(receive_data, 0, receive_bytes); //kopiowanie danych do pliku
+                        stream = client.GetStream(); //określenie rodzaju połączenia na odbiór danych
+                        int dec_data = stream.Read(receive_data, 0, receive_data.Length);//oczekiwanie na nazwę pliku klienta       
+                        char[] chars = new char[dec_data]; //zmienna pomocnicza do odkodowania nazwy pliku
+                        decoder.GetChars(receive_data, 0, dec_data, chars, 0); //dekodowanie otrzymanej nazwy pliku
+                        System.String enc_data = new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej
+                        FileStream filestream = new FileStream(file_path + @"\" + enc_data, FileMode.OpenOrCreate, FileAccess.Write); //utworzenie pliku do zapisu archiwum 
+                        while ((receive_bytes = stream.Read(receive_data, 0, receive_data.Length)) > 0)
+                        {
+                            filestream.Write(receive_data, 0, receive_bytes); //kopiowanie danych do pliku
+                        }
+                        filestream.Close();
+                        stream.Close();
+                    }
+                    else if (server_option == ServerOptions.send)
+                    {
+
+                    }
+                    else if (client.Client.Poll(0, SelectMode.SelectRead))
+                    {
+                        byte[] buff = new byte[1];
+                        if (client.Client.Receive(buff, SocketFlags.Peek) == 0)
+                        {
+                            client.Client.Disconnect(true);
+                        }
+                    }
                 }
-                filestream.Close();
-                stream.Close();
+                client.Close();
+                updateCounterOfActiveUsers(false); //aktualizacja aktywnych użytkowników
             }
-            client.Close();
-            updateCounterOfActiveUsers(false); //aktualizacja aktywnych użytkowników
+            catch (SocketException)
+            {
+                client.Close();
+                updateCounterOfActiveUsers(false); //aktualizacja aktywnych użytkowników
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
+        private static void BackgroundWorkerClose() //funkcja do przerywania wątka w tle
+        {
+            if (m_oBackgroundWorker.IsBusy) //sprawdzanie czy taki wątek istnieje
+            {
+                m_oBackgroundWorker.CancelAsync();//przerwanie wątka roboczego
+            }
+        }
         private static void updateCounterOfActiveUsers(bool x) //funkcja do aktualizowania aktywnych połączeń
         {
             if (x)
@@ -576,11 +662,7 @@ namespace Serwer
                 active_clients++;
                 Console.Clear();
                 InfoDisplay();
-                Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
-                Console.WriteLine("2) Stwórz archiwum .zip.");
-                Console.WriteLine("3) Wyślij archiwum .zip aktywnym klientom.");
-                Console.WriteLine("4) Zmień ścieżkę dostępu.");
-                Console.WriteLine("5) Wyjście");
+                SetFont();
 
             }
             else
@@ -588,12 +670,66 @@ namespace Serwer
                 active_clients--;
                 Console.Clear();
                 InfoDisplay();
-                Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
-                Console.WriteLine("2) Stwórz archiwum .zip.");
-                Console.WriteLine("3) Wyślij archiwum .zip aktywnym klientom.");
-                Console.WriteLine("4) Zmień ścieżkę dostępu.");
-                Console.WriteLine("5) Wyjście");
+                SetFont();
             }
         }
+
+        private static void SetServerOptions() //funkcja do ustawiania trybu pracy serwera
+        {
+            bool correct = true;
+            do
+            {
+                try
+                {
+                    string caseSwitch;
+                    ConsoleKeyInfo cki;
+
+                    Console.WriteLine("Wybierz nowy tryb pracy serwera.");
+                    Console.WriteLine("1) wstrzymaj pracę serwera.    2) oczekiwanie na nawiązanie połączeń.    3) odbiór plików.    4) wysłanie plików.    5) powrót.");
+                    cki = Console.ReadKey(true);
+                    caseSwitch = (cki.Key.ToString());
+
+                    switch (caseSwitch)
+                    {
+                        case "D1":
+                            server_option = ServerOptions.locked;
+                            BackgroundWorkerClose();
+                            Console.Clear();
+                            correct = false;
+                            break;
+                        case "D2":
+                            server_option = ServerOptions.wait;
+                            ConnectionListen();
+                            Console.Clear();                        
+                            correct = false;
+                            break;
+                        case "D3":
+                            server_option = ServerOptions.receive;
+                            BackgroundWorkerClose();
+                            Console.Clear();
+                            correct = false;
+                            break;
+                        case "D4":
+                            server_option = ServerOptions.send;
+                            BackgroundWorkerClose();
+                            Console.Clear();
+                            correct = false;
+                            break;
+                        case "D5":
+                            correct = false;
+                            break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Nie ma takiej opcji, proszę wybrać poprawną opcję. " + e);
+                    Console.ReadKey(true);
+                    Console.Clear();
+                    InfoDisplay();
+                    SetFont();
+                }
+            } while (correct);
+        }
+        
     }
 }
