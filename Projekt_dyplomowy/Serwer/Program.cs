@@ -18,95 +18,87 @@ namespace Serwer
 {
     class Program : Form
     {
-        enum ServerOptions
-        {
-            locked,
-            wait,
-            send,
-            receive
-        }
-
         //zmienne globalne
-        private static ServerOptions server_option = ServerOptions.locked;
-        private static Config config;
-        private static BackgroundWorker m_oBackgroundWorker = null;
-        private static FileData file;
-        private static string save_address;
-        private static int active_clients = 0;
+        private static ServerOptions server_option = ServerOptions.locked; //tryb pracy serwera -> domyślnie locked
+        private static Config config; //konfiguracja serwera -> domyślnie pusta
+        private static BackgroundWorker m_oBackgroundWorker = null; //wątek roboczy pracujacy w tle -> domyślnie niezainicjowany
+        private static FileData file; //plik do udostepnienia -> domyslnie pusty
+        private static string save_address; //ścieżka zapisu przychodzących plików ->domyslnie pusta
+        private static int active_clients = 0; //liczba aktywnych połączeń -> domyślnie zero
 
         [STAThread]
         static void Main(string[] args) //główna funckja programu
-        {
-            
-            InitConfig();
-            OptionsMenu();
+        {           
+            InitConfig(); //wczytanie lub stworzenie konfiguracji serwera
+            OptionsMenu(); //wybór funkcji programu
+            BackgroundWorkerClose(); //zamknięcie wątka roboczego o ile istnieje
         }
 
-        private static void SetFont() //funkcja do wyświetlania menu
+        private static void SetFont() //funkcja do wyświetlania menu opcji
         {
-            Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
-            Console.WriteLine("2) Stwórz archiwum .zip.");
-            if (file == null)
+            Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml"); //komunikat
+            Console.WriteLine("2) Stwórz archiwum .zip."); //komunikat
+            if (file == null) //jeśli nie wybrano jeszcze pliku do udostępnienia
             {
-                Console.WriteLine("3) Wybierz archiwum .zip do udostępnienia.");
+                Console.WriteLine("3) Wybierz archiwum .zip do udostępnienia."); //komunikat
             }
             else
             {
-                Console.WriteLine("3) Zmień archiwum .zip do udostępnienia.");
+                Console.WriteLine("3) Zmień archiwum .zip do udostępnienia."); //komunikat
             }
-            Console.WriteLine("4) Zmień ścieżkę dostępu.");
-            Console.WriteLine("5) Zmień tryb pracy serwera.");
-            Console.WriteLine("6) Wyjście");
+            Console.WriteLine("4) Zmień ścieżkę dostępu."); //komunikat
+            Console.WriteLine("5) Zmień tryb pracy serwera."); //komunikat
+            Console.WriteLine("6) Wyjście"); //komunikat
         }
 
         private static void OptionsMenu() //wybór funkcji programu
         {
-            bool work = true;
+            bool work = true; //zmienna pomocnicza
             while (work)
             {
-                InfoDisplay();
+                InfoDisplay(); //wyświetlenie informacji o serwerze i jego konfiguracji
                 try
                 {
-                    string caseSwitch;
-                    ConsoleKeyInfo cki;
-                    SetFont();
-                    cki = Console.ReadKey(true);
-                    caseSwitch = (cki.Key.ToString());
+                    string caseSwitch; //zmienna do odczytywania wybranej przez użytkownika opcji
+                    ConsoleKeyInfo cki; //zmienna pomocnicza do odczytywania wybranej przez użytkownika opcji
+                    SetFont(); //wyświetlenie menu opcji
+                    cki = Console.ReadKey(true); //odczyt opcji użytkownika
+                    caseSwitch = (cki.Key.ToString()); //konwertowanie opcji na konkretny klawisz
 
-                    switch (caseSwitch)
+                    switch (caseSwitch) //wywołanie funkcji programu zgodnie z wyborem użytkownika
                     {
-                        case "D1":
-                            ExportConfig();
-                            Console.Clear();
+                        case "D1": //1
+                            ExportConfig(); //eksportowanie pliku konfiguracyjnego
+                            Console.Clear(); //czyszczenie konsoi
                             break;
-                        case "D2":
-                            CreateZIP();
-                            Console.Clear();
+                        case "D2": //2
+                            CreateZIP(); //tworzenie archiwum ZIP
+                            Console.Clear(); //czyszczenie konsoli
                             break;
-                        case "D3":
-                            SetSendingFile();
-                            Console.Clear();
+                        case "D3": //3
+                            SetSendingFile(); //wybranie pliku do udostępnienia
+                            Console.Clear(); //czyszczenie konsoli
                             break;
-                        case "D4":
-                            ChangeFilePath();
-                            Console.Clear();
+                        case "D4": //4
+                            ChangeFilePath(); //zmiana ścieżki zapisu otrzymanych plików
+                            Console.Clear(); //czyszczenie konsoli
                             break;
-                        case "D5":
-                            SetServerOptions();
-                            Console.Clear();
+                        case "D5": //5
+                            SetServerOptions(); //zmiana trybu pracy serwera
+                            Console.Clear(); //czyszczenie konsoli
                             break;
-                        case "D6":
-                            work = false;
+                        case "D6": //6
+                            work = false; //przerwanie pętli == koniec pracy programu
                             break;
-                        default:
-                            throw new Exception();
+                        default: //w przypadku wybrania nieistniejącej opcji przez użytkownika
+                            throw new Exception(); //wyrzuca wyjątek
                     }
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("Nie ma takiej opcji, proszę wybrać poprawną opcję.");
-                    Console.ReadKey(true);
-                    Console.Clear();
+                    Console.WriteLine("Nie ma takiej opcji, proszę wybrać poprawną opcję."); //komunikat
+                    Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
+                    Console.Clear(); //czyszczenie konsoli
                 }
             }
         }
@@ -118,20 +110,20 @@ namespace Serwer
                 Console.Write("*");                
             }
             Console.WriteLine();
-            Console.WriteLine("*" + config + "*");
+            Console.WriteLine("*" + config + "*"); //wyswietlenie bieżącej konfiguracji serwera
             for (int i = 0; i < config.ToString().Length + 2; i++)
             {
                 Console.Write("*");
             }
             Console.WriteLine();
-            InfoUsers();
+            InfoUsers(); //wyśiwetlenie informacji o serwerze
         }
 
-        private static void InfoUsers() //ramka do wyświetlania aktywnych użytkowników
+        private static void InfoUsers() //ramka do wyświetlania informacji o serwerze
         {
-            string users_info = "Aktywni użytkownicy: ";
-            string server_info = "Tryb pracy serwera:  ";
-            string file_info = "Wybrany plik do udostępnienia: ";
+            string users_info = "Aktywni użytkownicy: "; //komunikat
+            string server_info = "Tryb pracy serwera:  "; //komunikat
+            string file_info = "Wybrany plik do udostępnienia: "; //komunikat
             Console.Write("|");
             for(int i = 0; i < active_clients.ToString().Length+ users_info.Length+2; i++)
             {
@@ -143,7 +135,7 @@ namespace Serwer
                 Console.Write("-");
             }
             Console.WriteLine("|");
-            Console.WriteLine("| " + users_info + active_clients + " || " + server_info + server_option + " |");
+            Console.WriteLine("| " + users_info + active_clients + " || " + server_info + server_option + " |"); //wyśiwetlenie aktywnych połączeń || wyświetlenie aktualnego trybu pracy serwera
             Console.Write("|");
             for (int i = 0; i < active_clients.ToString().Length + users_info.Length + 2; i++)
             {
@@ -155,51 +147,62 @@ namespace Serwer
                 Console.Write("-");
             }
             Console.WriteLine("|");
-            if (file != null)
+            if (file != null) //jeśli wybrano plik do udostępnienia
             {
-                Console.WriteLine(file_info + file.GetAddress());
+                Console.Write("|");
+                for (int i = 0; i < file_info.Length + 2 + file.GetName().Length; i++)
+                {
+                    Console.Write("-");
+                }
+                Console.WriteLine("|");
+                Console.WriteLine("| " + file_info + file.GetName() + " |"); //wyświetlenie wybranego pliku do udostępnienia
+                Console.Write("|");
+                for (int i = 0; i < file_info.Length + 2 + file.GetName().Length; i++)
+                {
+                    Console.Write("-");
+                }
+                Console.WriteLine("|");
             }
         }
 
-        private static void InitConfig() //wybór funkcji użytkownika
+        private static void InitConfig() //wybór sposobu konfiguracji serwera
         {           
             do
             {
                 try
                 {
-                    string caseSwitch;
-                    ConsoleKeyInfo cki;
+                    string caseSwitch; //zmienna do odczytywania wybranej przez użytkownika opcji
+                    ConsoleKeyInfo cki; //zmienna pomocnicza do odczytywania wybranej przez użytkownika opcji
+                    Console.WriteLine("Witaj użytkowniku " + Environment.UserName); //komunikat
+                    Console.WriteLine("Wybierz spoósb konfiguracji serwera:"); //komunikat
+                    Console.WriteLine("1) Automatyczny z pliku .txt/.xml   2) Ręczna konfiguracja   3) Wyjście"); //komunikat
+                    cki = Console.ReadKey(true); //odczyt opcji użytkownika
+                    caseSwitch = (cki.Key.ToString()); //konwertowanie opcji na konkretny klawisz
 
-                    Console.WriteLine("Witaj użytkowniku " + Environment.UserName);
-                    Console.WriteLine("Wybierz spoósb konfiguracji serwera:");
-                    Console.WriteLine("1) Automatyczny z pliku .txt/.xml   2) Ręczna konfiguracja   3) Wyjście");
-                    cki = Console.ReadKey(true);
-                    caseSwitch = (cki.Key.ToString());
-
-                    switch (caseSwitch)
+                    switch (caseSwitch) //wywołanie sposobu konfiguracji serwera zgodnie z wyborem użytkownika
                     {
-                        case "D1":
-                            ImportConfig();
-                            Console.Clear();
+                        case "D1": //1
+                            ImportConfig(); //importowanie konfiguracji serwera z pliku
+                            Console.Clear(); //czyszczenie konsoli
                             break;
-                        case "D2":
-                            SetConfig();
-                            Console.Clear();
+                        case "D2": //2
+                            SetConfig(); //ustawienie konfiguracji serwera w sposób ręczny
+                            Console.Clear(); //czyszczenie konsoli
                             break;
-                        case "D3":
-                            Environment.Exit(0);
+                        case "D3": //3
+                            Environment.Exit(0); //wyjście z programu
                             break;
-                        default:
-                            throw new FormatException();
+                        default: //w przypadku wybrania nieistniejącej opcji
+                            throw new FormatException(); //wyrzuca wyjątek
                     }
                 }
                 catch (FormatException)
                 {
-                    Console.WriteLine("Nie ma takiej opcji, proszę wybrać poprawną opcję.");
-                    Console.ReadKey(true);
-                    Console.Clear();
+                    Console.WriteLine("Nie ma takiej opcji, proszę wybrać poprawną opcję."); //komunikat
+                    Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
+                    Console.Clear(); //czyszczenie konsoli
                 }
-            } while (config == null);
+            } while (config == null); //dopóki nie ustawiono konfiguracji serwera
         }
 
         private static void SetConfig() //funkcja ręcznej konfiguracji serwera
@@ -207,86 +210,86 @@ namespace Serwer
             string username = Environment.UserName; //odczyt nazwy konta użytkownika
             string hostName = Dns.GetHostName(); //odczyt hostname
             string ip_address = Dns.GetHostByName(hostName).AddressList[0].ToString(); // odczyt adresu IPv4
-            string archive_address = "";
-            int port = 0, buffer_size = 0;
+            string archive_address = ""; //zmienna pomocnicza do odczytu ścieżki zapisu otrzymanych plików
+            int port = 0, buffer_size = 0; //zmienne pomocnicze do odczytu portu i rozmiaru buffera 
             bool next = false; //pomocnicza flaga do sprawdzania poprawności formatu
 
             do
             {
-                Console.WriteLine("Ręczna konfiguracja serwera.");
-                Console.Write("Proszę podaj port, po którym odbywać się będzię komunikacja: ");
+                Console.WriteLine("Ręczna konfiguracja serwera."); //komunikat
+                Console.Write("Proszę podaj port, po którym odbywać się będzię komunikacja: "); //komunikat
                 try
                 {
                     port = Convert.ToInt32(Console.ReadLine()); //ręczne ustawienie portu komunikacji
-                    next = false;
+                    next = false; //poprawny format wprowadzonych danych
                 }
                 catch
                 {
-                    Console.WriteLine("Niepoprawny numer portu!");
-                    Console.ReadKey(true); //czekanie na potwierdzenie błedu
-                    Console.Clear();
-                    next = true;
+                    Console.WriteLine("Niepoprawny numer portu!"); //komunikat
+                    Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
+                    Console.Clear(); //czyszczenie konsoli
+                    next = true; //błędny format
                 }
-            } while (next);
+            } while (next); //dopóki błędny format
 
             do
             {
-                Console.Write("Proszę podaj rozmiar buforowania: ");
+                Console.Write("Proszę podaj rozmiar buforowania: "); //komunikat
                 try
                 {
                     buffer_size = Convert.ToInt32(Console.ReadLine()); //ręczne ustawienie rozmiaru bufera
-                    next = false;
+                    next = false; //poprawny format wprowadzonych danych
                 }
                 catch
                 {
-                    Console.WriteLine("Niepoprawny rozmiar bufera!");
-                    Console.ReadKey(true); //czekanie na potwierdzenie błedu
-                    Console.Clear();
-                    Console.WriteLine("Witaj użytkowniku " + username + "!");
-                    Console.WriteLine("Proszę podaj port, po którym odbywać się będzię komunikacja: " + port);
-                    next = true;
+                    Console.WriteLine("Niepoprawny rozmiar bufera!"); //komunikat
+                    Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
+                    Console.Clear(); //czyszczenie konsoli
+                    Console.WriteLine("Witaj użytkowniku " + username + "!"); //komunikat
+                    Console.WriteLine("Proszę podaj port, po którym odbywać się będzię komunikacja: " + port); //komunikat
+                    next = true; //błędny format
                 }
-            } while (next);
+            } while (next); //dopóki błędny format
 
             do
             {
-                Console.Write("Proszę podaj ścieżkę dostępu: ");
-                FolderBrowserDialog fbd = new FolderBrowserDialog();
-                fbd.Description = "Wybierz ścieżkę dostępu.";
-                fbd.ShowNewFolderButton = true;
+                Console.Write("Proszę podaj ścieżkę dostępu: "); //komunikat
+                FolderBrowserDialog fbd = new FolderBrowserDialog(); //utworzenie okna dialogowego do wybrania ścieżki zapisu otrzymanych plików
+                fbd.Description = "Wybierz ścieżkę dostępu."; //tytuł utworzonego okna
+                fbd.ShowNewFolderButton = true; //włączenie mozliwości tworzenia nowych folderów
 
-                if (fbd.ShowDialog() == DialogResult.OK)
+                if (fbd.ShowDialog() == DialogResult.OK) //jeśli wybrano ścieżkę
                 {
-                    archive_address = fbd.SelectedPath;
-                    Console.Write(archive_address);
-                    next = false;
+                    archive_address = fbd.SelectedPath; //przypisanie wybranej ścieżki do zmiennej globalnej
+                    Console.Write(archive_address); //wyświetlenie wybranej ściezki
+                    next = false; //poprawny format wprowadzonych danych
                 }
                 else
                 {
-                    Console.WriteLine("Niepoprawny rozmiar bufera!");
-                    Console.ReadKey(true); //czekanie na potwierdzenie błedu
-                    Console.Clear();
-                    Console.WriteLine("Witaj użytkowniku " + username + "!");
-                    Console.WriteLine("Proszę podaj port, po którym odbywać się będzię komunikacja: " + port);
-                    Console.WriteLine("Proszę podaj rozmiar buforowania: " + buffer_size);
-                    next = true;
+                    Console.WriteLine("Niepoprawny rozmiar bufera!"); //komunikat
+                    Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
+                    Console.Clear(); //czyszczenie konsoli
+                    Console.WriteLine("Witaj użytkowniku " + username + "!"); //komunikat
+                    Console.WriteLine("Proszę podaj port, po którym odbywać się będzię komunikacja: " + port); //komunikat
+                    Console.WriteLine("Proszę podaj rozmiar buforowania: " + buffer_size); //komunikat
+                    next = true; //błędny format
                 }
-            } while (next);
+            } while (next); //dopóki błędny format
 
             config = new Config(username, hostName, ip_address,archive_address, port, buffer_size);//utworzenie configa
             save_address = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
-            Console.WriteLine();
-            Console.WriteLine("Poprawna konfiguracja serwera.");
-            Console.ReadKey();
-            Console.Clear();
+            Console.WriteLine(); //nowa linia
+            Console.WriteLine("Poprawna konfiguracja serwera."); //komunikat
+            Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
+            Console.Clear(); //czyszczenie konsoli
         }
 
         private static void ImportConfig() //funkcja do automatycznej konfiguracji serwera
         {
-            StreamReader file;
-            string[] result = new string[2];
-            string filePath, line,archive_address="";
-            int port = 0, buffer_size = 0, counterp = 0, counterb = 0,countera=0;
+            StreamReader file; //zmienna do odczytu pliku
+            string[] result = new string[2]; //tablica zmiennych do odczytu konfiguracji
+            string filePath, line,archive_address=""; //zmienne pomocnicze do konfiguracji serwera
+            int port = 0, buffer_size = 0, counterp = 0, counterb = 0,countera=0; //zmienne pomocnicze sprawdzające poprawność importowanych danych
             string username = Environment.UserName; //odczyt nazwy konta użytkownika
             string hostName = Dns.GetHostName(); //odczyt hostname
             string ip_address = Dns.GetHostByName(hostName).AddressList[0].ToString(); // odczyt adresu IPv4
@@ -305,121 +308,121 @@ namespace Serwer
                     try
                     {
                         file = new StreamReader(filePath); //utworzenie odczytu pliku
-                        while ((line = file.ReadLine()) != null)
+                        while ((line = file.ReadLine()) != null) //dopóki są linie w pliku
                         {
                             line = String.Concat(line.Where(x => !Char.IsWhiteSpace(x))); //usunięcie wszelkich znaków białych z linii
                             result = line.Split('='); //podzielenie odczytanej linii wykorzystując separator
-                            switch (result[0].ToLower())
+                            switch (result[0].ToLower()) //zmiana liter na małe w poleceniu
                             {
-                                case "port_tcp":
+                                case "port_tcp": //polecenie
                                     port = Convert.ToInt32(result[1].Substring(1,result[1].Length-2)); //przypisanie numeru portu odczytanego z pliku txt
-                                    counterp = 1;
+                                    counterp = 1; //poprawny format
                                     break;
-                                case "buffer_size":
+                                case "buffer_size": //polecenie
                                     buffer_size = Convert.ToInt32(result[1].Substring(1, result[1].Length - 2)); //przypisanie rozmiaru buffera odczytanego z pliku txt
-                                    counterb = 1;
+                                    counterb = 1; //poprawny format
                                     break;
-                                case "archive_address":
+                                case "archive_address": //polecenie
                                     archive_address = Convert.ToString(result[1].Substring(1, result[1].Length - 2)); //przypisanie ścieżki zapisu otrzymanych plików
-                                    countera = 1;
+                                    countera = 1; //poprawny format
                                     break;
                             }
-                            if (counterp + counterb + countera == 3)
+                            if (counterp + counterb + countera == 3) //jeśli wczytano wszystkie niezbędne dane
                             {
-                                break;
+                                break; //przerwij dalsze wczytywanie
                             }
                         }
                         file.Close(); //zamknięcie pliku
-                        if (counterp + counterb +countera != 3)
+                        if (counterp + counterb +countera != 3) //jeśli nie wczytano wszystkich niezbędnych danych
                         {
                             file.Close(); //zamknięcie pliku
-                            throw new FileLoadException();
+                            throw new FileLoadException(); //wyrzucenie wyjątku
                         }
                         config = new Config(username, hostName, ip_address,archive_address, port, buffer_size);//utworzenie configa
                         save_address = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
-                        Console.WriteLine("Poprawna konfiguracja serwera.");
-                        Console.ReadKey(true);
-                        Console.Clear();
+                        Console.WriteLine("Poprawna konfiguracja serwera."); //komunikat
+                        Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
+                        Console.Clear(); //czyszczenie konsoli
                     }
                     catch (FileLoadException)
                     {
-                        Console.WriteLine("Plik konfiguracyjny jest uszkodzony! Spróbuj z innym plikiem lub skorzystaj z ręcznej konfiguracji!");
-                        Console.ReadKey(true);
-                        Console.Clear();
+                        Console.WriteLine("Plik konfiguracyjny jest uszkodzony! Spróbuj z innym plikiem lub skorzystaj z ręcznej konfiguracji!"); //komunikat
+                        Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
+                        Console.Clear(); //czyszczenie konsoli
                     }
                 }
                 else if (ofd.FilterIndex == 2)//odczyt dla pliku xml
                 {
                     try
                     {
-                        bool serwer = false; 
-                        bool configure = false;
+                        bool serwer = false; //zmienna pomocnicza do odczytu konfiguracji dla serwera
+                        bool configure = false; //zmienna pomocnicza sprawdzająca poprawność importowanych danych
                         file = new StreamReader(filePath); //utworzenie odczytu pliku
-                        while ((line = file.ReadLine()) != null)
+                        while ((line = file.ReadLine()) != null) //dopóki są linie w pliku
                         {
                             line = String.Concat(line.Where(x => !Char.IsWhiteSpace(x))); //usunięcie wszelkich znaków białych z linii
-                            if (line.ToLower() == "<serwer>")
+                            if (line.ToLower() == "<serwer>") //początek konfiguracji serwera
                             {
-                                serwer = true;
+                                serwer = true; //ustawienie odczytu danych dla serwera
                             }
-                            else if (line.ToLower() == "</serwer>")
+                            else if (line.ToLower() == "</serwer>") //koniec konfiguracji serwera
                             {
-                                serwer = false;
+                                serwer = false; //przerwanie odczytu danych
                                 break;
                             }
-                            else if(line.ToLower() == "<configure>" && serwer)
+                            else if(line.ToLower() == "<configure>" && serwer) //początek konfiguracji
                             {
-                                configure = true;
+                                configure = true; //ustawienie odczytu konfiguracji
                             }
-                            else if(line.ToLower() == "</configure>" && serwer)
+                            else if(line.ToLower() == "</configure>" && serwer) //koniec konfiguracji
                             {
-                                configure = false;
+                                configure = false; //przerwanie konfiguracji
                             }
-                            else if(serwer && configure)
+                            else if(serwer && configure) //jeśli konfiguracja obowiązuje dla serwera
                             {
                                 result = line.Split('='); //podzielenie odczytanej linii wykorzystując separator
-                                switch (result[0].ToLower())
+                                switch (result[0].ToLower()) //ustawienie małych liter poleceń
                                 {
-                                    case "port_tcp":
+                                    case "port_tcp": //polecenie
                                         port = Convert.ToInt32(result[1].Substring(1, result[1].Length - 2)); //przypisanie numeru portu odczytanego z pliku xml
-                                        counterp = 1;
+                                        counterp = 1; //poprawny format
                                         break;
-                                    case "buffer_size":
+                                    case "buffer_size": //polecenie
                                         buffer_size = Convert.ToInt32(result[1].Substring(1, result[1].Length - 2)); //przypisanie numeru portu odczytanego z pliku xml
-                                        counterb = 1;
+                                        counterb = 1; //poprawny format
                                         break;
-                                    case "archive_address":
+                                    case "archive_address": //polecenie 
                                         archive_address = Convert.ToString(result[1].Substring(1, result[1].Length - 2)); //przypisanie ścieżki zapisu otrzymanych plików
-                                        countera = 1;
+                                        countera = 1; //poprawny format
                                         break;
                                 }
                             }
                         }
                         file.Close(); //zamknięcie pliku
-                        if (counterp + counterb + countera != 3)
+                        if (counterp + counterb + countera != 3) //jeśli niepoprawny format konfiguracji
                         {
                             file.Close(); //zamknięcie pliku
-                            throw new FileLoadException();
+                            throw new FileLoadException(); //wyrzuca wyjątek
                         }
-                        config = new Config(username, hostName, ip_address,archive_address, port, buffer_size);//utworzenie configa
+                        config = new Config(username, hostName, ip_address,archive_address, port, buffer_size); //utworzenie configa
                         save_address = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
-                        Console.WriteLine("Poprawna konfiguracja serwera.");
-                        Console.ReadKey(true);
-                        Console.Clear();
+                        Console.WriteLine("Poprawna konfiguracja serwera."); //komunikat
+                        Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
+                        Console.Clear(); //czyszczenie konsoli
                     }
                     catch (FileLoadException)
                     {
-                        Console.WriteLine("Plik konfiguracyjny jest uszkodzony! Spróbuj z innym plikiem lub skorzystaj z ręcznej konfiguracji!");
-                        Console.ReadKey(true);
-                        Console.Clear();
+                        Console.WriteLine("Plik konfiguracyjny jest uszkodzony! Spróbuj z innym plikiem lub skorzystaj z ręcznej konfiguracji!"); //komunikat
+                        Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
+                        Console.Clear(); //czyszczenie konsoli
                     }
                 }
             }
             else
             {
-                Console.WriteLine("Nie wybrano pliku. Powrót do menu głównego.");
-                Console.ReadKey(true);
-                Console.Clear();
+                Console.WriteLine("Nie wybrano pliku. Powrót do menu głównego."); //komunikat
+                Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
+                Console.Clear(); //czyszczenie konsoli
             }
         }
 
@@ -438,7 +441,7 @@ namespace Serwer
                         Environment.NewLine + "buffer_size=" + '"' + config.GetBufferSize() + '"' +
                         Environment.NewLine + "archive_address=" + '"' + config.GetArchiveAddress() + '"'); //stworzenie lub nadpisanie pliku        
                 }
-                else if (sfg.FilterIndex == 2)
+                else if (sfg.FilterIndex == 2) //zapis dla pliku xml
                 {
                     File.WriteAllText(sfg.FileName, "<serwer>" + 
                         Environment.NewLine + "    <configure>" + 
@@ -448,14 +451,14 @@ namespace Serwer
                         Environment.NewLine + "    </configure>" + 
                         Environment.NewLine + "</serwer>"); //stworzenie lub nadpisanie pliku 
                 }
-                Console.WriteLine("Wyeksportowano konfiguracja: "+sfg.FileName);
-                Console.ReadKey(true);
+                Console.WriteLine("Wyeksportowano konfiguracja: "+sfg.FileName); //komunikat
+                Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
             }
             else
             {
-                Console.WriteLine("Nie zapisano pliku. Powrót do menu głównego.");
-                Console.ReadKey(true);
-                Console.Clear();
+                Console.WriteLine("Nie zapisano pliku. Powrót do menu głównego."); //komunikat
+                Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
+                Console.Clear(); //czyszczenie konsoli
             }
         }
 
@@ -514,13 +517,19 @@ namespace Serwer
 
         private static void ChangeFilePath()//funkcja do zmiany ścieżki dostepu
         {
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.Description = "Wybierz nową ścieżkę dostępu.";
-            fbd.ShowNewFolderButton = true;
+            FolderBrowserDialog fbd = new FolderBrowserDialog(); //utworzenie okna dialogowego do wybrania nowej ścieżki dostępu
+            fbd.Description = "Wybierz nową ścieżkę dostępu."; //tytuł utworzonego okna
+            fbd.ShowNewFolderButton = true; //włączenie mozliwości tworzenia nowych folderów
 
-            if (fbd.ShowDialog() == DialogResult.OK)
+            if (fbd.ShowDialog() == DialogResult.OK) //jeśli wybrano ścieżkę 
             {
                 save_address=config.SetArchiveAddress(fbd.SelectedPath);//przypisanie nowej ścieżki i zwrócenie jej do zmiennej globalnej               
+            }
+            else
+            {
+                Console.WriteLine("Nie wybrano ścieżki."); //komunikat
+                Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
+                Console.Clear(); //czyszczenie konsoli
             }
         }
 
@@ -529,13 +538,13 @@ namespace Serwer
             if (null == m_oBackgroundWorker) //sprawdzanie czy obiekt istnieje
             {
                 m_oBackgroundWorker = new BackgroundWorker(); //utworzenie obiektu
-                m_oBackgroundWorker.WorkerSupportsCancellation = true;
-                m_oBackgroundWorker.DoWork += new DoWorkEventHandler(m_oBackgroundWorker_DoWork);
+                m_oBackgroundWorker.WorkerSupportsCancellation = true; //włączenie możliwości przerwania pracy wątka roboczego
+                m_oBackgroundWorker.DoWork += new DoWorkEventHandler(m_oBackgroundWorker_DoWork); //utworzenie uchwyta dla obiektu
             }
-            m_oBackgroundWorker.RunWorkerAsync(config.GetPort());
+            m_oBackgroundWorker.RunWorkerAsync(config.GetPort()); //start wątka roboczego w tle
         }
 
-        private static void m_oBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        private static void m_oBackgroundWorker_DoWork(object sender, DoWorkEventArgs e) //funkcja odpowiadająca za pracę wątka roboczego w tle
         {
             /*TcpListener listener = new TcpListener(IPAddress.Any, config.GetPort());
             System.Text.Decoder decoder = System.Text.Encoding.UTF8.GetDecoder();
@@ -577,23 +586,23 @@ namespace Serwer
             {
                 if (server_option == ServerOptions.wait) //działa jesli tryb pracy serwera jest ustawiony na oczekiwanie
                 {
-                    if (listener.Pending())
+                    if (listener.Pending()) //jeśli jakieś zapytanie przychodzi
                     {
                         client = listener.AcceptTcpClient(); //zaakceptowanie przychodzącego połączenia                        
                         ThreadPool.QueueUserWorkItem(TransferThread, client); //Dodanie do kolejki klienta
                     }
                 }
-                if (m_oBackgroundWorker.CancellationPending)
+                if (m_oBackgroundWorker.CancellationPending) //jeśli przerwano prace wątka
                 {
-                    listener.Stop();
-                    e.Cancel = true;
-                    do_work = false;
+                    listener.Stop(); //stop nasłuchiwania
+                    e.Cancel = true; //przerwanie obiektu
+                    do_work = false; //koniec pracy
                     return;
                 }
             }
         }
 
-        private static void SetSendingFile()
+        private static void SetSendingFile() //funkcja do wybrania pliku do udostępnienia
         {
             OpenFileDialog ofd = new OpenFileDialog(); //utworzenie okna dialogowego
             ofd.Filter = "zip file(*.zip)|*.zip|all files(*.*) | *.*"; //ustawienie filtrów na pliki
@@ -602,13 +611,15 @@ namespace Serwer
             ofd.Title = "Wybierz plik do udostępnienia."; //tytuł okna
             ofd.Multiselect = false; //wyłączenie opcji multi plików
 
-            if(ofd.ShowDialog() == DialogResult.OK)
+            if(ofd.ShowDialog() == DialogResult.OK) //jeśli wybrano plik
             {
-                file = new FileData(ofd.SafeFileName, ofd.FileName);
+                file = new FileData(ofd.SafeFileName, ofd.FileName); //utworzenie pliku do wysłania
             }
             else
             {
-                Console.WriteLine("Nie wybrano pliku.");
+                Console.WriteLine("Nie wybrano pliku."); //komunikat
+                Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
+                Console.Clear(); //czyszczenie konsoli
             }
         }
 
@@ -619,20 +630,20 @@ namespace Serwer
             byte[] receive_data = new byte[config.GetBufferSize()]; //ustawienie rozmiaru bufera
             int receive_bytes; //zmienna do odbierania plików
             NetworkStream stream = null; //utworzenie kanału do odbioru
-            bool help = true;
+            bool help = true; //zmienna omocnicza określająca czy nowy klient się podłączył
 
             try
             {
-                while (client.Connected)
+                while (client.Connected) //dopóki klient podłączony
                 {
-                    if (server_option != ServerOptions.wait && help)
+                    if (server_option != ServerOptions.wait && help) //jeśli !(tryb pracy ustawiony na nasłuchiwanie i nowy klient)
                     {
-                        client.Close();
+                        client.Close(); //zamknij klienta
                     }
-                    else if (server_option == ServerOptions.wait && help)
+                    else if (server_option == ServerOptions.wait && help) //jeśli (tryb pracy ustawiony na nasłuchiwanie i nowy klient)
                     {
                         updateCounterOfActiveUsers(true); //aktualizacja aktywnych użytkowników
-                        help = false;
+                        help = false; //wyłączenie właściwości nowego klienta
                     }
                     else if (server_option == ServerOptions.receive && !help) //sprawdzanie czy serwer jest ustawiony na odbiór plików
                     {
@@ -647,52 +658,52 @@ namespace Serwer
                         decoder.GetChars(receive_data, 0, dec_data, chars, 0); //dekodowanie otrzymanej nazwy pliku
                         System.String enc_data = new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej
                         FileStream filestream = new FileStream(save_address + @"\" + enc_data, FileMode.OpenOrCreate, FileAccess.Write); //utworzenie pliku do zapisu archiwum 
-                        while ((receive_bytes = stream.Read(receive_data, 0, receive_data.Length)) > 0)
+                        while ((receive_bytes = stream.Read(receive_data, 0, receive_data.Length)) > 0) //dopóki przychodzą dane
                         {
                             filestream.Write(receive_data, 0, receive_bytes); //kopiowanie danych do pliku
                         }
-                        filestream.Close();
-                        stream.Close();
+                        filestream.Close(); //zamknięcie strumienia pliku
+                        stream.Close(); //zakmnięcie strumienia połączenia
                     }
-                    else if (server_option == ServerOptions.send && !help)
+                    else if (server_option == ServerOptions.send && !help) //jeśli (tryb pracy ustawiony na wysłanie i !nowy klient)
                     {
-                        if (file!=null)
+                        if (file!=null) //jeśli wybrany plik istnieje
                         {
-                            Socket socket = client.Client;
-                            byte[] byData = System.Text.Encoding.ASCII.GetBytes(file.GetName());
-                            socket.Send(byData);
-                            Thread.Sleep(1000);
-                            socket.SendFile(file.GetAddress());
-                            socket.Close();
-                            server_option = ServerOptions.locked;
+                            Socket socket = client.Client; //przypisanie klienta do socketa
+                            byte[] byData = System.Text.Encoding.ASCII.GetBytes(file.GetName()); //przygotowanie nazwy pliku do wysłania
+                            socket.Send(byData); //wysłanie nazwy pliku
+                            Thread.Sleep(1000); //krótkie uśpienie
+                            socket.SendFile(file.GetAddress()); //wysłanie pliku
+                            socket.Close(); //zamknięcie socketu
+                            server_option = ServerOptions.locked; //ustawienie trybu pracy serwera na domyślny
                         }
                     }
-                    else if (client.Client.Poll(0, SelectMode.SelectRead))
+                    else if (client.Client.Poll(0, SelectMode.SelectRead)) //jeśli klient odpowiada
                     {
-                        byte[] buff = new byte[1];
-                        if (client.Client.Receive(buff, SocketFlags.Peek) == 0)
+                        byte[] buff = new byte[1]; //pomocniczy bufer
+                        if (client.Client.Receive(buff, SocketFlags.Peek) == 0) //jeśli nagle przestał odpowiadać
                         {
-                            client.Client.Disconnect(true);
+                            client.Client.Disconnect(true); //rozłącz klienta
                         }
                     }
                 }
-                client.Close();
+                client.Close(); //zamknięcie klienta
                 updateCounterOfActiveUsers(false); //aktualizacja aktywnych użytkowników
             }
             catch (SocketException)
             {
-                client.Close();
+                client.Close(); //zamknięcie klienta
                 updateCounterOfActiveUsers(false); //aktualizacja aktywnych użytkowników
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(e); //komunikat o błędzie
             }
         }
 
         private static void BackgroundWorkerClose() //funkcja do przerywania wątka w tle
         {
-            if (m_oBackgroundWorker != null)
+            if (m_oBackgroundWorker != null) //jeśli obiekt istnieje
             {
                 if (m_oBackgroundWorker.IsBusy) //sprawdzanie czy taki wątek istnieje
                 {
@@ -702,78 +713,77 @@ namespace Serwer
         }
         private static void updateCounterOfActiveUsers(bool x) //funkcja do aktualizowania aktywnych połączeń
         {
-            if (x)
+            if (x) //jeśli true
             {
-                active_clients++;
-                Console.Clear();
-                InfoDisplay();
-                SetFont();
+                active_clients++; //zwiększenie listy aktywnych klientów
+                Console.Clear(); //czyszczenie konsoli 
+                InfoDisplay(); //wyświetlanie informacji o konfiguracji serwera i o serwerze
+                SetFont(); //wyświetlanie menu opcji
 
             }
             else
             {
-                active_clients--;
-                Console.Clear();
-                InfoDisplay();
-                SetFont();
+                active_clients--; //zmniejszenie liczby aktywnych klientów
+                Console.Clear(); //czyszczenie konsoli 
+                InfoDisplay(); //wyświetlanie informacji o konfiguracji serwera i o serwerze
+                SetFont(); //wyświetlanie menu opcji
             }
         }
 
         private static void SetServerOptions() //funkcja do ustawiania trybu pracy serwera
         {
-            bool correct = true;
+            bool correct = true; //zmienna pomocnicza sprawdzająca czy wybrano jakąś opcje
             do
             {
                 try
                 {
-                    string caseSwitch;
-                    ConsoleKeyInfo cki;
+                    string caseSwitch; //zmienna do odczytywania wybranej przez użytkownika opcji
+                    ConsoleKeyInfo cki; //zmienna pomocnicza do odczytywania wybranej przez użytkownika opcji
+                    Console.WriteLine("Wybierz nowy tryb pracy serwera."); //komunikat
+                    Console.WriteLine("1) wstrzymaj pracę serwera.    2) oczekiwanie na nawiązanie połączeń.    3) odbiór plików.    4) wysłanie plików.    5) powrót."); //komunikat
+                    cki = Console.ReadKey(true); //odczyt opcji użytkownika
+                    caseSwitch = (cki.Key.ToString()); //konwertowanie opcji na konkretny klawisz
 
-                    Console.WriteLine("Wybierz nowy tryb pracy serwera.");
-                    Console.WriteLine("1) wstrzymaj pracę serwera.    2) oczekiwanie na nawiązanie połączeń.    3) odbiór plików.    4) wysłanie plików.    5) powrót.");
-                    cki = Console.ReadKey(true);
-                    caseSwitch = (cki.Key.ToString());
-
-                    switch (caseSwitch)
+                    switch (caseSwitch) //wywołanie funkcji programu zgodnie z wyborem użytkownika
                     {
                         case "D1":
-                            server_option = ServerOptions.locked;
-                            BackgroundWorkerClose();
-                            Console.Clear();
-                            correct = false;
+                            server_option = ServerOptions.locked; //ustawienie trybu pracy serwera na domyślny
+                            BackgroundWorkerClose(); //zamknięcie wątka roboczego o ile istnieje
+                            Console.Clear(); //czyszczenie konsoli
+                            correct = false; //poprawna opcja
                             break;
                         case "D2":
-                            server_option = ServerOptions.wait;
-                            ConnectionListen();
-                            Console.Clear();                        
-                            correct = false;
+                            server_option = ServerOptions.wait; //ustawienie trybu pracy serwera na oczekiwanie na połączenia
+                            ConnectionListen(); //start nasłuchiwania
+                            Console.Clear(); //czyszczenie konsoli                       
+                            correct = false; //poprawna opcja
                             break;
                         case "D3":
-                            server_option = ServerOptions.receive;
-                            BackgroundWorkerClose();
-                            Console.Clear();
-                            correct = false;
+                            server_option = ServerOptions.receive; //ustawienie trybu pracy serwera na odbiór plików
+                            BackgroundWorkerClose(); //zamknięcie wątka roboczego o ile istnieje
+                            Console.Clear(); //czyszczenie konsoli
+                            correct = false; //poprawna opcja
                             break;
                         case "D4":
-                            server_option = ServerOptions.send;
-                            BackgroundWorkerClose();
-                            Console.Clear();
-                            correct = false;
+                            server_option = ServerOptions.send; //ustawienie trybu pracy serwera na wysłanie pliku
+                            BackgroundWorkerClose(); //zamknięcie wątka roboczego o ile istnieje
+                            Console.Clear(); //czyszczenie konsoli
+                            correct = false; //poprawna opcja
                             break;
                         case "D5":
-                            correct = false;
+                            correct = false; //poprawna opcja
                             break;
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Nie ma takiej opcji, proszę wybrać poprawną opcję. " + e);
-                    Console.ReadKey(true);
-                    Console.Clear();
-                    InfoDisplay();
-                    SetFont();
+                    Console.WriteLine("Nie ma takiej opcji, proszę wybrać poprawną opcję. " + e); //komunikat
+                    Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
+                    Console.Clear(); //czyszczenie konsoli
+                    InfoDisplay(); //wyświetlanie informacji o konfiguracji serwera i o serwerze
+                    SetFont(); //wyświetlanie menu opcji
                 }
-            } while (correct);
+            } while (correct); //dopóki nie wybrano poprawnej opcji
         }
         
     }
