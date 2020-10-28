@@ -27,11 +27,12 @@ namespace Serwer
         }
 
         //zmienne globalne
+        private static ServerOptions server_option = ServerOptions.locked;
         private static Config config;
         private static BackgroundWorker m_oBackgroundWorker = null;
-        private static string file_path;
+        private static FileData file;
+        private static string save_address;
         private static int active_clients = 0;
-        private static ServerOptions server_option = ServerOptions.locked;
 
         [STAThread]
         static void Main(string[] args) //główna funckja programu
@@ -41,11 +42,18 @@ namespace Serwer
             OptionsMenu();
         }
 
-        private static void SetFont()
+        private static void SetFont() //funkcja do wyświetlania menu
         {
             Console.WriteLine("1) Export konfiguracji serwera do pliku .txt/.xml");
             Console.WriteLine("2) Stwórz archiwum .zip.");
-            Console.WriteLine("3) Wyślij archiwum .zip aktywnym klientom.");
+            if (file == null)
+            {
+                Console.WriteLine("3) Wybierz archiwum .zip do udostępnienia.");
+            }
+            else
+            {
+                Console.WriteLine("3) Zmień archiwum .zip do udostępnienia.");
+            }
             Console.WriteLine("4) Zmień ścieżkę dostępu.");
             Console.WriteLine("5) Zmień tryb pracy serwera.");
             Console.WriteLine("6) Wyjście");
@@ -76,6 +84,7 @@ namespace Serwer
                             Console.Clear();
                             break;
                         case "D3":
+                            SetSendingFile();
                             Console.Clear();
                             break;
                         case "D4":
@@ -122,6 +131,7 @@ namespace Serwer
         {
             string users_info = "Aktywni użytkownicy: ";
             string server_info = "Tryb pracy serwera:  ";
+            string file_info = "Wybrany plik do udostępnienia: ";
             Console.Write("|");
             for(int i = 0; i < active_clients.ToString().Length+ users_info.Length+2; i++)
             {
@@ -145,6 +155,10 @@ namespace Serwer
                 Console.Write("-");
             }
             Console.WriteLine("|");
+            if (file != null)
+            {
+                Console.WriteLine(file_info + file.GetAddress());
+            }
         }
 
         private static void InitConfig() //wybór funkcji użytkownika
@@ -260,7 +274,7 @@ namespace Serwer
             } while (next);
 
             config = new Config(username, hostName, ip_address,archive_address, port, buffer_size);//utworzenie configa
-            file_path = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
+            save_address = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
             Console.WriteLine();
             Console.WriteLine("Poprawna konfiguracja serwera.");
             Console.ReadKey();
@@ -322,7 +336,7 @@ namespace Serwer
                             throw new FileLoadException();
                         }
                         config = new Config(username, hostName, ip_address,archive_address, port, buffer_size);//utworzenie configa
-                        file_path = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
+                        save_address = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
                         Console.WriteLine("Poprawna konfiguracja serwera.");
                         Console.ReadKey(true);
                         Console.Clear();
@@ -388,7 +402,7 @@ namespace Serwer
                             throw new FileLoadException();
                         }
                         config = new Config(username, hostName, ip_address,archive_address, port, buffer_size);//utworzenie configa
-                        file_path = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
+                        save_address = config.GetArchiveAddress(); //przypisanie adresu otrzymywanych plików
                         Console.WriteLine("Poprawna konfiguracja serwera.");
                         Console.ReadKey(true);
                         Console.Clear();
@@ -420,7 +434,7 @@ namespace Serwer
             {
                 if (sfg.FilterIndex == 1) //zapis dla pliku txt
                 {
-                    File.WriteAllText(sfg.FileName, "port_tcp=" + '"' + config.GetPort() + '"' + 
+                        File.WriteAllText(sfg.FileName, "port_tcp=" + '"' + config.GetPort() + '"' + 
                         Environment.NewLine + "buffer_size=" + '"' + config.GetBufferSize() + '"' +
                         Environment.NewLine + "archive_address=" + '"' + config.GetArchiveAddress() + '"'); //stworzenie lub nadpisanie pliku        
                 }
@@ -506,7 +520,7 @@ namespace Serwer
 
             if (fbd.ShowDialog() == DialogResult.OK)
             {
-                file_path=config.GetArchiveAddress(fbd.SelectedPath);//przypisanie nowej ścieżki                
+                save_address=config.SetArchiveAddress(fbd.SelectedPath);//przypisanie nowej ścieżki i zwrócenie jej do zmiennej globalnej               
             }
         }
 
@@ -543,7 +557,7 @@ namespace Serwer
                     char[] chars = new char[dec_data];
                     decoder.GetChars(receive_data, 0, dec_data, chars, 0);
                     System.String enc_data = new System.String(chars);
-                    FileStream filestream = new FileStream(file_path+enc_data, FileMode.OpenOrCreate, FileAccess.Write);
+                    FileStream filestream = new FileStream(save_address+enc_data, FileMode.OpenOrCreate, FileAccess.Write);
                     while ((receive_bytes = stream.Read(receive_data, 0, receive_data.Length)) > 0)
                     {
                         filestream.Write(receive_data, 0, receive_bytes);
@@ -579,6 +593,25 @@ namespace Serwer
             }
         }
 
+        private static void SetSendingFile()
+        {
+            OpenFileDialog ofd = new OpenFileDialog(); //utworzenie okna dialogowego
+            ofd.Filter = "zip file(*.zip)|*.zip|all files(*.*) | *.*"; //ustawienie filtrów na pliki
+            ofd.FilterIndex = 1; //ustawienie domyślnego filtru na archiwum .zip
+            ofd.RestoreDirectory = true; //przywracanie wcześniej zamkniętego katalogu
+            ofd.Title = "Wybierz plik do udostępnienia."; //tytuł okna
+            ofd.Multiselect = false; //wyłączenie opcji multi plików
+
+            if(ofd.ShowDialog() == DialogResult.OK)
+            {
+                file = new FileData(ofd.SafeFileName, ofd.FileName);
+            }
+            else
+            {
+                Console.WriteLine("Nie wybrano pliku.");
+            }
+        }
+
         private static void TransferThread(object obj) //nasłuchiwanie dla jednego klienta 
         {
             TcpClient client = (TcpClient)obj; //przejęcie kontroli nad klientem
@@ -603,9 +636,9 @@ namespace Serwer
                     }
                     else if (server_option == ServerOptions.receive && !help) //sprawdzanie czy serwer jest ustawiony na odbiór plików
                     {
-                        if (Directory.Exists(file_path) == false) //sprawdzanie czy ścieżka dostępu z pliku konfiguracyjnego istnieje
+                        if (Directory.Exists(save_address) == false) //sprawdzanie czy ścieżka dostępu z pliku konfiguracyjnego istnieje
                         {
-                            Directory.CreateDirectory(file_path); //utworzenie ścieżki dostępu z pliku konfiguracyjnego
+                            Directory.CreateDirectory(save_address); //utworzenie ścieżki dostępu z pliku konfiguracyjnego
                         }
 
                         stream = client.GetStream(); //określenie rodzaju połączenia na odbiór danych
@@ -613,7 +646,7 @@ namespace Serwer
                         char[] chars = new char[dec_data]; //zmienna pomocnicza do odkodowania nazwy pliku
                         decoder.GetChars(receive_data, 0, dec_data, chars, 0); //dekodowanie otrzymanej nazwy pliku
                         System.String enc_data = new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej
-                        FileStream filestream = new FileStream(file_path + @"\" + enc_data, FileMode.OpenOrCreate, FileAccess.Write); //utworzenie pliku do zapisu archiwum 
+                        FileStream filestream = new FileStream(save_address + @"\" + enc_data, FileMode.OpenOrCreate, FileAccess.Write); //utworzenie pliku do zapisu archiwum 
                         while ((receive_bytes = stream.Read(receive_data, 0, receive_data.Length)) > 0)
                         {
                             filestream.Write(receive_data, 0, receive_bytes); //kopiowanie danych do pliku
@@ -621,9 +654,18 @@ namespace Serwer
                         filestream.Close();
                         stream.Close();
                     }
-                    else if (server_option == ServerOptions.send)
+                    else if (server_option == ServerOptions.send && !help)
                     {
-
+                        if (file!=null)
+                        {
+                            Socket socket = client.Client;
+                            byte[] byData = System.Text.Encoding.ASCII.GetBytes(file.GetName());
+                            socket.Send(byData);
+                            Thread.Sleep(1000);
+                            socket.SendFile(file.GetAddress());
+                            socket.Close();
+                            server_option = ServerOptions.locked;
+                        }
                     }
                     else if (client.Client.Poll(0, SelectMode.SelectRead))
                     {
@@ -650,9 +692,12 @@ namespace Serwer
 
         private static void BackgroundWorkerClose() //funkcja do przerywania wątka w tle
         {
-            if (m_oBackgroundWorker.IsBusy) //sprawdzanie czy taki wątek istnieje
+            if (m_oBackgroundWorker != null)
             {
-                m_oBackgroundWorker.CancelAsync();//przerwanie wątka roboczego
+                if (m_oBackgroundWorker.IsBusy) //sprawdzanie czy taki wątek istnieje
+                {
+                    m_oBackgroundWorker.CancelAsync();//przerwanie wątka roboczego
+                }
             }
         }
         private static void updateCounterOfActiveUsers(bool x) //funkcja do aktualizowania aktywnych połączeń

@@ -41,7 +41,7 @@ namespace Serwer
             return this.archive_address;
         }
 
-        public string GetArchiveAddress(string a)
+        public string SetArchiveAddress(string a)
         {
             this.archive_address = a;
             return this.archive_address;
