@@ -25,6 +25,8 @@ namespace Serwer
         private static FileData file; //plik do udostepnienia -> domyslnie pusty
         private static string save_address; //ścieżka zapisu przychodzących plików ->domyslnie pusta
         private static int active_clients = 0; //liczba aktywnych połączeń -> domyślnie zero
+        private static List<String> history = new List<String>(); //historia działań serwera i klientow -> domyślnie pusta
+        private static ServerHistory server_history = new ServerHistory(); //obiekt do wywoływania odpowiednich komunikatow historii -> domyślnie utworzony
 
         [STAThread]
         static void Main(string[] args) //główna funckja programu
@@ -32,6 +34,15 @@ namespace Serwer
             InitConfig(); //wczytanie lub stworzenie konfiguracji serwera
             OptionsMenu(); //wybór funkcji programu
             BackgroundWorkerClose(); //zamknięcie wątka roboczego o ile istnieje
+        }
+
+        private static void ShowHistory() //funkcja do wyświetlania historii operacji
+        {
+            foreach (var x in history)
+            {
+                Console.WriteLine(x);
+            }
+            Console.ReadKey(true); //czekanie na potwierdzenie
         }
 
         private static void SetFont() //funkcja do wyświetlania menu opcji
@@ -48,7 +59,8 @@ namespace Serwer
             }
             Console.WriteLine("4) Zmień ścieżkę dostępu."); //komunikat
             Console.WriteLine("5) Zmień tryb pracy serwera."); //komunikat
-            Console.WriteLine("6) Wyjście"); //komunikat
+            Console.WriteLine("6) Wyświetl historie operacji."); //komunikat
+            Console.WriteLine("9) Wyjście"); //komunikat
         }
 
         private static void OptionsMenu() //wybór funkcji programu
@@ -87,7 +99,11 @@ namespace Serwer
                             SetServerOptions(); //zmiana trybu pracy serwera
                             Console.Clear(); //czyszczenie konsoli
                             break;
-                        case "D6": //6
+                        case "D6":
+                            ShowHistory();
+                            Console.Clear();
+                            break;
+                        case "D9": //9
                             work = false; //przerwanie pętli == koniec pracy programu
                             break;
                         default: //w przypadku wybrania nieistniejącej opcji przez użytkownika
@@ -588,7 +604,7 @@ namespace Serwer
                 {
                     if (listener.Pending()) //jeśli jakieś zapytanie przychodzi
                     {
-                        client = listener.AcceptTcpClient(); //zaakceptowanie przychodzącego połączenia                        
+                        client = listener.AcceptTcpClient(); //zaakceptowanie przychodzącego połączenia                           
                         ThreadPool.QueueUserWorkItem(TransferThread, client); //Dodanie do kolejki klienta
                     }
                 }
@@ -627,9 +643,12 @@ namespace Serwer
         {
             TcpClient client = (TcpClient)obj; //przejęcie kontroli nad klientem
             System.Text.Decoder decoder = System.Text.Encoding.UTF8.GetDecoder(); //zmienna pomocnicza do odkodowania nazwy pliku
-            byte[] receive_data = new byte[config.GetBufferSize()]; //ustawienie rozmiaru bufera
+            int buffer_size = config.GetBufferSize(); //wczytanie rozmiaru buffera z konfiguracji
+            byte[] data = new byte[buffer_size]; //ustawienie rozmiaru bufera
             int receive_bytes; //zmienna do odbierania plików
             NetworkStream stream = null; //utworzenie kanału do odbioru
+            string client_hostname = null; //zmienna do identyfikacji połączenia
+            string client_filename = null; //zmienna do identyfikacji nazwy pliku
             bool help = true; //zmienna omocnicza określająca czy nowy klient się podłączył
 
             try
@@ -643,6 +662,12 @@ namespace Serwer
                     else if (server_option == ServerOptions.wait && help) //jeśli (tryb pracy ustawiony na nasłuchiwanie i nowy klient)
                     {
                         updateCounterOfActiveUsers(true); //aktualizacja aktywnych użytkowników
+                        stream = client.GetStream(); //określenie rodzaju połączenia na odbiór danych
+                        int dec_data = stream.Read(data, 0, data.Length);//oczekiwanie na nazwę pliku klienta       
+                        char[] chars = new char[dec_data]; //zmienna pomocnicza do odkodowania nazwy pliku
+                        decoder.GetChars(data, 0, dec_data, chars, 0); //dekodowanie otrzymanej nazwy pliku
+                        client_hostname= new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej
+                        history.Add(server_history.ServerStartConnection(client_hostname)); //komunikat do historii
                         help = false; //wyłączenie właściwości nowego klienta
                     }
                     else if (server_option == ServerOptions.receive && !help) //sprawdzanie czy serwer jest ustawiony na odbiór plików
@@ -653,29 +678,60 @@ namespace Serwer
                         }
 
                         stream = client.GetStream(); //określenie rodzaju połączenia na odbiór danych
-                        int dec_data = stream.Read(receive_data, 0, receive_data.Length);//oczekiwanie na nazwę pliku klienta       
-                        char[] chars = new char[dec_data]; //zmienna pomocnicza do odkodowania nazwy pliku
-                        decoder.GetChars(receive_data, 0, dec_data, chars, 0); //dekodowanie otrzymanej nazwy pliku
-                        System.String enc_data = new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej
-                        FileStream filestream = new FileStream(save_address + @"\" + enc_data, FileMode.OpenOrCreate, FileAccess.Write); //utworzenie pliku do zapisu archiwum 
-                        while ((receive_bytes = stream.Read(receive_data, 0, receive_data.Length)) > 0) //dopóki przychodzą dane
+                        int dec_data = stream.Read(data, 0, data.Length);//oczekiwanie na nazwę pliku klienta       
+                        /* char[] chars = new char[dec_data]; //zmienna pomocnicza do odkodowania nazwy pliku
+                        decoder.GetChars(data, 0, dec_data, chars, 0); //dekodowanie otrzymanej nazwy pliku
+                        client_filename = new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej*/
+                        client_filename= System.Text.Encoding.ASCII.GetString(data, 0, dec_data); ;
+                        history.Add(server_history.ServerBeginReceive(client_hostname, client_filename)); //komunikat do historii
+                        FileStream filestream = new FileStream(save_address + @"\" + client_filename, FileMode.OpenOrCreate, FileAccess.Write); //utworzenie pliku do zapisu archiwum                        
+                        while ((receive_bytes = stream.Read(data, 0, data.Length)) > 0) //dopóki przychodzą dane
                         {
-                            filestream.Write(receive_data, 0, receive_bytes); //kopiowanie danych do pliku
+                            filestream.Write(data, 0, receive_bytes); //kopiowanie danych do pliku
                         }
                         filestream.Close(); //zamknięcie strumienia pliku
                         stream.Close(); //zakmnięcie strumienia połączenia
+                        history.Add(server_history.ServerEndReceive(client_hostname, client_filename)); //komunikat do historii
+                        client_filename = null; //wyczyszczenie nazwy pliku
                     }
                     else if (server_option == ServerOptions.send && !help) //jeśli (tryb pracy ustawiony na wysłanie i !nowy klient)
                     {
                         if (file!=null) //jeśli wybrany plik istnieje
                         {
-                            Socket socket = client.Client; //przypisanie klienta do socketa
+                            /*Socket socket = client.Client; //przypisanie klienta do socketa
                             byte[] byData = System.Text.Encoding.ASCII.GetBytes(file.GetName()); //przygotowanie nazwy pliku do wysłania
                             socket.Send(byData); //wysłanie nazwy pliku
                             Thread.Sleep(1000); //krótkie uśpienie
                             socket.SendFile(file.GetAddress()); //wysłanie pliku
                             socket.Close(); //zamknięcie socketu
-                            server_option = ServerOptions.locked; //ustawienie trybu pracy serwera na domyślny
+                            server_option = ServerOptions.locked; //ustawienie trybu pracy serwera na domyślny*/
+                            try
+                            {
+                                stream = client.GetStream(); //aktywacja strumienia
+                                data = System.Text.Encoding.ASCII.GetBytes(file.GetName()); //zakodowanie nazwy pliku
+                                stream.Write(data, 0, data.Length); //wysłanie nazwy pliku 
+                                stream.Flush(); //zwolnienie strumienia
+                                data = new byte[buffer_size]; //ustawienie rozmiaru bufera
+                                history.Add(server_history.ServerStartSend(client_hostname, file.GetName())); //komunikat do historii
+                                using (var s = File.OpenRead(file.GetAddress())) //dopoki plik jest otwarty
+                                {
+                                    int actually_read; //zmienna pomocnicza do odczytu rozmiaru
+                                    while ((actually_read = s.Read(data, 0, buffer_size)) > 0) //dopóki w pliku sa dane
+                                    {
+                                        stream.Write(data, 0, actually_read); //wyslanie danych z pliku
+                                    }
+                                }
+                                stream.Flush(); //zwolnienie strumienia
+                                stream.Close(); //zamkniecie strumienia
+                                history.Add(server_history.ServerEndSend(client_hostname, file.GetName())); //komunikat do historii
+                            }
+                            catch(Exception e)
+                            {
+                                stream.Flush();
+                                stream.Close();
+                                history.Add(server_history.ServerTransferError(client_hostname, file.GetName())); //komunikat do historii
+                                throw new SocketException();
+                            }
                         }
                     }
                     else if (client.Client.Poll(0, SelectMode.SelectRead)) //jeśli klient odpowiada
@@ -684,14 +740,27 @@ namespace Serwer
                         if (client.Client.Receive(buff, SocketFlags.Peek) == 0) //jeśli nagle przestał odpowiadać
                         {
                             client.Client.Disconnect(true); //rozłącz klienta
+                            history.Add(server_history.ServerEndConnection(client_hostname)); //komunikat do historii
                         }
+                        else
+                        {
+                            throw new SocketException();
+                        }                        
                     }
                 }
                 client.Close(); //zamknięcie klienta
                 updateCounterOfActiveUsers(false); //aktualizacja aktywnych użytkowników
+                history.Add(server_history.ServerEndConnection(client_hostname)); //komunikat do historii
             }
             catch (SocketException)
             {
+                client.Close(); //zamknięcie klienta
+                updateCounterOfActiveUsers(false); //aktualizacja aktywnych użytkowników
+                history.Add(server_history.ServerConnectionError(client_hostname)); //komunikat do historii
+            }
+            catch (IOException)
+            {
+                history.Add(server_history.ServerTransferError(client_hostname, client_filename)); //komunikat do historii
                 client.Close(); //zamknięcie klienta
                 updateCounterOfActiveUsers(false); //aktualizacja aktywnych użytkowników
             }
