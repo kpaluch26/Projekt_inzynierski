@@ -32,6 +32,7 @@ namespace Serwer
         static void Main(string[] args) //główna funckja programu
         {           
             InitConfig(); //wczytanie lub stworzenie konfiguracji serwera
+            history.Add(DateTime.Now.TimeOfDay.ToString() + " Rozpoczęcie pracy serwera."); //dodanie do historii godziny startu serwera
             OptionsMenu(); //wybór funkcji programu
             BackgroundWorkerClose(); //zamknięcie wątka roboczego o ile istnieje
         }
@@ -60,6 +61,7 @@ namespace Serwer
             Console.WriteLine("4) Zmień ścieżkę dostępu."); //komunikat
             Console.WriteLine("5) Zmień tryb pracy serwera."); //komunikat
             Console.WriteLine("6) Wyświetl historie operacji."); //komunikat
+            Console.WriteLine("7) Export historii operacji."); //komunikat
             Console.WriteLine("9) Wyjście"); //komunikat
         }
 
@@ -99,9 +101,13 @@ namespace Serwer
                             SetServerOptions(); //zmiana trybu pracy serwera
                             Console.Clear(); //czyszczenie konsoli
                             break;
-                        case "D6":
-                            ShowHistory();
-                            Console.Clear();
+                        case "D6": //6
+                            ShowHistory(); //wyświetlanie historii
+                            Console.Clear(); //czyszczenie konsoli
+                            break;
+                        case "D7": //7
+                            HistoryExport(); //export historii
+                            Console.Clear(); //czyszczenie konsoli
                             break;
                         case "D9": //9
                             work = false; //przerwanie pętli == koniec pracy programu
@@ -110,9 +116,10 @@ namespace Serwer
                             throw new Exception(); //wyrzuca wyjątek
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    Console.WriteLine("Nie ma takiej opcji, proszę wybrać poprawną opcję."); //komunikat
+                    Console.WriteLine(e.ToString());
+                    //Console.WriteLine("Nie ma takiej opcji, proszę wybrać poprawną opcję."); //komunikat
                     Console.ReadKey(true); //czekanie na potwierdzenie komunikatu
                     Console.Clear(); //czyszczenie konsoli
                 }
@@ -798,7 +805,6 @@ namespace Serwer
                 SetFont(); //wyświetlanie menu opcji
             }
         }
-
         private static void SetServerOptions() //funkcja do ustawiania trybu pracy serwera
         {
             bool correct = true; //zmienna pomocnicza sprawdzająca czy wybrano jakąś opcje
@@ -820,24 +826,28 @@ namespace Serwer
                             BackgroundWorkerClose(); //zamknięcie wątka roboczego o ile istnieje
                             Console.Clear(); //czyszczenie konsoli
                             correct = false; //poprawna opcja
+                            history.Add(server_history.ServerStatusChange(server_option.ToString())); //dodanie zmiany stanu do historii
                             break;
                         case "D2":
                             server_option = ServerOptions.wait; //ustawienie trybu pracy serwera na oczekiwanie na połączenia
                             ConnectionListen(); //start nasłuchiwania
                             Console.Clear(); //czyszczenie konsoli                       
                             correct = false; //poprawna opcja
+                            history.Add(server_history.ServerStatusChange(server_option.ToString())); //dodanie zmiany stanu do historii
                             break;
                         case "D3":
                             server_option = ServerOptions.receive; //ustawienie trybu pracy serwera na odbiór plików
                             BackgroundWorkerClose(); //zamknięcie wątka roboczego o ile istnieje
                             Console.Clear(); //czyszczenie konsoli
                             correct = false; //poprawna opcja
+                            history.Add(server_history.ServerStatusChange(server_option.ToString())); //dodanie zmiany stanu do historii
                             break;
                         case "D4":
                             server_option = ServerOptions.send; //ustawienie trybu pracy serwera na wysłanie pliku
                             BackgroundWorkerClose(); //zamknięcie wątka roboczego o ile istnieje
                             Console.Clear(); //czyszczenie konsoli
                             correct = false; //poprawna opcja
+                            history.Add(server_history.ServerStatusChange(server_option.ToString())); //dodanie zmiany stanu do historii
                             break;
                         case "D5":
                             correct = false; //poprawna opcja
@@ -853,6 +863,58 @@ namespace Serwer
                     SetFont(); //wyświetlanie menu opcji
                 }
             } while (correct); //dopóki nie wybrano poprawnej opcji
+        }
+        private static void HistoryExport() //funkcja do eksportowania historii pracy serwera i akcji klientów
+        {
+            string caseSwitch; //zmienna do odczytywania wybranej przez użytkownika opcji
+            ConsoleKeyInfo cki; //zmienna pomocnicza do odczytywania wybranej przez użytkownika opcji
+            StreamWriter sw; //zmienna do przechowywania adresu zapisu
+
+            Console.WriteLine("1) Export zgodnie z konfiguracją.    2) Export niestandardowy."); //komunikat    
+            cki = Console.ReadKey(true); //odczyt opcji użytkownika
+            caseSwitch = (cki.Key.ToString()); //konwertowanie opcji na konkretny klawisz
+
+            switch (caseSwitch) //wywołanie funkcji programu zgodnie z wyborem użytkownika
+            {
+                case "D1":
+                    sw = new StreamWriter(Path.Combine(save_address, "Historia_operacji.txt")); //utworzenie streama do zapisu danych
+                    foreach(string x in history)
+                    {
+                        sw.WriteLine(x); //zapis do pliku
+                    }
+                    sw.Close(); //zamknięcie streama
+                    Console.WriteLine("Export zakończony."); //komunikat
+                    Console.ReadKey(true); //potwierdzenie komunikatu
+                    break;
+                case "D2":
+                    SaveFileDialog sfg = new SaveFileDialog(); //utworzenie okna do przeglądania plików
+                    sfg.Filter = "txt files (*.txt)|*.txt"; //ustawienie filtrów okna na pliki txt i xml
+                    sfg.FilterIndex = 1; //ustawienie domyślnego filtru na plik txt
+                    sfg.RestoreDirectory = true; //przywracanie wcześniej zamkniętego katalogu
+                    sfg.Title="Wybierz lub utwórz plik do zapisu historii."; //nadanie nazwy okna
+
+                    if (sfg.ShowDialog() == DialogResult.OK)//wyświetlenie okna ze sprawdzeniem, czy plik został zapisany
+                    {
+                        sw = new StreamWriter(Path.Combine(sfg.FileName)); //utworzenie streama do zapisu danych
+                        foreach (string x in history)
+                        {
+                            sw.WriteLine(x); //zapis do pliku
+                        }
+                        sw.Close(); //zamknięcie streama
+                        Console.WriteLine("Export zakończony."); //komunikat
+                        Console.ReadKey(true); //potwierdzenie komunikatu
+                    }
+                    else
+                    {
+                        Console.WriteLine("Nie wybrano pliku do zapisu, powrót do menu."); //komunikat
+                        Console.ReadKey(true); //potwierdzenie komunikatu
+                    }
+                    break;
+                default:
+                    Console.WriteLine("Nie wybrano żadnej opcji, powrót do menu."); //komunikat
+                    Console.ReadKey(true); //potwierdzenie komunikatu
+                    break;
+            }
         }
         
     }
