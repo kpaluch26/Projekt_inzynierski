@@ -1,0 +1,11 @@
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\bin\Debug\Klient.exe.config
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\bin\Debug\Klient.exe
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\bin\Debug\Klient.pdb
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.csprojAssemblyReference.cache
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.ConnectionWindow.resources
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.Properties.Resources.resources
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.csproj.GenerateResource.cache
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.csproj.CoreCompileInputs.cache
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.exe
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.pdb
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.MainWindow.resources
