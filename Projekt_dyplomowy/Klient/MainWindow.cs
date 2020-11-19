@@ -14,7 +14,7 @@ namespace Klient
     public partial class MainWindow : Form
     {
         //zmienne globalne
-        private TcpClient client;
+        private TcpClient client=null;
 
         private TcpClient SetClient
         {
@@ -23,9 +23,14 @@ namespace Klient
         public MainWindow()
         {
             ConnectionWindow cw = new ConnectionWindow();
-            this.SetClient = cw.GetClient;
             cw.ShowDialog();
-            InitializeComponent();           
+            this.SetClient = cw.GetClient;
+
+            if (this.client != null)
+            {
+                InitializeComponent();
+            }
+            else Environment.Exit(0);
         }
 
         private void MainWindow_Load(object sender, System.EventArgs e)

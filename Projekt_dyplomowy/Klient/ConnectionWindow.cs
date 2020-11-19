@@ -15,7 +15,9 @@ namespace Klient
 {
     public partial class ConnectionWindow : Form
     {
+        //zmienne globalne
         private TcpClient client = null;
+        
         public ConnectionWindow()
         {
             InitializeComponent();
@@ -71,7 +73,7 @@ namespace Klient
                 ns.Write(bytesToSend, 0, bytesToSend.Length);
                
                 this.Close();
-                //ns.Close();
+                ns.Flush();
             }
             catch(SocketException x)
             {
