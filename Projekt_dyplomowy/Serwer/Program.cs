@@ -787,6 +787,7 @@ namespace Serwer
                 }
             }
         }
+
         private static void updateCounterOfActiveUsers(bool x) //funkcja do aktualizowania aktywnych połączeń
         {
             if (x) //jeśli true
@@ -805,6 +806,7 @@ namespace Serwer
                 SetFont(); //wyświetlanie menu opcji
             }
         }
+
         private static void SetServerOptions() //funkcja do ustawiania trybu pracy serwera
         {
             bool correct = true; //zmienna pomocnicza sprawdzająca czy wybrano jakąś opcje
@@ -864,6 +866,7 @@ namespace Serwer
                 }
             } while (correct); //dopóki nie wybrano poprawnej opcji
         }
+
         private static void HistoryExport() //funkcja do eksportowania historii pracy serwera i akcji klientów
         {
             string caseSwitch; //zmienna do odczytywania wybranej przez użytkownika opcji
