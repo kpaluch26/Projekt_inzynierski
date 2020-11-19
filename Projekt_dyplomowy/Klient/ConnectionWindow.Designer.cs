@@ -109,7 +109,6 @@
             this.Name = "ConnectionWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Połącz z serwerem";
-            this.Load += new System.EventHandler(this.ConnectionWindow_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

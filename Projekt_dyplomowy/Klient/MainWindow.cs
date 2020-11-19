@@ -15,18 +15,25 @@ namespace Klient
     {
         //zmienne globalne
         private TcpClient client=null;
+        private NetworkStream ns = null;
 
         private TcpClient SetClient
         {
             set { this.client = value; }
         }
+        private NetworkStream SetStream
+        {
+            set { this.ns = value; }
+        }
+
         public MainWindow()
         {
             ConnectionWindow cw = new ConnectionWindow();
             cw.ShowDialog();
             this.SetClient = cw.GetClient;
+            this.SetStream = cw.GetStream;
 
-            if (this.client != null)
+            if (this.client != null || this.ns!=null)
             {
                 InitializeComponent();
             }

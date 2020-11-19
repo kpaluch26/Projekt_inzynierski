@@ -17,15 +17,11 @@ namespace Klient
     {
         //zmienne globalne
         private TcpClient client = null;
-        
+        private NetworkStream ns =null;
+
         public ConnectionWindow()
         {
             InitializeComponent();
-        }
-
-        private void ConnectionWindow_Load(object sender, EventArgs e)
-        {
-
         }
 
         public TcpClient GetClient
@@ -33,13 +29,16 @@ namespace Klient
             get{ return client; }
         }
 
+        public NetworkStream GetStream
+        {
+            get { return ns; }
+        }
 
         private void btn_CONNECT_Click(object sender, EventArgs e)
         {
             string IP_text, PORT_text;
             IPAddress IP_address;
             int PORT_number;
-            NetworkStream ns;
 
             IP_text = txt_IP.Text.Trim();
             PORT_text = txt_PORT.Text.Trim();
