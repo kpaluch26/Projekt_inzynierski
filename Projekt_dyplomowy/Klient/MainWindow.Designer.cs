@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
+            this.sstr_belka = new System.Windows.Forms.StatusStrip();
             this.tssl_label = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tspb_transferbar = new System.Windows.Forms.ToolStripProgressBar();
             this.gbx_Ustawienia = new System.Windows.Forms.GroupBox();
             this.btn_change_backup = new System.Windows.Forms.Button();
             this.lbl_backup = new System.Windows.Forms.Label();
@@ -57,23 +57,25 @@
             this.txt_IP = new System.Windows.Forms.TextBox();
             this.lbl_PORT = new System.Windows.Forms.Label();
             this.lbl_IP = new System.Windows.Forms.Label();
-            this.statusStrip1.SuspendLayout();
+            this.tssb_Rozlacz = new System.Windows.Forms.ToolStripSplitButton();
+            this.rozłączToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sstr_belka.SuspendLayout();
             this.gbx_Ustawienia.SuspendLayout();
             this.mstr_Menu.SuspendLayout();
             this.gbx_Polaczenie.SuspendLayout();
             this.SuspendLayout();
             // 
-            // statusStrip1
+            // sstr_belka
             // 
-            this.statusStrip1.BackColor = System.Drawing.SystemColors.Control;
-            this.statusStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Visible;
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sstr_belka.BackColor = System.Drawing.SystemColors.Control;
+            this.sstr_belka.GripStyle = System.Windows.Forms.ToolStripGripStyle.Visible;
+            this.sstr_belka.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tssl_label,
-            this.tspb_transferbar});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 416);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(944, 25);
-            this.statusStrip1.TabIndex = 0;
+            this.tssb_Rozlacz});
+            this.sstr_belka.Location = new System.Drawing.Point(0, 416);
+            this.sstr_belka.Name = "sstr_belka";
+            this.sstr_belka.Size = new System.Drawing.Size(944, 25);
+            this.sstr_belka.TabIndex = 0;
             // 
             // tssl_label
             // 
@@ -81,15 +83,9 @@
             this.tssl_label.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.tssl_label.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.tssl_label.Name = "tssl_label";
-            this.tssl_label.Size = new System.Drawing.Size(154, 20);
-            this.tssl_label.Text = "Połączony z serwerem";
+            this.tssl_label.Size = new System.Drawing.Size(137, 20);
+            this.tssl_label.Text = "Połączenie aktywne";
             this.tssl_label.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // tspb_transferbar
-            // 
-            this.tspb_transferbar.Name = "tspb_transferbar";
-            this.tspb_transferbar.Size = new System.Drawing.Size(100, 19);
-            this.tspb_transferbar.Visible = false;
             // 
             // gbx_Ustawienia
             // 
@@ -379,6 +375,24 @@
             this.lbl_IP.Text = "Adres IP serwera:";
             this.lbl_IP.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // tssb_Rozlacz
+            // 
+            this.tssb_Rozlacz.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tssb_Rozlacz.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.rozłączToolStripMenuItem});
+            this.tssb_Rozlacz.Image = ((System.Drawing.Image)(resources.GetObject("tssb_Rozlacz.Image")));
+            this.tssb_Rozlacz.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tssb_Rozlacz.Name = "tssb_Rozlacz";
+            this.tssb_Rozlacz.Size = new System.Drawing.Size(32, 23);
+            this.tssb_Rozlacz.Text = "toolStripSplitButton1";
+            // 
+            // rozłączToolStripMenuItem
+            // 
+            this.rozłączToolStripMenuItem.Name = "rozłączToolStripMenuItem";
+            this.rozłączToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rozłączToolStripMenuItem.Text = "Rozłącz";
+            this.rozłączToolStripMenuItem.Click += new System.EventHandler(this.rozłączToolStripMenuItem_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -386,15 +400,15 @@
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(944, 441);
             this.Controls.Add(this.gbx_Polaczenie);
-            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.sstr_belka);
             this.Controls.Add(this.mstr_Menu);
             this.Controls.Add(this.gbx_Ustawienia);
             this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.MainMenuStrip = this.mstr_Menu;
             this.Name = "MainWindow";
             this.Text = "Klient";
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
+            this.sstr_belka.ResumeLayout(false);
+            this.sstr_belka.PerformLayout();
             this.gbx_Ustawienia.ResumeLayout(false);
             this.gbx_Ustawienia.PerformLayout();
             this.mstr_Menu.ResumeLayout(false);
@@ -408,9 +422,8 @@
 
         #endregion
 
-        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.StatusStrip sstr_belka;
         private System.Windows.Forms.ToolStripStatusLabel tssl_label;
-        private System.Windows.Forms.ToolStripProgressBar tspb_transferbar;
         private System.Windows.Forms.GroupBox gbx_Ustawienia;
         private System.Windows.Forms.Button btn_change_save_path;
         private System.Windows.Forms.Label lbl_savepath;
@@ -437,5 +450,7 @@
         private System.Windows.Forms.TextBox txt_IP;
         private System.Windows.Forms.Label lbl_PORT;
         private System.Windows.Forms.Label lbl_IP;
+        private System.Windows.Forms.ToolStripSplitButton tssb_Rozlacz;
+        private System.Windows.Forms.ToolStripMenuItem rozłączToolStripMenuItem;
     }
 }

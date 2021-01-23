@@ -18,6 +18,7 @@ namespace Klient
         //zmienne globalne
         private TcpClient client = null;
         private NetworkStream ns = null;
+        private static BackgroundWorker m_oBackgroundWorker = null; //wątek roboczy pracujacy w tle -> domyślnie niezainicjowany
 
         //private TcpClient SetClient //właściwość do odbioru klienta tcp
         //{
@@ -41,6 +42,7 @@ namespace Klient
             }
             else Environment.Exit(0);*/
             InitializeComponent();
+            SetDefaultOption();
         }
 
         private void MainWindow_Load(object sender, System.EventArgs e)
@@ -67,12 +69,12 @@ namespace Klient
         {
             string IP_text, PORT_text;
             IPAddress IP_address;
-            int PORT_number;
+            int PORT_number=0;
 
             IP_text = txt_IP.Text.Trim();
             PORT_text = txt_PORT.Text.Trim();
             try
-            {
+            {               
                 bool ValidateIP = IPAddress.TryParse(IP_text, out IP_address);
                 bool ValidatePORT = Int32.TryParse(PORT_text, out PORT_number);
 
@@ -100,7 +102,7 @@ namespace Klient
                 byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(Dns.GetHostName());
                 ns.Write(bytesToSend, 0, bytesToSend.Length);
 
-                ns.Flush();
+                ns.Flush();              
             }
             catch (SocketException x)
             {
@@ -116,14 +118,28 @@ namespace Klient
                 MessageBox.Show(x.ToString());
             }
 
-
             if (client != null && client.Connected)
             {
+                //Widok Połączenia
                 mtstr_Polaczenie.Enabled = false;
                 gbx_Polaczenie.Visible = false;
                 gbx_Polaczenie.Enabled = false;
+                //Widok Ustawień
                 gbx_Ustawienia.Visible = true;
                 gbx_Ustawienia.Enabled = true;
+                //status belka
+                tssl_label.Visible = true;
+                //przycisk belka
+                tssb_Rozlacz.Visible = true;
+                tssb_Rozlacz.Enabled = true;
+
+                if (null == m_oBackgroundWorker) //sprawdzanie czy obiekt istnieje
+                {
+                    m_oBackgroundWorker = new BackgroundWorker(); //utworzenie obiektu
+                    m_oBackgroundWorker.WorkerSupportsCancellation = false; //włączenie możliwości przerwania pracy wątka roboczego
+                    m_oBackgroundWorker.DoWork += new DoWorkEventHandler(m_oBackgroundWorker_DoWork); //utworzenie uchwyta dla obiektu
+                }
+                m_oBackgroundWorker.RunWorkerAsync(PORT_number); //start wątka roboczego w tle
             }
         }
 
@@ -141,6 +157,73 @@ namespace Klient
             gbx_Polaczenie.Enabled = false;
             gbx_Ustawienia.Visible = true;
             gbx_Ustawienia.Enabled = true;
+        }
+
+        private void rozłączToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            client.Close();
+            SetDefaultOption();
+        }
+
+        private void m_oBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            bool do_work = true; //zmienna określające prace wątka w tle
+
+            while (do_work)
+            {
+                try
+                {
+                    if (client.Client.Poll(0, SelectMode.SelectRead)) //jeśli klient odpowiada
+                    {
+                        byte[] buff = new byte[1]; //pomocniczy bufer
+                        try
+                        {
+                            if (client.Client.Receive(buff, SocketFlags.Peek) == 0) //jeśli nagle przestał odpowiadać
+                            {
+                                client.Client.Disconnect(true); //rozłącz klienta   
+                                this.Invoke(new MethodInvoker(delegate { ServerConnectionError(); }));
+                            }
+                            else
+                            {
+                                throw new SocketException();
+                            }
+                        }
+                        catch (SocketException)
+                        {
+                            client.Close();
+                            this.Invoke(new MethodInvoker(delegate { ServerConnectionError(); }));
+                            do_work = false;
+                            return;
+                        }
+                    }
+                }
+                catch
+                {
+                    do_work = false;
+                    return;
+                }
+            }
+        }
+
+        private void SetDefaultOption()
+        {
+            client = null;
+            mtstr_Polaczenie.Enabled = true;
+            //status belka
+            tssl_label.Visible = false;
+            //przycisk belka
+            tssb_Rozlacz.Visible = false;
+            tssb_Rozlacz.Enabled = false;
+            tssb_Rozlacz.Text = "Połączenie aktywne";
+            tssb_Rozlacz.Image = Klient.Properties.Resources.Status_OK;
+        }
+
+        private void ServerConnectionError()
+        {
+            tssl_label.Text = "Błąd połączenia";
+            tssb_Rozlacz.Image = Klient.Properties.Resources.Status_ERROR;
+            MessageBox.Show("Połączenie zostało nagle przerwane. Serwer przestał odpowiadać.", "Błąd połączenia.");
+            SetDefaultOption();
         }
     }
 }
