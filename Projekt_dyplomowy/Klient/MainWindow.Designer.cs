@@ -31,21 +31,11 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.sstr_belka = new System.Windows.Forms.StatusStrip();
             this.tssl_label = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tssb_Rozlacz = new System.Windows.Forms.ToolStripSplitButton();
+            this.rozłączToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gbx_Ustawienia = new System.Windows.Forms.GroupBox();
-            this.btn_change_backup = new System.Windows.Forms.Button();
-            this.lbl_backup = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.btn_change_work_path = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.lbl_work_path = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.btn_confirm_config = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.btn_change_save_path = new System.Windows.Forms.Button();
+            this.gbx_DaneUzytkownika = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.lbl_savepath = new System.Windows.Forms.Label();
             this.mstr_Menu = new System.Windows.Forms.MenuStrip();
             this.plikToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,10 +47,21 @@
             this.txt_IP = new System.Windows.Forms.TextBox();
             this.lbl_PORT = new System.Windows.Forms.Label();
             this.lbl_IP = new System.Windows.Forms.Label();
-            this.tssb_Rozlacz = new System.Windows.Forms.ToolStripSplitButton();
-            this.rozłączToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.txt_Imie = new System.Windows.Forms.TextBox();
+            this.txt_Nazwisko = new System.Windows.Forms.TextBox();
+            this.txt_Grupa = new System.Windows.Forms.TextBox();
+            this.txt_Sekcja = new System.Windows.Forms.TextBox();
+            this.txt_Wersja = new System.Windows.Forms.TextBox();
+            this.btn_Potwierdz = new System.Windows.Forms.Button();
+            this.cbx_czy_sekcja = new System.Windows.Forms.CheckBox();
+            this.cbx_czy_wersja = new System.Windows.Forms.CheckBox();
             this.sstr_belka.SuspendLayout();
             this.gbx_Ustawienia.SuspendLayout();
+            this.gbx_DaneUzytkownika.SuspendLayout();
             this.mstr_Menu.SuspendLayout();
             this.gbx_Polaczenie.SuspendLayout();
             this.SuspendLayout();
@@ -87,23 +88,29 @@
             this.tssl_label.Text = "Połączenie aktywne";
             this.tssl_label.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // tssb_Rozlacz
+            // 
+            this.tssb_Rozlacz.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tssb_Rozlacz.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.rozłączToolStripMenuItem});
+            this.tssb_Rozlacz.Image = ((System.Drawing.Image)(resources.GetObject("tssb_Rozlacz.Image")));
+            this.tssb_Rozlacz.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tssb_Rozlacz.Name = "tssb_Rozlacz";
+            this.tssb_Rozlacz.Size = new System.Drawing.Size(32, 23);
+            this.tssb_Rozlacz.Text = "toolStripSplitButton1";
+            // 
+            // rozłączToolStripMenuItem
+            // 
+            this.rozłączToolStripMenuItem.Name = "rozłączToolStripMenuItem";
+            this.rozłączToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.rozłączToolStripMenuItem.Text = "Rozłącz";
+            this.rozłączToolStripMenuItem.Click += new System.EventHandler(this.rozłączToolStripMenuItem_Click);
+            // 
             // gbx_Ustawienia
             // 
             this.gbx_Ustawienia.BackColor = System.Drawing.SystemColors.Control;
-            this.gbx_Ustawienia.Controls.Add(this.btn_change_backup);
-            this.gbx_Ustawienia.Controls.Add(this.lbl_backup);
-            this.gbx_Ustawienia.Controls.Add(this.label6);
-            this.gbx_Ustawienia.Controls.Add(this.comboBox2);
-            this.gbx_Ustawienia.Controls.Add(this.btn_change_work_path);
-            this.gbx_Ustawienia.Controls.Add(this.label2);
-            this.gbx_Ustawienia.Controls.Add(this.label4);
-            this.gbx_Ustawienia.Controls.Add(this.lbl_work_path);
-            this.gbx_Ustawienia.Controls.Add(this.comboBox1);
-            this.gbx_Ustawienia.Controls.Add(this.btn_confirm_config);
-            this.gbx_Ustawienia.Controls.Add(this.label3);
-            this.gbx_Ustawienia.Controls.Add(this.btn_change_save_path);
-            this.gbx_Ustawienia.Controls.Add(this.label1);
-            this.gbx_Ustawienia.Controls.Add(this.lbl_savepath);
+            this.gbx_Ustawienia.Controls.Add(this.btn_Potwierdz);
+            this.gbx_Ustawienia.Controls.Add(this.gbx_DaneUzytkownika);
             this.gbx_Ustawienia.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.gbx_Ustawienia.Location = new System.Drawing.Point(0, 27);
             this.gbx_Ustawienia.Name = "gbx_Ustawienia";
@@ -112,156 +119,35 @@
             this.gbx_Ustawienia.TabStop = false;
             this.gbx_Ustawienia.Text = "Ustawienia";
             // 
-            // btn_change_backup
+            // gbx_DaneUzytkownika
             // 
-            this.btn_change_backup.Location = new System.Drawing.Point(492, 140);
-            this.btn_change_backup.Name = "btn_change_backup";
-            this.btn_change_backup.Size = new System.Drawing.Size(98, 101);
-            this.btn_change_backup.TabIndex = 10;
-            this.btn_change_backup.Text = "Zmień";
-            this.btn_change_backup.UseVisualStyleBackColor = true;
-            // 
-            // lbl_backup
-            // 
-            this.lbl_backup.AutoSize = true;
-            this.lbl_backup.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lbl_backup.Location = new System.Drawing.Point(123, 81);
-            this.lbl_backup.Name = "lbl_backup";
-            this.lbl_backup.Size = new System.Drawing.Size(187, 20);
-            this.lbl_backup.TabIndex = 9;
-            this.lbl_backup.Text = "C:/Users/Kamil/Download";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label6.Location = new System.Drawing.Point(7, 71);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(67, 20);
-            this.label6.TabIndex = 8;
-            this.label6.Text = "Backup:";
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Items.AddRange(new object[] {
-            "5 min",
-            "10 min",
-            "15 min",
-            "20 min",
-            "30 min"});
-            this.comboBox2.Location = new System.Drawing.Point(92, 204);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(121, 28);
-            this.comboBox2.TabIndex = 7;
-            // 
-            // btn_change_work_path
-            // 
-            this.btn_change_work_path.Location = new System.Drawing.Point(492, 33);
-            this.btn_change_work_path.Name = "btn_change_work_path";
-            this.btn_change_work_path.Size = new System.Drawing.Size(98, 101);
-            this.btn_change_work_path.TabIndex = 5;
-            this.btn_change_work_path.Text = "Zmień";
-            this.btn_change_work_path.UseVisualStyleBackColor = true;
-            this.btn_change_work_path.Click += new System.EventHandler(this.btn_change_work_path_Click);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label2.Location = new System.Drawing.Point(14, 166);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(57, 20);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Buffer:";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label4.Location = new System.Drawing.Point(9, 208);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(80, 20);
-            this.label4.TabIndex = 6;
-            this.label4.Text = "Autosave:";
-            // 
-            // lbl_work_path
-            // 
-            this.lbl_work_path.AutoSize = true;
-            this.lbl_work_path.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lbl_work_path.Location = new System.Drawing.Point(123, 33);
-            this.lbl_work_path.Name = "lbl_work_path";
-            this.lbl_work_path.Size = new System.Drawing.Size(187, 20);
-            this.lbl_work_path.TabIndex = 4;
-            this.lbl_work_path.Text = "C:/Users/Kamil/Download";
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "1 KB",
-            "2 KB",
-            "4 KB",
-            "8 KB",
-            "16 KB",
-            "32 KB",
-            "64 KB"});
-            this.comboBox1.Location = new System.Drawing.Point(77, 158);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 28);
-            this.comboBox1.TabIndex = 2;
-            // 
-            // btn_confirm_config
-            // 
-            this.btn_confirm_config.Location = new System.Drawing.Point(490, 257);
-            this.btn_confirm_config.Name = "btn_confirm_config";
-            this.btn_confirm_config.Size = new System.Drawing.Size(100, 33);
-            this.btn_confirm_config.TabIndex = 2;
-            this.btn_confirm_config.Text = "Potwierdź";
-            this.btn_confirm_config.UseVisualStyleBackColor = true;
-            this.btn_confirm_config.Click += new System.EventHandler(this.btn_confirm_config_Click);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label3.Location = new System.Drawing.Point(7, 16);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(54, 20);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "Praca:";
-            // 
-            // btn_change_save_path
-            // 
-            this.btn_change_save_path.Location = new System.Drawing.Point(372, 41);
-            this.btn_change_save_path.Name = "btn_change_save_path";
-            this.btn_change_save_path.Size = new System.Drawing.Size(98, 101);
-            this.btn_change_save_path.TabIndex = 3;
-            this.btn_change_save_path.Text = "Zmień";
-            this.btn_change_save_path.UseVisualStyleBackColor = true;
-            this.btn_change_save_path.Click += new System.EventHandler(this.btn_change_save_path_Click);
+            this.gbx_DaneUzytkownika.Controls.Add(this.cbx_czy_wersja);
+            this.gbx_DaneUzytkownika.Controls.Add(this.cbx_czy_sekcja);
+            this.gbx_DaneUzytkownika.Controls.Add(this.txt_Wersja);
+            this.gbx_DaneUzytkownika.Controls.Add(this.label5);
+            this.gbx_DaneUzytkownika.Controls.Add(this.label4);
+            this.gbx_DaneUzytkownika.Controls.Add(this.txt_Sekcja);
+            this.gbx_DaneUzytkownika.Controls.Add(this.label3);
+            this.gbx_DaneUzytkownika.Controls.Add(this.txt_Grupa);
+            this.gbx_DaneUzytkownika.Controls.Add(this.txt_Nazwisko);
+            this.gbx_DaneUzytkownika.Controls.Add(this.txt_Imie);
+            this.gbx_DaneUzytkownika.Controls.Add(this.label2);
+            this.gbx_DaneUzytkownika.Controls.Add(this.label1);
+            this.gbx_DaneUzytkownika.Location = new System.Drawing.Point(12, 25);
+            this.gbx_DaneUzytkownika.Name = "gbx_DaneUzytkownika";
+            this.gbx_DaneUzytkownika.Size = new System.Drawing.Size(340, 180);
+            this.gbx_DaneUzytkownika.TabIndex = 1;
+            this.gbx_DaneUzytkownika.TabStop = false;
+            this.gbx_DaneUzytkownika.Text = "Dane Użytkownika";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label1.Location = new System.Drawing.Point(7, 41);
+            this.label1.Location = new System.Drawing.Point(6, 30);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(52, 20);
+            this.label1.Size = new System.Drawing.Size(43, 20);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Zapis:";
-            // 
-            // lbl_savepath
-            // 
-            this.lbl_savepath.AutoSize = true;
-            this.lbl_savepath.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lbl_savepath.Location = new System.Drawing.Point(88, 54);
-            this.lbl_savepath.Name = "lbl_savepath";
-            this.lbl_savepath.Size = new System.Drawing.Size(187, 20);
-            this.lbl_savepath.TabIndex = 2;
-            this.lbl_savepath.Text = "C:/Users/Kamil/Download";
+            this.label1.Text = "Imię:";
             // 
             // mstr_Menu
             // 
@@ -375,23 +261,107 @@
             this.lbl_IP.Text = "Adres IP serwera:";
             this.lbl_IP.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // tssb_Rozlacz
+            // label2
             // 
-            this.tssb_Rozlacz.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tssb_Rozlacz.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.rozłączToolStripMenuItem});
-            this.tssb_Rozlacz.Image = ((System.Drawing.Image)(resources.GetObject("tssb_Rozlacz.Image")));
-            this.tssb_Rozlacz.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tssb_Rozlacz.Name = "tssb_Rozlacz";
-            this.tssb_Rozlacz.Size = new System.Drawing.Size(32, 23);
-            this.tssb_Rozlacz.Text = "toolStripSplitButton1";
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 60);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(80, 20);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Nazwisko:";
             // 
-            // rozłączToolStripMenuItem
+            // label3
             // 
-            this.rozłączToolStripMenuItem.Name = "rozłączToolStripMenuItem";
-            this.rozłączToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.rozłączToolStripMenuItem.Text = "Rozłącz";
-            this.rozłączToolStripMenuItem.Click += new System.EventHandler(this.rozłączToolStripMenuItem_Click);
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 90);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(58, 20);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Grupa:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(28, 120);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(61, 20);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Sekcja:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(28, 150);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(62, 20);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "Wersja:";
+            // 
+            // txt_Imie
+            // 
+            this.txt_Imie.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.txt_Imie.Location = new System.Drawing.Point(49, 27);
+            this.txt_Imie.Name = "txt_Imie";
+            this.txt_Imie.Size = new System.Drawing.Size(120, 26);
+            this.txt_Imie.TabIndex = 2;
+            // 
+            // txt_Nazwisko
+            // 
+            this.txt_Nazwisko.Location = new System.Drawing.Point(85, 57);
+            this.txt_Nazwisko.Name = "txt_Nazwisko";
+            this.txt_Nazwisko.Size = new System.Drawing.Size(230, 26);
+            this.txt_Nazwisko.TabIndex = 3;
+            // 
+            // txt_Grupa
+            // 
+            this.txt_Grupa.Location = new System.Drawing.Point(69, 87);
+            this.txt_Grupa.Name = "txt_Grupa";
+            this.txt_Grupa.Size = new System.Drawing.Size(100, 26);
+            this.txt_Grupa.TabIndex = 4;
+            // 
+            // txt_Sekcja
+            // 
+            this.txt_Sekcja.Location = new System.Drawing.Point(91, 117);
+            this.txt_Sekcja.Name = "txt_Sekcja";
+            this.txt_Sekcja.Size = new System.Drawing.Size(78, 26);
+            this.txt_Sekcja.TabIndex = 5;
+            // 
+            // txt_Wersja
+            // 
+            this.txt_Wersja.Location = new System.Drawing.Point(91, 147);
+            this.txt_Wersja.Name = "txt_Wersja";
+            this.txt_Wersja.Size = new System.Drawing.Size(78, 26);
+            this.txt_Wersja.TabIndex = 6;
+            // 
+            // btn_Potwierdz
+            // 
+            this.btn_Potwierdz.Location = new System.Drawing.Point(833, 351);
+            this.btn_Potwierdz.Name = "btn_Potwierdz";
+            this.btn_Potwierdz.Size = new System.Drawing.Size(105, 29);
+            this.btn_Potwierdz.TabIndex = 2;
+            this.btn_Potwierdz.Text = "Zapisz";
+            this.btn_Potwierdz.UseVisualStyleBackColor = true;
+            this.btn_Potwierdz.Click += new System.EventHandler(this.btn_Potwierdz_Click);
+            // 
+            // cbx_czy_sekcja
+            // 
+            this.cbx_czy_sekcja.AutoSize = true;
+            this.cbx_czy_sekcja.Location = new System.Drawing.Point(12, 124);
+            this.cbx_czy_sekcja.Name = "cbx_czy_sekcja";
+            this.cbx_czy_sekcja.Size = new System.Drawing.Size(15, 14);
+            this.cbx_czy_sekcja.TabIndex = 3;
+            this.cbx_czy_sekcja.UseVisualStyleBackColor = true;
+            this.cbx_czy_sekcja.Click += new System.EventHandler(this.cbx_czy_sekcja_Click);
+            // 
+            // cbx_czy_wersja
+            // 
+            this.cbx_czy_wersja.AutoSize = true;
+            this.cbx_czy_wersja.Location = new System.Drawing.Point(12, 154);
+            this.cbx_czy_wersja.Name = "cbx_czy_wersja";
+            this.cbx_czy_wersja.Size = new System.Drawing.Size(15, 14);
+            this.cbx_czy_wersja.TabIndex = 7;
+            this.cbx_czy_wersja.UseVisualStyleBackColor = true;
+            this.cbx_czy_wersja.CheckedChanged += new System.EventHandler(this.cbx_czy_wersja_CheckedChanged);
             // 
             // MainWindow
             // 
@@ -399,10 +369,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(944, 441);
-            this.Controls.Add(this.gbx_Polaczenie);
             this.Controls.Add(this.sstr_belka);
             this.Controls.Add(this.mstr_Menu);
             this.Controls.Add(this.gbx_Ustawienia);
+            this.Controls.Add(this.gbx_Polaczenie);
             this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.MainMenuStrip = this.mstr_Menu;
             this.Name = "MainWindow";
@@ -410,7 +380,8 @@
             this.sstr_belka.ResumeLayout(false);
             this.sstr_belka.PerformLayout();
             this.gbx_Ustawienia.ResumeLayout(false);
-            this.gbx_Ustawienia.PerformLayout();
+            this.gbx_DaneUzytkownika.ResumeLayout(false);
+            this.gbx_DaneUzytkownika.PerformLayout();
             this.mstr_Menu.ResumeLayout(false);
             this.mstr_Menu.PerformLayout();
             this.gbx_Polaczenie.ResumeLayout(false);
@@ -425,20 +396,6 @@
         private System.Windows.Forms.StatusStrip sstr_belka;
         private System.Windows.Forms.ToolStripStatusLabel tssl_label;
         private System.Windows.Forms.GroupBox gbx_Ustawienia;
-        private System.Windows.Forms.Button btn_change_save_path;
-        private System.Windows.Forms.Label lbl_savepath;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button btn_confirm_config;
-        private System.Windows.Forms.Button btn_change_work_path;
-        private System.Windows.Forms.Label lbl_work_path;
-        private System.Windows.Forms.Button btn_change_backup;
-        private System.Windows.Forms.Label lbl_backup;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.MenuStrip mstr_Menu;
         private System.Windows.Forms.ToolStripMenuItem mtstr_Ustawienia;
         private System.Windows.Forms.ToolStripMenuItem plikToolStripMenuItem;
@@ -452,5 +409,19 @@
         private System.Windows.Forms.Label lbl_IP;
         private System.Windows.Forms.ToolStripSplitButton tssb_Rozlacz;
         private System.Windows.Forms.ToolStripMenuItem rozłączToolStripMenuItem;
+        private System.Windows.Forms.GroupBox gbx_DaneUzytkownika;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txt_Wersja;
+        private System.Windows.Forms.TextBox txt_Imie;
+        private System.Windows.Forms.TextBox txt_Sekcja;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox txt_Grupa;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox txt_Nazwisko;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button btn_Potwierdz;
+        private System.Windows.Forms.CheckBox cbx_czy_sekcja;
+        private System.Windows.Forms.CheckBox cbx_czy_wersja;
     }
 }

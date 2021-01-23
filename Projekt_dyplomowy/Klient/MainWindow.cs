@@ -19,6 +19,7 @@ namespace Klient
         private TcpClient client = null;
         private NetworkStream ns = null;
         private static BackgroundWorker m_oBackgroundWorker = null; //wątek roboczy pracujacy w tle -> domyślnie niezainicjowany
+        private User user = null;
 
         //private TcpClient SetClient //właściwość do odbioru klienta tcp
         //{
@@ -41,6 +42,10 @@ namespace Klient
                 InitializeComponent();
             }
             else Environment.Exit(0);*/
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MinimizeBox = true;
+            this.MaximizeBox = false;
+            this.StartPosition = FormStartPosition.CenterScreen;
             InitializeComponent();
             SetDefaultOption();
         }
@@ -50,96 +55,84 @@ namespace Klient
 
         }
 
-        private void btn_change_save_path_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void btn_confirm_config_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void btn_change_work_path_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void btn_CONNECT_Click(object sender, EventArgs e)
         {
-            string IP_text, PORT_text;
-            IPAddress IP_address;
-            int PORT_number=0;
-
-            IP_text = txt_IP.Text.Trim();
-            PORT_text = txt_PORT.Text.Trim();
-            try
-            {               
-                bool ValidateIP = IPAddress.TryParse(IP_text, out IP_address);
-                bool ValidatePORT = Int32.TryParse(PORT_text, out PORT_number);
-
-                if (ValidateIP && ValidatePORT)
-                {
-                    client = new TcpClient(IP_address.ToString(), PORT_number);
-                }
-                else if (!ValidateIP && !ValidatePORT)
-                {
-                    MessageBox.Show("Wprowadzone złe dane, spróbuj ponownie.", "Błędny format danych");
-                    throw new FormatException();
-                }
-                else if (!ValidateIP && ValidatePORT)
-                {
-                    MessageBox.Show("Wprowadzone zły adres IP, spróbuj ponownie.", "Błędny format danych");
-                    throw new FormatException();
-                }
-                else
-                {
-                    MessageBox.Show("Wprowadzone zły numer portu, spróbuj ponownie.", "Błędny format danych");
-                    throw new FormatException();
-                }
-
-                ns = client.GetStream();
-                byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(Dns.GetHostName());
-                ns.Write(bytesToSend, 0, bytesToSend.Length);
-
-                ns.Flush();              
-            }
-            catch (SocketException x)
+            if (user != null)
             {
-                MessageBox.Show("Serwer odmawia nawiązania połączenia. Możliwe, że wprowadzono błędne dane serwera lub serwer pracuje w trybie uniemożliwiającym nawiązanie połączenia.",
-                    "Odmowa nawiązania połączenia.");
-            }
-            catch (FormatException)
-            {
+                string IP_text, PORT_text;
+                IPAddress IP_address;
+                int PORT_number = 0;
 
-            }
-            catch (Exception x)
-            {
-                MessageBox.Show(x.ToString());
-            }
-
-            if (client != null && client.Connected)
-            {
-                //Widok Połączenia
-                mtstr_Polaczenie.Enabled = false;
-                gbx_Polaczenie.Visible = false;
-                gbx_Polaczenie.Enabled = false;
-                //Widok Ustawień
-                gbx_Ustawienia.Visible = true;
-                gbx_Ustawienia.Enabled = true;
-                //status belka
-                tssl_label.Visible = true;
-                //przycisk belka
-                tssb_Rozlacz.Visible = true;
-                tssb_Rozlacz.Enabled = true;
-
-                if (null == m_oBackgroundWorker) //sprawdzanie czy obiekt istnieje
+                IP_text = txt_IP.Text.Trim();
+                PORT_text = txt_PORT.Text.Trim();
+                try
                 {
-                    m_oBackgroundWorker = new BackgroundWorker(); //utworzenie obiektu
-                    m_oBackgroundWorker.WorkerSupportsCancellation = false; //włączenie możliwości przerwania pracy wątka roboczego
-                    m_oBackgroundWorker.DoWork += new DoWorkEventHandler(m_oBackgroundWorker_DoWork); //utworzenie uchwyta dla obiektu
+                    bool ValidateIP = IPAddress.TryParse(IP_text, out IP_address);
+                    bool ValidatePORT = Int32.TryParse(PORT_text, out PORT_number);
+
+                    if (ValidateIP && ValidatePORT)
+                    {
+                        client = new TcpClient(IP_address.ToString(), PORT_number);
+                    }
+                    else if (!ValidateIP && !ValidatePORT)
+                    {
+                        MessageBox.Show("Wprowadzone złe dane, spróbuj ponownie.", "Błędny format danych");
+                        throw new FormatException();
+                    }
+                    else if (!ValidateIP && ValidatePORT)
+                    {
+                        MessageBox.Show("Wprowadzone zły adres IP, spróbuj ponownie.", "Błędny format danych");
+                        throw new FormatException();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Wprowadzone zły numer portu, spróbuj ponownie.", "Błędny format danych");
+                        throw new FormatException();
+                    }
+
+                    ns = client.GetStream();
+                    byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(user.ToString());
+                    ns.Write(bytesToSend, 0, bytesToSend.Length);
+
+                    ns.Flush();
                 }
-                m_oBackgroundWorker.RunWorkerAsync(PORT_number); //start wątka roboczego w tle
+                catch (SocketException x)
+                {
+                    MessageBox.Show("Serwer odmawia nawiązania połączenia. Możliwe, że wprowadzono błędne dane serwera lub serwer pracuje w trybie uniemożliwiającym nawiązanie połączenia.",
+                        "Odmowa nawiązania połączenia.");
+                }
+                catch (FormatException)
+                {
+
+                }
+                catch (Exception x)
+                {
+                    MessageBox.Show(x.ToString());
+                }
+
+                if (client != null && client.Connected)
+                {
+                    //Widok Połączenia
+                    mtstr_Polaczenie.Enabled = false;
+                    gbx_Polaczenie.Visible = false;
+                    gbx_Polaczenie.Enabled = false;
+                    //Widok Ustawień
+                    gbx_Ustawienia.Visible = true;
+                    gbx_Ustawienia.Enabled = true;
+                    //status belka
+                    tssl_label.Visible = true;
+                    //przycisk belka
+                    tssb_Rozlacz.Visible = true;
+                    tssb_Rozlacz.Enabled = true;
+
+                    if (null == m_oBackgroundWorker) //sprawdzanie czy obiekt istnieje
+                    {
+                        m_oBackgroundWorker = new BackgroundWorker(); //utworzenie obiektu
+                        m_oBackgroundWorker.WorkerSupportsCancellation = false; //włączenie możliwości przerwania pracy wątka roboczego
+                        m_oBackgroundWorker.DoWork += new DoWorkEventHandler(m_oBackgroundWorker_DoWork); //utworzenie uchwyta dla obiektu
+                    }
+                    m_oBackgroundWorker.RunWorkerAsync(PORT_number); //start wątka roboczego w tle
+                }
             }
         }
 
@@ -216,14 +209,107 @@ namespace Klient
             tssb_Rozlacz.Enabled = false;
             tssb_Rozlacz.Text = "Połączenie aktywne";
             tssb_Rozlacz.Image = Klient.Properties.Resources.Status_OK;
+            //Dane Użytkownika
+            cbx_czy_sekcja.Checked = true;
+            txt_Sekcja.Enabled = true;        
+            cbx_czy_wersja.Checked = true;
+            txt_Wersja.Enabled = true;
         }
 
         private void ServerConnectionError()
         {
             tssl_label.Text = "Błąd połączenia";
             tssb_Rozlacz.Image = Klient.Properties.Resources.Status_ERROR;
-            MessageBox.Show("Połączenie zostało nagle przerwane. Serwer przestał odpowiadać.", "Błąd połączenia.");
+            MessageBox.Show("Błąd po stronie serwera. Połączenie zostało nagle przerwane.", "Połączenie");
             SetDefaultOption();
+        }
+
+        private void btn_Potwierdz_Click(object sender, EventArgs e)
+        {
+            string firstname, lastname, group, section, version;
+
+            if (user == null)
+            {
+                user = new User();
+            }
+
+            firstname = txt_Imie.Text.Trim();
+            if (firstname != null && firstname != "")
+            {
+                user.firstname = firstname;
+            }
+            else
+            {
+                MessageBox.Show("Nie wprowadzono imienia użytkownika.", "Ustawienia");
+            }
+            lastname = txt_Nazwisko.Text.Trim();
+            if (lastname != null && lastname != "")
+            {
+                user.lastname = lastname;
+            }
+            else
+            {
+                MessageBox.Show("Nie wprowadzono nazwiska użytkownika.", "Ustawienia");
+            }
+
+            group = txt_Grupa.Text.Trim();
+            if (group != null && group != "")
+            {
+                user.group = group;
+            }
+            else
+            {
+                MessageBox.Show("Nie wprowadzono grupy użytkownika.", "Ustawienia");
+            }
+
+            if (cbx_czy_sekcja.Checked == true)
+            {
+                section = txt_Sekcja.Text.Trim();
+                if (section != null && section != "")
+                {
+                    user.section = section;
+                }
+                else
+                {
+                    MessageBox.Show("Nie wprowadzono sekcji użytkownika.", "Ustawienia");
+                }
+            }
+            if (cbx_czy_wersja.Checked == true)
+            {
+                version = txt_Wersja.Text.Trim();
+                if (version != null && version != "")
+                {
+                    user.version = version;
+                }
+                else
+                {
+                    MessageBox.Show("Nie wprowadzono wersji.", "Ustawienia");
+                }
+            }
+        }
+
+        private void cbx_czy_sekcja_Click(object sender, EventArgs e)
+        {
+            if (txt_Sekcja.Enabled == false)
+            {
+                txt_Sekcja.Enabled = true;
+            }
+            else
+            {
+                txt_Sekcja.Enabled = false;
+            }
+        }
+
+        private void cbx_czy_wersja_CheckedChanged(object sender, EventArgs e)
+        {
+            if (txt_Wersja.Enabled == false)
+            {
+                txt_Wersja.Enabled = true;
+            }
+            else
+            {
+                txt_Wersja.Enabled = false;
+            }
         }
     }
 }

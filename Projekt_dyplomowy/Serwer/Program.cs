@@ -43,6 +43,7 @@ namespace Serwer
             {
                 Console.WriteLine(x);
             }
+            Console.WriteLine("Naciśnij dowolny klawisz by zamknąć historię."); //komunikat
             Console.ReadKey(true); //czekanie na potwierdzenie
         }
 
@@ -747,7 +748,7 @@ namespace Serwer
                         if (client.Client.Receive(buff, SocketFlags.Peek) == 0) //jeśli nagle przestał odpowiadać
                         {
                             client.Client.Disconnect(true); //rozłącz klienta
-                            history.Add(server_history.ServerEndConnection(client_hostname)); //komunikat do historii
+                            //history.Add(server_history.ServerEndConnection(client_hostname)); //komunikat do historii
                         }
                         else
                         {
