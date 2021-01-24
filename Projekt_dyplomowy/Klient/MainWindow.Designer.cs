@@ -34,7 +34,19 @@
             this.tssb_Rozlacz = new System.Windows.Forms.ToolStripSplitButton();
             this.rozłączToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gbx_Ustawienia = new System.Windows.Forms.GroupBox();
+            this.btn_Potwierdz = new System.Windows.Forms.Button();
             this.gbx_DaneUzytkownika = new System.Windows.Forms.GroupBox();
+            this.cbx_czy_wersja = new System.Windows.Forms.CheckBox();
+            this.cbx_czy_sekcja = new System.Windows.Forms.CheckBox();
+            this.txt_Wersja = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.txt_Sekcja = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.txt_Grupa = new System.Windows.Forms.TextBox();
+            this.txt_Nazwisko = new System.Windows.Forms.TextBox();
+            this.txt_Imie = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.mstr_Menu = new System.Windows.Forms.MenuStrip();
             this.plikToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,23 +59,21 @@
             this.txt_IP = new System.Windows.Forms.TextBox();
             this.lbl_PORT = new System.Windows.Forms.Label();
             this.lbl_IP = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.txt_Imie = new System.Windows.Forms.TextBox();
-            this.txt_Nazwisko = new System.Windows.Forms.TextBox();
-            this.txt_Grupa = new System.Windows.Forms.TextBox();
-            this.txt_Sekcja = new System.Windows.Forms.TextBox();
-            this.txt_Wersja = new System.Windows.Forms.TextBox();
-            this.btn_Potwierdz = new System.Windows.Forms.Button();
-            this.cbx_czy_sekcja = new System.Windows.Forms.CheckBox();
-            this.cbx_czy_wersja = new System.Windows.Forms.CheckBox();
+            this.gbx_Ustawienia_polaczenia = new System.Windows.Forms.GroupBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.nup_bufor = new System.Windows.Forms.NumericUpDown();
+            this.label7 = new System.Windows.Forms.Label();
+            this.lbl_path_polaczenie = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.lbl_ID = new System.Windows.Forms.Label();
+            this.gbx_Backup = new System.Windows.Forms.GroupBox();
             this.sstr_belka.SuspendLayout();
             this.gbx_Ustawienia.SuspendLayout();
             this.gbx_DaneUzytkownika.SuspendLayout();
             this.mstr_Menu.SuspendLayout();
             this.gbx_Polaczenie.SuspendLayout();
+            this.gbx_Ustawienia_polaczenia.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nup_bufor)).BeginInit();
             this.SuspendLayout();
             // 
             // sstr_belka
@@ -109,15 +119,27 @@
             // gbx_Ustawienia
             // 
             this.gbx_Ustawienia.BackColor = System.Drawing.SystemColors.Control;
+            this.gbx_Ustawienia.Controls.Add(this.gbx_Backup);
+            this.gbx_Ustawienia.Controls.Add(this.gbx_Ustawienia_polaczenia);
             this.gbx_Ustawienia.Controls.Add(this.btn_Potwierdz);
             this.gbx_Ustawienia.Controls.Add(this.gbx_DaneUzytkownika);
             this.gbx_Ustawienia.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.gbx_Ustawienia.Location = new System.Drawing.Point(0, 27);
+            this.gbx_Ustawienia.Location = new System.Drawing.Point(30, 24);
             this.gbx_Ustawienia.Name = "gbx_Ustawienia";
-            this.gbx_Ustawienia.Size = new System.Drawing.Size(944, 386);
+            this.gbx_Ustawienia.Size = new System.Drawing.Size(880, 392);
             this.gbx_Ustawienia.TabIndex = 1;
             this.gbx_Ustawienia.TabStop = false;
             this.gbx_Ustawienia.Text = "Ustawienia";
+            // 
+            // btn_Potwierdz
+            // 
+            this.btn_Potwierdz.Location = new System.Drawing.Point(745, 331);
+            this.btn_Potwierdz.Name = "btn_Potwierdz";
+            this.btn_Potwierdz.Size = new System.Drawing.Size(105, 29);
+            this.btn_Potwierdz.TabIndex = 2;
+            this.btn_Potwierdz.Text = "Zapisz";
+            this.btn_Potwierdz.UseVisualStyleBackColor = true;
+            this.btn_Potwierdz.Click += new System.EventHandler(this.btn_Potwierdz_Click);
             // 
             // gbx_DaneUzytkownika
             // 
@@ -133,12 +155,106 @@
             this.gbx_DaneUzytkownika.Controls.Add(this.txt_Imie);
             this.gbx_DaneUzytkownika.Controls.Add(this.label2);
             this.gbx_DaneUzytkownika.Controls.Add(this.label1);
-            this.gbx_DaneUzytkownika.Location = new System.Drawing.Point(12, 25);
+            this.gbx_DaneUzytkownika.Location = new System.Drawing.Point(30, 30);
             this.gbx_DaneUzytkownika.Name = "gbx_DaneUzytkownika";
             this.gbx_DaneUzytkownika.Size = new System.Drawing.Size(340, 180);
             this.gbx_DaneUzytkownika.TabIndex = 1;
             this.gbx_DaneUzytkownika.TabStop = false;
             this.gbx_DaneUzytkownika.Text = "Dane Użytkownika";
+            // 
+            // cbx_czy_wersja
+            // 
+            this.cbx_czy_wersja.AutoSize = true;
+            this.cbx_czy_wersja.Location = new System.Drawing.Point(12, 154);
+            this.cbx_czy_wersja.Name = "cbx_czy_wersja";
+            this.cbx_czy_wersja.Size = new System.Drawing.Size(15, 14);
+            this.cbx_czy_wersja.TabIndex = 7;
+            this.cbx_czy_wersja.TabStop = false;
+            this.cbx_czy_wersja.UseVisualStyleBackColor = true;
+            this.cbx_czy_wersja.CheckedChanged += new System.EventHandler(this.cbx_czy_wersja_CheckedChanged);
+            // 
+            // cbx_czy_sekcja
+            // 
+            this.cbx_czy_sekcja.AutoSize = true;
+            this.cbx_czy_sekcja.Location = new System.Drawing.Point(12, 124);
+            this.cbx_czy_sekcja.Name = "cbx_czy_sekcja";
+            this.cbx_czy_sekcja.Size = new System.Drawing.Size(15, 14);
+            this.cbx_czy_sekcja.TabIndex = 6;
+            this.cbx_czy_sekcja.TabStop = false;
+            this.cbx_czy_sekcja.UseVisualStyleBackColor = true;
+            this.cbx_czy_sekcja.Click += new System.EventHandler(this.cbx_czy_sekcja_Click);
+            // 
+            // txt_Wersja
+            // 
+            this.txt_Wersja.Location = new System.Drawing.Point(91, 147);
+            this.txt_Wersja.Name = "txt_Wersja";
+            this.txt_Wersja.Size = new System.Drawing.Size(78, 26);
+            this.txt_Wersja.TabIndex = 5;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(28, 150);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(62, 20);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "Wersja:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(28, 120);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(61, 20);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Sekcja:";
+            // 
+            // txt_Sekcja
+            // 
+            this.txt_Sekcja.Location = new System.Drawing.Point(91, 117);
+            this.txt_Sekcja.Name = "txt_Sekcja";
+            this.txt_Sekcja.Size = new System.Drawing.Size(78, 26);
+            this.txt_Sekcja.TabIndex = 4;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 90);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(58, 20);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Grupa:";
+            // 
+            // txt_Grupa
+            // 
+            this.txt_Grupa.Location = new System.Drawing.Point(69, 87);
+            this.txt_Grupa.Name = "txt_Grupa";
+            this.txt_Grupa.Size = new System.Drawing.Size(100, 26);
+            this.txt_Grupa.TabIndex = 3;
+            // 
+            // txt_Nazwisko
+            // 
+            this.txt_Nazwisko.Location = new System.Drawing.Point(85, 57);
+            this.txt_Nazwisko.Name = "txt_Nazwisko";
+            this.txt_Nazwisko.Size = new System.Drawing.Size(230, 26);
+            this.txt_Nazwisko.TabIndex = 2;
+            // 
+            // txt_Imie
+            // 
+            this.txt_Imie.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.txt_Imie.Location = new System.Drawing.Point(49, 27);
+            this.txt_Imie.Name = "txt_Imie";
+            this.txt_Imie.Size = new System.Drawing.Size(120, 26);
+            this.txt_Imie.TabIndex = 2;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 60);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(80, 20);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Nazwisko:";
             // 
             // label1
             // 
@@ -151,42 +267,50 @@
             // 
             // mstr_Menu
             // 
-            this.mstr_Menu.GripStyle = System.Windows.Forms.ToolStripGripStyle.Visible;
+            this.mstr_Menu.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.mstr_Menu.BackColor = System.Drawing.SystemColors.Control;
+            this.mstr_Menu.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.mstr_Menu.Dock = System.Windows.Forms.DockStyle.None;
+            this.mstr_Menu.GripMargin = new System.Windows.Forms.Padding(0);
             this.mstr_Menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.plikToolStripMenuItem,
             this.panelToolStripMenuItem,
             this.mtstr_Polaczenie,
             this.mtstr_Ustawienia});
+            this.mstr_Menu.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.mstr_Menu.Location = new System.Drawing.Point(0, 0);
             this.mstr_Menu.Name = "mstr_Menu";
+            this.mstr_Menu.Padding = new System.Windows.Forms.Padding(0);
             this.mstr_Menu.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.mstr_Menu.Size = new System.Drawing.Size(944, 24);
+            this.mstr_Menu.Size = new System.Drawing.Size(359, 24);
             this.mstr_Menu.TabIndex = 2;
             this.mstr_Menu.Text = "menuStrip1";
             // 
             // plikToolStripMenuItem
             // 
             this.plikToolStripMenuItem.Name = "plikToolStripMenuItem";
-            this.plikToolStripMenuItem.Size = new System.Drawing.Size(38, 20);
+            this.plikToolStripMenuItem.Size = new System.Drawing.Size(38, 24);
             this.plikToolStripMenuItem.Text = "Plik";
             // 
             // panelToolStripMenuItem
             // 
             this.panelToolStripMenuItem.Name = "panelToolStripMenuItem";
-            this.panelToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.panelToolStripMenuItem.Size = new System.Drawing.Size(48, 24);
             this.panelToolStripMenuItem.Text = "Panel";
             // 
             // mtstr_Polaczenie
             // 
             this.mtstr_Polaczenie.Name = "mtstr_Polaczenie";
-            this.mtstr_Polaczenie.Size = new System.Drawing.Size(75, 20);
+            this.mtstr_Polaczenie.Size = new System.Drawing.Size(75, 24);
             this.mtstr_Polaczenie.Text = "Połączenie";
             this.mtstr_Polaczenie.Click += new System.EventHandler(this.mtstr_Polaczenie_Click);
             // 
             // mtstr_Ustawienia
             // 
             this.mtstr_Ustawienia.Name = "mtstr_Ustawienia";
-            this.mtstr_Ustawienia.Size = new System.Drawing.Size(76, 20);
+            this.mtstr_Ustawienia.Size = new System.Drawing.Size(76, 24);
             this.mtstr_Ustawienia.Text = "Ustawienia";
             this.mtstr_Ustawienia.Click += new System.EventHandler(this.mtstr_Ustawienia_Click);
             // 
@@ -199,9 +323,9 @@
             this.gbx_Polaczenie.Controls.Add(this.lbl_PORT);
             this.gbx_Polaczenie.Controls.Add(this.lbl_IP);
             this.gbx_Polaczenie.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.gbx_Polaczenie.Location = new System.Drawing.Point(0, 27);
+            this.gbx_Polaczenie.Location = new System.Drawing.Point(30, 24);
             this.gbx_Polaczenie.Name = "gbx_Polaczenie";
-            this.gbx_Polaczenie.Size = new System.Drawing.Size(944, 386);
+            this.gbx_Polaczenie.Size = new System.Drawing.Size(880, 392);
             this.gbx_Polaczenie.TabIndex = 3;
             this.gbx_Polaczenie.TabStop = false;
             this.gbx_Polaczenie.Text = "Połączenie";
@@ -211,7 +335,7 @@
             this.btn_CONNECT.BackColor = System.Drawing.SystemColors.Control;
             this.btn_CONNECT.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btn_CONNECT.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btn_CONNECT.Location = new System.Drawing.Point(432, 213);
+            this.btn_CONNECT.Location = new System.Drawing.Point(420, 213);
             this.btn_CONNECT.Margin = new System.Windows.Forms.Padding(0);
             this.btn_CONNECT.Name = "btn_CONNECT";
             this.btn_CONNECT.Size = new System.Drawing.Size(100, 40);
@@ -224,25 +348,25 @@
             // 
             this.txt_PORT.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txt_PORT.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.txt_PORT.Location = new System.Drawing.Point(462, 173);
+            this.txt_PORT.Location = new System.Drawing.Point(440, 173);
             this.txt_PORT.Name = "txt_PORT";
-            this.txt_PORT.Size = new System.Drawing.Size(200, 32);
+            this.txt_PORT.Size = new System.Drawing.Size(185, 32);
             this.txt_PORT.TabIndex = 8;
             // 
             // txt_IP
             // 
             this.txt_IP.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txt_IP.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.txt_IP.Location = new System.Drawing.Point(462, 133);
+            this.txt_IP.Location = new System.Drawing.Point(440, 133);
             this.txt_IP.Name = "txt_IP";
-            this.txt_IP.Size = new System.Drawing.Size(200, 32);
+            this.txt_IP.Size = new System.Drawing.Size(185, 32);
             this.txt_IP.TabIndex = 7;
             // 
             // lbl_PORT
             // 
             this.lbl_PORT.AutoSize = true;
             this.lbl_PORT.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lbl_PORT.Location = new System.Drawing.Point(282, 173);
+            this.lbl_PORT.Location = new System.Drawing.Point(255, 173);
             this.lbl_PORT.Name = "lbl_PORT";
             this.lbl_PORT.Size = new System.Drawing.Size(179, 26);
             this.lbl_PORT.TabIndex = 6;
@@ -253,7 +377,7 @@
             this.lbl_IP.AutoSize = true;
             this.lbl_IP.BackColor = System.Drawing.SystemColors.Control;
             this.lbl_IP.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lbl_IP.Location = new System.Drawing.Point(282, 133);
+            this.lbl_IP.Location = new System.Drawing.Point(255, 133);
             this.lbl_IP.Margin = new System.Windows.Forms.Padding(0);
             this.lbl_IP.Name = "lbl_IP";
             this.lbl_IP.Size = new System.Drawing.Size(185, 26);
@@ -261,107 +385,103 @@
             this.lbl_IP.Text = "Adres IP serwera:";
             this.lbl_IP.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label2
+            // gbx_Ustawienia_polaczenia
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 60);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(80, 20);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Nazwisko:";
+            this.gbx_Ustawienia_polaczenia.Controls.Add(this.lbl_ID);
+            this.gbx_Ustawienia_polaczenia.Controls.Add(this.label8);
+            this.gbx_Ustawienia_polaczenia.Controls.Add(this.lbl_path_polaczenie);
+            this.gbx_Ustawienia_polaczenia.Controls.Add(this.label7);
+            this.gbx_Ustawienia_polaczenia.Controls.Add(this.nup_bufor);
+            this.gbx_Ustawienia_polaczenia.Controls.Add(this.label6);
+            this.gbx_Ustawienia_polaczenia.Location = new System.Drawing.Point(30, 240);
+            this.gbx_Ustawienia_polaczenia.Name = "gbx_Ustawienia_polaczenia";
+            this.gbx_Ustawienia_polaczenia.Size = new System.Drawing.Size(574, 120);
+            this.gbx_Ustawienia_polaczenia.TabIndex = 3;
+            this.gbx_Ustawienia_polaczenia.TabStop = false;
+            this.gbx_Ustawienia_polaczenia.Text = "Połączenie";
             // 
-            // label3
+            // label6
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 90);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(58, 20);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "Grupa:";
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 60);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(122, 20);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Rozmiar bufora:";
             // 
-            // label4
+            // nup_bufor
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(28, 120);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(61, 20);
-            this.label4.TabIndex = 3;
-            this.label4.Text = "Sekcja:";
+            this.nup_bufor.Increment = new decimal(new int[] {
+            256,
+            0,
+            0,
+            0});
+            this.nup_bufor.Location = new System.Drawing.Point(130, 57);
+            this.nup_bufor.Maximum = new decimal(new int[] {
+            8192,
+            0,
+            0,
+            0});
+            this.nup_bufor.Minimum = new decimal(new int[] {
+            256,
+            0,
+            0,
+            0});
+            this.nup_bufor.Name = "nup_bufor";
+            this.nup_bufor.Size = new System.Drawing.Size(120, 26);
+            this.nup_bufor.TabIndex = 1;
+            this.nup_bufor.Tag = "";
+            this.nup_bufor.Value = new decimal(new int[] {
+            1024,
+            0,
+            0,
+            0});
             // 
-            // label5
+            // label7
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(28, 150);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(62, 20);
-            this.label5.TabIndex = 2;
-            this.label5.Text = "Wersja:";
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 90);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(116, 20);
+            this.label7.TabIndex = 2;
+            this.label7.Text = "Miejsce zapisu:";
             // 
-            // txt_Imie
+            // lbl_path_polaczenie
             // 
-            this.txt_Imie.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.txt_Imie.Location = new System.Drawing.Point(49, 27);
-            this.txt_Imie.Name = "txt_Imie";
-            this.txt_Imie.Size = new System.Drawing.Size(120, 26);
-            this.txt_Imie.TabIndex = 2;
+            this.lbl_path_polaczenie.AutoSize = true;
+            this.lbl_path_polaczenie.Location = new System.Drawing.Point(122, 90);
+            this.lbl_path_polaczenie.Name = "lbl_path_polaczenie";
+            this.lbl_path_polaczenie.Size = new System.Drawing.Size(77, 20);
+            this.lbl_path_polaczenie.TabIndex = 3;
+            this.lbl_path_polaczenie.Text = "Wybierz...";
+            this.lbl_path_polaczenie.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lbl_path_polaczenie_MouseDoubleClick);
             // 
-            // txt_Nazwisko
+            // label8
             // 
-            this.txt_Nazwisko.Location = new System.Drawing.Point(85, 57);
-            this.txt_Nazwisko.Name = "txt_Nazwisko";
-            this.txt_Nazwisko.Size = new System.Drawing.Size(230, 26);
-            this.txt_Nazwisko.TabIndex = 3;
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 30);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(151, 20);
+            this.label8.TabIndex = 4;
+            this.label8.Text = "Identyfikator klienta:";
             // 
-            // txt_Grupa
+            // lbl_ID
             // 
-            this.txt_Grupa.Location = new System.Drawing.Point(69, 87);
-            this.txt_Grupa.Name = "txt_Grupa";
-            this.txt_Grupa.Size = new System.Drawing.Size(100, 26);
-            this.txt_Grupa.TabIndex = 4;
+            this.lbl_ID.AutoSize = true;
+            this.lbl_ID.Location = new System.Drawing.Point(153, 30);
+            this.lbl_ID.Name = "lbl_ID";
+            this.lbl_ID.Size = new System.Drawing.Size(9, 20);
+            this.lbl_ID.TabIndex = 5;
+            this.lbl_ID.Text = "\r\n";
             // 
-            // txt_Sekcja
+            // gbx_Backup
             // 
-            this.txt_Sekcja.Location = new System.Drawing.Point(91, 117);
-            this.txt_Sekcja.Name = "txt_Sekcja";
-            this.txt_Sekcja.Size = new System.Drawing.Size(78, 26);
-            this.txt_Sekcja.TabIndex = 5;
-            // 
-            // txt_Wersja
-            // 
-            this.txt_Wersja.Location = new System.Drawing.Point(91, 147);
-            this.txt_Wersja.Name = "txt_Wersja";
-            this.txt_Wersja.Size = new System.Drawing.Size(78, 26);
-            this.txt_Wersja.TabIndex = 6;
-            // 
-            // btn_Potwierdz
-            // 
-            this.btn_Potwierdz.Location = new System.Drawing.Point(833, 351);
-            this.btn_Potwierdz.Name = "btn_Potwierdz";
-            this.btn_Potwierdz.Size = new System.Drawing.Size(105, 29);
-            this.btn_Potwierdz.TabIndex = 2;
-            this.btn_Potwierdz.Text = "Zapisz";
-            this.btn_Potwierdz.UseVisualStyleBackColor = true;
-            this.btn_Potwierdz.Click += new System.EventHandler(this.btn_Potwierdz_Click);
-            // 
-            // cbx_czy_sekcja
-            // 
-            this.cbx_czy_sekcja.AutoSize = true;
-            this.cbx_czy_sekcja.Location = new System.Drawing.Point(12, 124);
-            this.cbx_czy_sekcja.Name = "cbx_czy_sekcja";
-            this.cbx_czy_sekcja.Size = new System.Drawing.Size(15, 14);
-            this.cbx_czy_sekcja.TabIndex = 3;
-            this.cbx_czy_sekcja.UseVisualStyleBackColor = true;
-            this.cbx_czy_sekcja.Click += new System.EventHandler(this.cbx_czy_sekcja_Click);
-            // 
-            // cbx_czy_wersja
-            // 
-            this.cbx_czy_wersja.AutoSize = true;
-            this.cbx_czy_wersja.Location = new System.Drawing.Point(12, 154);
-            this.cbx_czy_wersja.Name = "cbx_czy_wersja";
-            this.cbx_czy_wersja.Size = new System.Drawing.Size(15, 14);
-            this.cbx_czy_wersja.TabIndex = 7;
-            this.cbx_czy_wersja.UseVisualStyleBackColor = true;
-            this.cbx_czy_wersja.CheckedChanged += new System.EventHandler(this.cbx_czy_wersja_CheckedChanged);
+            this.gbx_Backup.Location = new System.Drawing.Point(430, 30);
+            this.gbx_Backup.Name = "gbx_Backup";
+            this.gbx_Backup.Size = new System.Drawing.Size(420, 180);
+            this.gbx_Backup.TabIndex = 4;
+            this.gbx_Backup.TabStop = false;
+            this.gbx_Backup.Text = "Backup";
             // 
             // MainWindow
             // 
@@ -386,6 +506,9 @@
             this.mstr_Menu.PerformLayout();
             this.gbx_Polaczenie.ResumeLayout(false);
             this.gbx_Polaczenie.PerformLayout();
+            this.gbx_Ustawienia_polaczenia.ResumeLayout(false);
+            this.gbx_Ustawienia_polaczenia.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nup_bufor)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -423,5 +546,13 @@
         private System.Windows.Forms.Button btn_Potwierdz;
         private System.Windows.Forms.CheckBox cbx_czy_sekcja;
         private System.Windows.Forms.CheckBox cbx_czy_wersja;
+        private System.Windows.Forms.GroupBox gbx_Ustawienia_polaczenia;
+        private System.Windows.Forms.NumericUpDown nup_bufor;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label lbl_path_polaczenie;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label lbl_ID;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.GroupBox gbx_Backup;
     }
 }

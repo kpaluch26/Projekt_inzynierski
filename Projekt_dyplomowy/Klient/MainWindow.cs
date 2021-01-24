@@ -124,6 +124,8 @@ namespace Klient
                     //przycisk belka
                     tssb_Rozlacz.Visible = true;
                     tssb_Rozlacz.Enabled = true;
+                    //Dane Uzytkownika
+                    gbx_DaneUzytkownika.Enabled = false;
 
                     if (null == m_oBackgroundWorker) //sprawdzanie czy obiekt istnieje
                     {
@@ -210,6 +212,7 @@ namespace Klient
             tssb_Rozlacz.Text = "Połączenie aktywne";
             tssb_Rozlacz.Image = Klient.Properties.Resources.Status_OK;
             //Dane Użytkownika
+            gbx_DaneUzytkownika.Enabled = true;
             cbx_czy_sekcja.Checked = true;
             txt_Sekcja.Enabled = true;        
             cbx_czy_wersja.Checked = true;
@@ -274,6 +277,10 @@ namespace Klient
                     MessageBox.Show("Nie wprowadzono sekcji użytkownika.", "Ustawienia");
                 }
             }
+            else
+            {
+                user.section = "";
+            }
             if (cbx_czy_wersja.Checked == true)
             {
                 version = txt_Wersja.Text.Trim();
@@ -286,6 +293,12 @@ namespace Klient
                     MessageBox.Show("Nie wprowadzono wersji.", "Ustawienia");
                 }
             }
+            else 
+            {
+                user.version = "";            
+            }
+
+            lbl_ID.Text = user.ToString();
         }
 
         private void cbx_czy_sekcja_Click(object sender, EventArgs e)
@@ -310,6 +323,18 @@ namespace Klient
             {
                 txt_Wersja.Enabled = false;
             }
+        }
+
+        private void lbl_path_polaczenie_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog(); //utworzenie okna dialogowego do wybrania nowej ścieżki dostępu
+            fbd.Description = "Wybierz nową ścieżkę dostępu."; //tytuł utworzonego okna
+            fbd.ShowNewFolderButton = true; //włączenie mozliwości tworzenia nowych folderów
+
+            if (fbd.ShowDialog() == DialogResult.OK) //jeśli wybrano ścieżkę 
+            {
+                lbl_path_polaczenie.Text = fbd.SelectedPath;//przypisanie nowej ścieżki do labela             
+            }            
         }
     }
 }
