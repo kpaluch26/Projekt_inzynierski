@@ -20,6 +20,7 @@ namespace Klient
         private NetworkStream ns = null;
         private static BackgroundWorker m_oBackgroundWorker = null; //wątek roboczy pracujacy w tle -> domyślnie niezainicjowany
         private User user = null;
+        private bool encrypetd = false;
 
         //private TcpClient SetClient //właściwość do odbioru klienta tcp
         //{
@@ -217,6 +218,12 @@ namespace Klient
             txt_Sekcja.Enabled = true;        
             cbx_czy_wersja.Checked = true;
             txt_Wersja.Enabled = true;
+            //Backup
+            rbtn_backup_off.Checked = true;
+            lbl_backup_workspace.Enabled = false;
+            lbl_backup_zapis.Enabled = false;
+            cbx_interwal_zapisu.Enabled = false;
+            cbx_szyfrowanie.Enabled = false;
         }
 
         private void ServerConnectionError()
@@ -299,17 +306,10 @@ namespace Klient
             }
 
             lbl_ID.Text = user.ToString();
-        }
 
-        private void cbx_czy_sekcja_Click(object sender, EventArgs e)
-        {
-            if (txt_Sekcja.Enabled == false)
+            if (rbtn_backup_on.Checked == true)
             {
-                txt_Sekcja.Enabled = true;
-            }
-            else
-            {
-                txt_Sekcja.Enabled = false;
+                
             }
         }
 
@@ -335,6 +335,65 @@ namespace Klient
             {
                 lbl_path_polaczenie.Text = fbd.SelectedPath;//przypisanie nowej ścieżki do labela             
             }            
+        }
+
+        private void lbl_backup_workspace_DoubleClick(object sender, EventArgs e)
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog(); //utworzenie okna dialogowego do wybrania nowej ścieżki dostępu
+            fbd.Description = "Wybierz nową ścieżkę dostępu."; //tytuł utworzonego okna
+            fbd.ShowNewFolderButton = true; //włączenie mozliwości tworzenia nowych folderów
+
+            if (fbd.ShowDialog() == DialogResult.OK) //jeśli wybrano ścieżkę 
+            {
+                lbl_backup_workspace.Text = fbd.SelectedPath;//przypisanie nowej ścieżki do labela             
+            }
+        }
+        private void lbl_backup_zapis_DoubleClick(object sender, EventArgs e)
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog(); //utworzenie okna dialogowego do wybrania nowej ścieżki dostępu
+            fbd.Description = "Wybierz nową ścieżkę dostępu."; //tytuł utworzonego okna
+            fbd.ShowNewFolderButton = true; //włączenie mozliwości tworzenia nowych folderów
+
+            if (fbd.ShowDialog() == DialogResult.OK) //jeśli wybrano ścieżkę 
+            {
+                lbl_backup_zapis.Text = fbd.SelectedPath;//przypisanie nowej ścieżki do labela             
+            }
+        }
+
+        private void rbtn_backup_on_Click(object sender, EventArgs e)
+        {
+            lbl_backup_workspace.Enabled = true;
+            lbl_backup_zapis.Enabled = true;
+            cbx_interwal_zapisu.Enabled = true;
+            cbx_szyfrowanie.Enabled = true;
+        }
+
+        private void rbtn_backup_off_Click(object sender, EventArgs e)
+        {
+            lbl_backup_workspace.Enabled = false;
+            lbl_backup_zapis.Enabled = false;
+            cbx_interwal_zapisu.Enabled = false;
+            cbx_szyfrowanie.Enabled = false;
+        }
+
+        private void cbx_szyfrowanie_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbx_szyfrowanie.Checked == true)
+            {
+                encrypetd = true;
+            }
+        }
+
+        private void cbx_czy_sekcja_CheckedChanged(object sender, EventArgs e)
+        {
+            if (txt_Sekcja.Enabled == false)
+            {
+                txt_Sekcja.Enabled = true;
+            }
+            else
+            {
+                txt_Sekcja.Enabled = false;
+            }
         }
     }
 }
