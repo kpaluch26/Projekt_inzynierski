@@ -534,7 +534,7 @@ namespace Serwer
                         Console.Write("Proszę podać hasło: ");
                         while (true)
                         {
-                            var key = System.Console.ReadKey(true);
+                            var key = System.Console.ReadKey(true); //czytanie hasła bez pokazywania znakow
                             if (key.Key == ConsoleKey.Enter)
                             {
                                 Console.WriteLine();
