@@ -5,3 +5,7 @@ D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Serwer\obj\Debug\Serwer.cspro
 D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Serwer\obj\Debug\Serwer.csproj.CoreCompileInputs.cache
 D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Serwer\obj\Debug\Serwer.exe
 D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Serwer\obj\Debug\Serwer.pdb
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Serwer\bin\Debug\DotNetZip.dll
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Serwer\bin\Debug\DotNetZip.pdb
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Serwer\bin\Debug\DotNetZip.xml
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Serwer\obj\Debug\Serwer.csproj.CopyComplete

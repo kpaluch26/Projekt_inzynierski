@@ -13,6 +13,7 @@ using System.Windows.Forms.VisualStyles;
 using System.Threading;
 using System.Runtime.CompilerServices;
 using System.Security;
+//using Ionic.Zip;
 
 namespace Serwer
 {
@@ -87,9 +88,26 @@ namespace Serwer
                             Console.Clear(); //czyszczenie konsoi
                             break;
                         case "D2": //2
-                            CreateZIP(); //tworzenie archiwum ZIP
-                            Console.Clear(); //czyszczenie konsoli
-                            break;
+                            Console.WriteLine("Czy chcesz dodać hasło do archiwum? (T/N)");
+                            cki = Console.ReadKey(true); //odczyt opcji użytkownika
+                            string help = (cki.Key.ToString()); //konwertowanie opcji na konkretny klawisz
+                            if (help == "T")
+                            {
+                                CreateZIP(true); //tworzenie archiwum ZIP
+                                Console.Clear(); //czyszczenie konsoli
+                            }
+                            else if(help == "N")
+                            {
+                                CreateZIP(false); //tworzenie archiwum ZIP
+                                Console.Clear(); //czyszczenie konsoli
+                            }
+                            else 
+                            {
+                                Console.WriteLine("Nie wybrano prawidłowej opcji. Powrót do menu głównego.");
+                                Console.ReadKey(true);
+                                Console.Clear(); //czyszczenie konsoli
+                            }
+                                break;
                         case "D3": //3
                             SetSendingFile(); //wybranie pliku do udostępnienia
                             Console.Clear(); //czyszczenie konsoli
@@ -486,7 +504,7 @@ namespace Serwer
             }
         }
 
-        private static void CreateZIP() //funkcja do tworzenia archiwum zip
+        private static void CreateZIP( bool _password) //funkcja do tworzenia archiwum zip
         {
             OpenFileDialog ofd = new OpenFileDialog(); //utworzenie okna do przeglądania plików
             ofd.Filter = "all files (*.*)|*.*"; //ustawienie filtrów okna na dowolne pliki
@@ -504,19 +522,48 @@ namespace Serwer
                 if (ofd.ShowDialog() == DialogResult.OK && sfg.ShowDialog() == DialogResult.OK)//sprawdzenie czy otworzone okna zwracają prawidłowe dane
                 {
                     int counter = 0; //licznik do odczytywania odpowiednich nazw plików
+                    string password = null;
 
                     if (File.Exists(sfg.FileName)) //sprawdzanie czy archiwum o takiej nazwie istnieje
                     {
                         File.Delete(sfg.FileName); //usuwanie istniejącego archiwum
                     }
 
-                    var zip = ZipFile.Open(sfg.FileName, ZipArchiveMode.Create); //utworzenie archiwum
-                    foreach (string file in ofd.FileNames)
+                    if (_password == true)
                     {
-                        zip.CreateEntryFromFile(file, ofd.SafeFileNames[counter], CompressionLevel.Optimal); //zapis do utworzonego archiwum plików wybranych przez użytkownika
-                        counter++;
+                        Console.Write("Proszę podać hasło: ");
+                        while (true)
+                        {
+                            var key = System.Console.ReadKey(true);
+                            if (key.Key == ConsoleKey.Enter)
+                            {
+                                Console.WriteLine();
+                                break;
+                            }
+                            password += key.KeyChar;
+                        }
+                        using (Ionic.Zip.ZipFile _zip = new Ionic.Zip.ZipFile()) //utworzenie archiwum
+                        {
+                            foreach (string file in ofd.FileNames)
+                            {
+                                _zip.Password = password; //dodanie hasła
+                                _zip.AddFile(file, ""); //dodanie pliku do archiwum
+                            }
+                            _zip.Save(sfg.FileName); //zapis archiwum
+                        }
                     }
-                    zip.Dispose(); //zwolnienie zasobu
+                    else
+                    {
+                        var zip = ZipFile.Open(sfg.FileName, ZipArchiveMode.Create); //utworzenie archiwum        
+                        foreach (string file in ofd.FileNames)
+                        {
+
+                            zip.CreateEntryFromFile(file, ofd.SafeFileNames[counter], CompressionLevel.Optimal); //zapis do utworzonego archiwum plików wybranych przez użytkownika                     
+                            counter++;
+                        }
+                        zip.Dispose(); //zwolnienie zasobu
+                    }
+                    
                     Console.WriteLine("Zarchiwizowano pliki.");
                     Console.ReadKey(true);
                 }
