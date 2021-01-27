@@ -127,6 +127,8 @@ namespace Klient
                     tssb_Rozlacz.Enabled = true;
                     //Dane Uzytkownika
                     gbx_DaneUzytkownika.Enabled = false;
+                    //Ustawienia połączenia
+                    gbx_Ustawienia_polaczenia.Enabled = false;
 
                     if (null == m_oBackgroundWorker) //sprawdzanie czy obiekt istnieje
                     {
@@ -137,12 +139,18 @@ namespace Klient
                     m_oBackgroundWorker.RunWorkerAsync(PORT_number); //start wątka roboczego w tle
                 }
             }
+            else
+            {
+                MessageBox.Show("Nie wprowadzono wszystkich danych w zakładce ustawienia.", "Błąd dane użytkownika.");
+            }
         }
 
         private void mtstr_Polaczenie_Click(object sender, EventArgs e)
         {
             gbx_Ustawienia.Visible = false;
             gbx_Ustawienia.Enabled = false;
+            gbx_Plik.Enabled = false;
+            gbx_Plik.Visible = false;
             gbx_Polaczenie.Visible = true;
             gbx_Polaczenie.Enabled = true;
         }
@@ -151,8 +159,10 @@ namespace Klient
         {
             gbx_Polaczenie.Visible = false;
             gbx_Polaczenie.Enabled = false;
+            gbx_Plik.Enabled = false;
+            gbx_Plik.Visible = false;
             gbx_Ustawienia.Visible = true;
-            gbx_Ustawienia.Enabled = true;
+            gbx_Ustawienia.Enabled = true;          
         }
 
         private void rozłączToolStripMenuItem_Click(object sender, EventArgs e)
@@ -224,6 +234,9 @@ namespace Klient
             lbl_backup_zapis.Enabled = false;
             cbx_interwal_zapisu.Enabled = false;
             cbx_szyfrowanie.Enabled = false;
+            //Plik
+            gbx_Plik.Enabled = false;
+            gbx_Plik.Visible = false;
         }
 
         private void ServerConnectionError()
@@ -307,6 +320,12 @@ namespace Klient
 
             lbl_ID.Text = user.ToString();
 
+            //Ustawienia połączenia
+            if(lbl_path_polaczenie.Text == "Wybierz...")
+            {
+                MessageBox.Show("Nie podano miejsca zapisu przychodzących plików.", "Ustawienia");
+            }
+
             if (rbtn_backup_on.Checked == true)
             {
                 
@@ -348,6 +367,7 @@ namespace Klient
                 lbl_backup_workspace.Text = fbd.SelectedPath;//przypisanie nowej ścieżki do labela             
             }
         }
+
         private void lbl_backup_zapis_DoubleClick(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog(); //utworzenie okna dialogowego do wybrania nowej ścieżki dostępu
@@ -393,6 +413,104 @@ namespace Klient
             else
             {
                 txt_Sekcja.Enabled = false;
+            }
+        }
+
+        private void mtstr_Plik_Click(object sender, EventArgs e)
+        {         
+            //Ustawienia
+            gbx_Ustawienia.Enabled = false;
+            gbx_Ustawienia.Visible = false;
+            //Połączenie
+            gbx_Polaczenie.Enabled = false;
+            gbx_Polaczenie.Visible = false;
+            //Plik
+            gbx_Plik.Enabled = true;
+            gbx_Plik.Visible = true;
+        }
+
+        private void cbx_zaznacz_pliki_CheckedChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void cbx_zaznacz_pliki_Click(object sender, EventArgs e)
+        {
+            clbx_lista_plikow.SelectedIndex = -1;
+
+            if (cbx_zaznacz_pliki.Checked == true)
+            {
+                for (int i = 0; i < clbx_lista_plikow.Items.Count; i++)
+                {
+                    clbx_lista_plikow.SetItemChecked(i, true);
+                }               
+            }
+            else
+            {
+                for (int i = 0; i < clbx_lista_plikow.Items.Count; i++)
+                {
+                    clbx_lista_plikow.SetItemChecked(i, false);
+                }               
+            }
+        }
+
+        private void clbx_lista_plikow_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            int counter = 0;
+
+            if(clbx_lista_plikow.SelectedIndex > -1)
+            {
+                if(clbx_lista_plikow.GetItemChecked(clbx_lista_plikow.SelectedIndex) == false && cbx_zaznacz_pliki.Checked == false)
+                {
+                    counter++;
+                }
+                if(clbx_lista_plikow.GetItemChecked(clbx_lista_plikow.SelectedIndex) == true && cbx_zaznacz_pliki.Checked == true)
+                {
+                    counter--;
+                }
+                for (int i = 0; i < clbx_lista_plikow.Items.Count; i++)
+                {
+                    if (clbx_lista_plikow.GetItemChecked(i))
+                    {
+                        counter++;
+                    }
+                }
+                if (counter != 0 && counter == clbx_lista_plikow.Items.Count )
+                {
+                    cbx_zaznacz_pliki.Checked = true;
+                }
+                else
+                {
+                    cbx_zaznacz_pliki.Checked = false;
+                }
+            }
+        }
+
+        private void cbx_czy_haslo_Click(object sender, EventArgs e)
+        {
+            if(cbx_czy_haslo.Checked == true)
+            {
+                txt_haslo.Enabled = true;
+                txt_haslo.Visible = true;
+                txt_haslo.PasswordChar = '*';                
+            }
+            else
+            {
+                txt_haslo.Enabled = false;
+                txt_haslo.Visible = false;
+                txt_haslo.Text = "";
+            }
+        }
+
+        private void lbl_zip_path_DoubleClick(object sender, EventArgs e)
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog(); //utworzenie okna dialogowego do wybrania nowej ścieżki dostępu
+            fbd.Description = "Wybierz nową ścieżkę dostępu."; //tytuł utworzonego okna
+            fbd.ShowNewFolderButton = true; //włączenie mozliwości tworzenia nowych folderów
+
+            if (fbd.ShowDialog() == DialogResult.OK) //jeśli wybrano ścieżkę 
+            {
+                lbl_zip_path.Text = fbd.SelectedPath;//przypisanie nowej ścieżki do labela             
             }
         }
     }

@@ -35,6 +35,17 @@
             this.rozłączToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gbx_Ustawienia = new System.Windows.Forms.GroupBox();
             this.gbx_Backup = new System.Windows.Forms.GroupBox();
+            this.cbx_szyfrowanie = new System.Windows.Forms.CheckBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.cbx_interwal_zapisu = new System.Windows.Forms.ComboBox();
+            this.lbl_backup_workspace = new System.Windows.Forms.Label();
+            this.lbl_backup_zapis = new System.Windows.Forms.Label();
+            this.rbtn_backup_off = new System.Windows.Forms.RadioButton();
+            this.label12 = new System.Windows.Forms.Label();
+            this.rbtn_backup_on = new System.Windows.Forms.RadioButton();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.gbx_Ustawienia_polaczenia = new System.Windows.Forms.GroupBox();
             this.lbl_ID = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -57,7 +68,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.mstr_Menu = new System.Windows.Forms.MenuStrip();
-            this.plikToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mtstr_Plik = new System.Windows.Forms.ToolStripMenuItem();
             this.panelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mtstr_Polaczenie = new System.Windows.Forms.ToolStripMenuItem();
             this.mtstr_Ustawienia = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,17 +78,19 @@
             this.txt_IP = new System.Windows.Forms.TextBox();
             this.lbl_PORT = new System.Windows.Forms.Label();
             this.lbl_IP = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.rbtn_backup_on = new System.Windows.Forms.RadioButton();
-            this.label12 = new System.Windows.Forms.Label();
-            this.rbtn_backup_off = new System.Windows.Forms.RadioButton();
-            this.lbl_backup_zapis = new System.Windows.Forms.Label();
-            this.lbl_backup_workspace = new System.Windows.Forms.Label();
-            this.cbx_interwal_zapisu = new System.Windows.Forms.ComboBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.cbx_szyfrowanie = new System.Windows.Forms.CheckBox();
+            this.gbx_Plik = new System.Windows.Forms.GroupBox();
+            this.txt_haslo = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.lbl_zip_path = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.cbx_czy_haslo = new System.Windows.Forms.CheckBox();
+            this.cbx_zaznacz_pliki = new System.Windows.Forms.CheckBox();
+            this.btn_wybierz_pliki = new System.Windows.Forms.Button();
+            this.btn_utworz = new System.Windows.Forms.Button();
+            this.clbx_lista_plikow = new System.Windows.Forms.CheckedListBox();
             this.sstr_belka.SuspendLayout();
             this.gbx_Ustawienia.SuspendLayout();
             this.gbx_Backup.SuspendLayout();
@@ -86,6 +99,7 @@
             this.gbx_DaneUzytkownika.SuspendLayout();
             this.mstr_Menu.SuspendLayout();
             this.gbx_Polaczenie.SuspendLayout();
+            this.gbx_Plik.SuspendLayout();
             this.SuspendLayout();
             // 
             // sstr_belka
@@ -159,9 +173,127 @@
             this.gbx_Backup.Location = new System.Drawing.Point(430, 30);
             this.gbx_Backup.Name = "gbx_Backup";
             this.gbx_Backup.Size = new System.Drawing.Size(420, 180);
-            this.gbx_Backup.TabIndex = 4;
+            this.gbx_Backup.TabIndex = 3;
             this.gbx_Backup.TabStop = false;
             this.gbx_Backup.Text = "Backup";
+            // 
+            // cbx_szyfrowanie
+            // 
+            this.cbx_szyfrowanie.AutoSize = true;
+            this.cbx_szyfrowanie.Location = new System.Drawing.Point(10, 154);
+            this.cbx_szyfrowanie.Name = "cbx_szyfrowanie";
+            this.cbx_szyfrowanie.Size = new System.Drawing.Size(15, 14);
+            this.cbx_szyfrowanie.TabIndex = 11;
+            this.cbx_szyfrowanie.TabStop = false;
+            this.cbx_szyfrowanie.UseVisualStyleBackColor = true;
+            this.cbx_szyfrowanie.CheckedChanged += new System.EventHandler(this.cbx_szyfrowanie_CheckedChanged);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 30);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(169, 20);
+            this.label13.TabIndex = 10;
+            this.label13.Text = "Opcja kopii zapasowej:";
+            // 
+            // cbx_interwal_zapisu
+            // 
+            this.cbx_interwal_zapisu.Cursor = System.Windows.Forms.Cursors.Default;
+            this.cbx_interwal_zapisu.FormattingEnabled = true;
+            this.cbx_interwal_zapisu.Items.AddRange(new object[] {
+            "5 min",
+            "10 min",
+            "15 min",
+            "20 min",
+            "30 min",
+            "45 min",
+            "60 min"});
+            this.cbx_interwal_zapisu.Location = new System.Drawing.Point(132, 57);
+            this.cbx_interwal_zapisu.Name = "cbx_interwal_zapisu";
+            this.cbx_interwal_zapisu.Size = new System.Drawing.Size(121, 28);
+            this.cbx_interwal_zapisu.TabIndex = 9;
+            this.cbx_interwal_zapisu.Text = "5 min";
+            // 
+            // lbl_backup_workspace
+            // 
+            this.lbl_backup_workspace.AutoSize = true;
+            this.lbl_backup_workspace.Location = new System.Drawing.Point(120, 90);
+            this.lbl_backup_workspace.Name = "lbl_backup_workspace";
+            this.lbl_backup_workspace.Size = new System.Drawing.Size(77, 20);
+            this.lbl_backup_workspace.TabIndex = 8;
+            this.lbl_backup_workspace.Text = "Wybierz...";
+            this.lbl_backup_workspace.DoubleClick += new System.EventHandler(this.lbl_backup_workspace_DoubleClick);
+            // 
+            // lbl_backup_zapis
+            // 
+            this.lbl_backup_zapis.AutoSize = true;
+            this.lbl_backup_zapis.Location = new System.Drawing.Point(128, 120);
+            this.lbl_backup_zapis.Name = "lbl_backup_zapis";
+            this.lbl_backup_zapis.Size = new System.Drawing.Size(77, 20);
+            this.lbl_backup_zapis.TabIndex = 7;
+            this.lbl_backup_zapis.Text = "Wybierz...";
+            this.lbl_backup_zapis.DoubleClick += new System.EventHandler(this.lbl_backup_zapis_DoubleClick);
+            // 
+            // rbtn_backup_off
+            // 
+            this.rbtn_backup_off.AutoSize = true;
+            this.rbtn_backup_off.Location = new System.Drawing.Point(255, 30);
+            this.rbtn_backup_off.Name = "rbtn_backup_off";
+            this.rbtn_backup_off.Size = new System.Drawing.Size(78, 24);
+            this.rbtn_backup_off.TabIndex = 6;
+            this.rbtn_backup_off.TabStop = true;
+            this.rbtn_backup_off.Text = "Wyłącz";
+            this.rbtn_backup_off.UseVisualStyleBackColor = true;
+            this.rbtn_backup_off.Click += new System.EventHandler(this.rbtn_backup_off_Click);
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(31, 150);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(95, 20);
+            this.label12.TabIndex = 4;
+            this.label12.Text = "Szyfrowanie";
+            // 
+            // rbtn_backup_on
+            // 
+            this.rbtn_backup_on.AutoSize = true;
+            this.rbtn_backup_on.Location = new System.Drawing.Point(178, 30);
+            this.rbtn_backup_on.Name = "rbtn_backup_on";
+            this.rbtn_backup_on.Size = new System.Drawing.Size(71, 24);
+            this.rbtn_backup_on.TabIndex = 3;
+            this.rbtn_backup_on.TabStop = true;
+            this.rbtn_backup_on.Text = "Włącz";
+            this.rbtn_backup_on.UseVisualStyleBackColor = true;
+            this.rbtn_backup_on.Click += new System.EventHandler(this.rbtn_backup_on_Click);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 120);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(116, 20);
+            this.label11.TabIndex = 2;
+            this.label11.Text = "Miejsce zapisu:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 90);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(108, 20);
+            this.label10.TabIndex = 1;
+            this.label10.Text = "Miejsce pracy:";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 60);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(120, 20);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "Interwał zapisu:";
             // 
             // gbx_Ustawienia_polaczenia
             // 
@@ -174,7 +306,7 @@
             this.gbx_Ustawienia_polaczenia.Location = new System.Drawing.Point(30, 240);
             this.gbx_Ustawienia_polaczenia.Name = "gbx_Ustawienia_polaczenia";
             this.gbx_Ustawienia_polaczenia.Size = new System.Drawing.Size(574, 120);
-            this.gbx_Ustawienia_polaczenia.TabIndex = 3;
+            this.gbx_Ustawienia_polaczenia.TabIndex = 2;
             this.gbx_Ustawienia_polaczenia.TabStop = false;
             this.gbx_Ustawienia_polaczenia.Text = "Połączenie";
             // 
@@ -257,7 +389,7 @@
             this.btn_Potwierdz.Location = new System.Drawing.Point(745, 331);
             this.btn_Potwierdz.Name = "btn_Potwierdz";
             this.btn_Potwierdz.Size = new System.Drawing.Size(105, 29);
-            this.btn_Potwierdz.TabIndex = 2;
+            this.btn_Potwierdz.TabIndex = 4;
             this.btn_Potwierdz.Text = "Zapisz";
             this.btn_Potwierdz.UseVisualStyleBackColor = true;
             this.btn_Potwierdz.Click += new System.EventHandler(this.btn_Potwierdz_Click);
@@ -366,7 +498,7 @@
             this.txt_Imie.Location = new System.Drawing.Point(49, 27);
             this.txt_Imie.Name = "txt_Imie";
             this.txt_Imie.Size = new System.Drawing.Size(120, 26);
-            this.txt_Imie.TabIndex = 2;
+            this.txt_Imie.TabIndex = 1;
             // 
             // label2
             // 
@@ -396,7 +528,7 @@
             this.mstr_Menu.Dock = System.Windows.Forms.DockStyle.None;
             this.mstr_Menu.GripMargin = new System.Windows.Forms.Padding(0);
             this.mstr_Menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.plikToolStripMenuItem,
+            this.mtstr_Plik,
             this.panelToolStripMenuItem,
             this.mtstr_Polaczenie,
             this.mtstr_Ustawienia});
@@ -409,11 +541,12 @@
             this.mstr_Menu.TabIndex = 2;
             this.mstr_Menu.Text = "menuStrip1";
             // 
-            // plikToolStripMenuItem
+            // mtstr_Plik
             // 
-            this.plikToolStripMenuItem.Name = "plikToolStripMenuItem";
-            this.plikToolStripMenuItem.Size = new System.Drawing.Size(38, 24);
-            this.plikToolStripMenuItem.Text = "Plik";
+            this.mtstr_Plik.Name = "mtstr_Plik";
+            this.mtstr_Plik.Size = new System.Drawing.Size(38, 24);
+            this.mtstr_Plik.Text = "Plik";
+            this.mtstr_Plik.Click += new System.EventHandler(this.mtstr_Plik_Click);
             // 
             // panelToolStripMenuItem
             // 
@@ -506,122 +639,143 @@
             this.lbl_IP.Text = "Adres IP serwera:";
             this.lbl_IP.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label9
+            // gbx_Plik
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 60);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(120, 20);
-            this.label9.TabIndex = 0;
-            this.label9.Text = "Interwał zapisu:";
+            this.gbx_Plik.Controls.Add(this.txt_haslo);
+            this.gbx_Plik.Controls.Add(this.button1);
+            this.gbx_Plik.Controls.Add(this.checkBox2);
+            this.gbx_Plik.Controls.Add(this.label17);
+            this.gbx_Plik.Controls.Add(this.lbl_zip_path);
+            this.gbx_Plik.Controls.Add(this.label15);
+            this.gbx_Plik.Controls.Add(this.label14);
+            this.gbx_Plik.Controls.Add(this.cbx_czy_haslo);
+            this.gbx_Plik.Controls.Add(this.cbx_zaznacz_pliki);
+            this.gbx_Plik.Controls.Add(this.btn_wybierz_pliki);
+            this.gbx_Plik.Controls.Add(this.btn_utworz);
+            this.gbx_Plik.Controls.Add(this.clbx_lista_plikow);
+            this.gbx_Plik.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.gbx_Plik.Location = new System.Drawing.Point(30, 24);
+            this.gbx_Plik.Name = "gbx_Plik";
+            this.gbx_Plik.Size = new System.Drawing.Size(880, 389);
+            this.gbx_Plik.TabIndex = 4;
+            this.gbx_Plik.TabStop = false;
+            this.gbx_Plik.Text = "Plik";
             // 
-            // label10
+            // txt_haslo
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 90);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(108, 20);
-            this.label10.TabIndex = 1;
-            this.label10.Text = "Miejsce pracy:";
+            this.txt_haslo.Location = new System.Drawing.Point(558, 269);
+            this.txt_haslo.Name = "txt_haslo";
+            this.txt_haslo.Size = new System.Drawing.Size(157, 26);
+            this.txt_haslo.TabIndex = 14;
             // 
-            // label11
+            // button1
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 120);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(116, 20);
-            this.label11.TabIndex = 2;
-            this.label11.Text = "Miejsce zapisu:";
+            this.button1.Location = new System.Drawing.Point(558, 300);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(105, 29);
+            this.button1.TabIndex = 13;
+            this.button1.Text = "Wyczyść";
+            this.button1.UseVisualStyleBackColor = true;
             // 
-            // rbtn_backup_on
+            // checkBox2
             // 
-            this.rbtn_backup_on.AutoSize = true;
-            this.rbtn_backup_on.Location = new System.Drawing.Point(178, 30);
-            this.rbtn_backup_on.Name = "rbtn_backup_on";
-            this.rbtn_backup_on.Size = new System.Drawing.Size(71, 24);
-            this.rbtn_backup_on.TabIndex = 3;
-            this.rbtn_backup_on.TabStop = true;
-            this.rbtn_backup_on.Text = "Włącz";
-            this.rbtn_backup_on.UseVisualStyleBackColor = true;
-            this.rbtn_backup_on.Click += new System.EventHandler(this.rbtn_backup_on_Click);
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(558, 199);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(159, 24);
+            this.checkBox2.TabIndex = 12;
+            this.checkBox2.Text = "Ustaw do wysłania";
+            this.checkBox2.UseVisualStyleBackColor = true;
             // 
-            // label12
+            // label17
             // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(31, 150);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(95, 20);
-            this.label12.TabIndex = 4;
-            this.label12.Text = "Szyfrowanie";
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(554, 57);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(77, 20);
+            this.label17.TabIndex = 11;
+            this.label17.Text = "Wybierz...";
             // 
-            // rbtn_backup_off
+            // lbl_zip_path
             // 
-            this.rbtn_backup_off.AutoSize = true;
-            this.rbtn_backup_off.Location = new System.Drawing.Point(255, 30);
-            this.rbtn_backup_off.Name = "rbtn_backup_off";
-            this.rbtn_backup_off.Size = new System.Drawing.Size(78, 24);
-            this.rbtn_backup_off.TabIndex = 6;
-            this.rbtn_backup_off.TabStop = true;
-            this.rbtn_backup_off.Text = "Wyłącz";
-            this.rbtn_backup_off.UseVisualStyleBackColor = true;
-            this.rbtn_backup_off.Click += new System.EventHandler(this.rbtn_backup_off_Click);
+            this.lbl_zip_path.AutoSize = true;
+            this.lbl_zip_path.Location = new System.Drawing.Point(554, 114);
+            this.lbl_zip_path.Name = "lbl_zip_path";
+            this.lbl_zip_path.Size = new System.Drawing.Size(77, 20);
+            this.lbl_zip_path.TabIndex = 10;
+            this.lbl_zip_path.Text = "Wybierz...";
+            this.lbl_zip_path.DoubleClick += new System.EventHandler(this.lbl_zip_path_DoubleClick);
             // 
-            // lbl_backup_zapis
+            // label15
             // 
-            this.lbl_backup_zapis.AutoSize = true;
-            this.lbl_backup_zapis.Location = new System.Drawing.Point(128, 120);
-            this.lbl_backup_zapis.Name = "lbl_backup_zapis";
-            this.lbl_backup_zapis.Size = new System.Drawing.Size(77, 20);
-            this.lbl_backup_zapis.TabIndex = 7;
-            this.lbl_backup_zapis.Text = "Wybierz...";
-            this.lbl_backup_zapis.DoubleClick += new System.EventHandler(this.lbl_backup_zapis_DoubleClick);
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(554, 87);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(116, 20);
+            this.label15.TabIndex = 9;
+            this.label15.Text = "Miejsce zapisu:";
             // 
-            // lbl_backup_workspace
+            // label14
             // 
-            this.lbl_backup_workspace.AutoSize = true;
-            this.lbl_backup_workspace.Location = new System.Drawing.Point(120, 90);
-            this.lbl_backup_workspace.Name = "lbl_backup_workspace";
-            this.lbl_backup_workspace.Size = new System.Drawing.Size(77, 20);
-            this.lbl_backup_workspace.TabIndex = 8;
-            this.lbl_backup_workspace.Text = "Wybierz...";
-            this.lbl_backup_workspace.DoubleClick += new System.EventHandler(this.lbl_backup_workspace_DoubleClick);
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(554, 30);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(132, 20);
+            this.label14.TabIndex = 8;
+            this.label14.Text = "Nazwa archiwum:";
             // 
-            // cbx_interwal_zapisu
+            // cbx_czy_haslo
             // 
-            this.cbx_interwal_zapisu.Cursor = System.Windows.Forms.Cursors.Default;
-            this.cbx_interwal_zapisu.FormattingEnabled = true;
-            this.cbx_interwal_zapisu.Items.AddRange(new object[] {
-            "5 min",
-            "10 min",
-            "15 min",
-            "20 min",
-            "30 min",
-            "45 min",
-            "60 min"});
-            this.cbx_interwal_zapisu.Location = new System.Drawing.Point(132, 57);
-            this.cbx_interwal_zapisu.Name = "cbx_interwal_zapisu";
-            this.cbx_interwal_zapisu.Size = new System.Drawing.Size(121, 28);
-            this.cbx_interwal_zapisu.TabIndex = 9;
-            this.cbx_interwal_zapisu.Text = "5 min";
+            this.cbx_czy_haslo.AutoSize = true;
+            this.cbx_czy_haslo.Location = new System.Drawing.Point(558, 234);
+            this.cbx_czy_haslo.Name = "cbx_czy_haslo";
+            this.cbx_czy_haslo.Size = new System.Drawing.Size(116, 24);
+            this.cbx_czy_haslo.TabIndex = 6;
+            this.cbx_czy_haslo.Text = "Ustaw hasło";
+            this.cbx_czy_haslo.UseVisualStyleBackColor = true;
+            this.cbx_czy_haslo.Click += new System.EventHandler(this.cbx_czy_haslo_Click);
             // 
-            // label13
+            // cbx_zaznacz_pliki
             // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 30);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(169, 20);
-            this.label13.TabIndex = 10;
-            this.label13.Text = "Opcja kopii zapasowej:";
+            this.cbx_zaznacz_pliki.AutoSize = true;
+            this.cbx_zaznacz_pliki.Location = new System.Drawing.Point(558, 164);
+            this.cbx_zaznacz_pliki.Name = "cbx_zaznacz_pliki";
+            this.cbx_zaznacz_pliki.Size = new System.Drawing.Size(157, 24);
+            this.cbx_zaznacz_pliki.TabIndex = 5;
+            this.cbx_zaznacz_pliki.Text = "Zaznacz wszystko";
+            this.cbx_zaznacz_pliki.UseVisualStyleBackColor = true;
+            this.cbx_zaznacz_pliki.Click += new System.EventHandler(this.cbx_zaznacz_pliki_Click);
             // 
-            // cbx_szyfrowanie
+            // btn_wybierz_pliki
             // 
-            this.cbx_szyfrowanie.AutoSize = true;
-            this.cbx_szyfrowanie.Location = new System.Drawing.Point(10, 154);
-            this.cbx_szyfrowanie.Name = "cbx_szyfrowanie";
-            this.cbx_szyfrowanie.Size = new System.Drawing.Size(15, 14);
-            this.cbx_szyfrowanie.TabIndex = 11;
-            this.cbx_szyfrowanie.UseVisualStyleBackColor = true;
-            this.cbx_szyfrowanie.CheckedChanged += new System.EventHandler(this.cbx_szyfrowanie_CheckedChanged);
+            this.btn_wybierz_pliki.Location = new System.Drawing.Point(30, 337);
+            this.btn_wybierz_pliki.Name = "btn_wybierz_pliki";
+            this.btn_wybierz_pliki.Size = new System.Drawing.Size(105, 29);
+            this.btn_wybierz_pliki.TabIndex = 4;
+            this.btn_wybierz_pliki.Text = "Wybierz...";
+            this.btn_wybierz_pliki.UseVisualStyleBackColor = true;
+            // 
+            // btn_utworz
+            // 
+            this.btn_utworz.Location = new System.Drawing.Point(745, 337);
+            this.btn_utworz.Name = "btn_utworz";
+            this.btn_utworz.Size = new System.Drawing.Size(105, 29);
+            this.btn_utworz.TabIndex = 3;
+            this.btn_utworz.Text = "Utwórz";
+            this.btn_utworz.UseVisualStyleBackColor = true;
+            // 
+            // clbx_lista_plikow
+            // 
+            this.clbx_lista_plikow.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.clbx_lista_plikow.FormattingEnabled = true;
+            this.clbx_lista_plikow.Items.AddRange(new object[] {
+            "Plik tekstowy ustawiony z kolekcji",
+            "kolejny do testowania zachowania checkboxa"});
+            this.clbx_lista_plikow.Location = new System.Drawing.Point(30, 30);
+            this.clbx_lista_plikow.Name = "clbx_lista_plikow";
+            this.clbx_lista_plikow.Size = new System.Drawing.Size(518, 296);
+            this.clbx_lista_plikow.TabIndex = 0;
+            this.clbx_lista_plikow.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.clbx_lista_plikow_ItemCheck);
             // 
             // MainWindow
             // 
@@ -631,6 +785,7 @@
             this.ClientSize = new System.Drawing.Size(944, 441);
             this.Controls.Add(this.sstr_belka);
             this.Controls.Add(this.mstr_Menu);
+            this.Controls.Add(this.gbx_Plik);
             this.Controls.Add(this.gbx_Ustawienia);
             this.Controls.Add(this.gbx_Polaczenie);
             this.ForeColor = System.Drawing.SystemColors.ControlText;
@@ -651,6 +806,8 @@
             this.mstr_Menu.PerformLayout();
             this.gbx_Polaczenie.ResumeLayout(false);
             this.gbx_Polaczenie.PerformLayout();
+            this.gbx_Plik.ResumeLayout(false);
+            this.gbx_Plik.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -663,7 +820,7 @@
         private System.Windows.Forms.GroupBox gbx_Ustawienia;
         private System.Windows.Forms.MenuStrip mstr_Menu;
         private System.Windows.Forms.ToolStripMenuItem mtstr_Ustawienia;
-        private System.Windows.Forms.ToolStripMenuItem plikToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mtstr_Plik;
         private System.Windows.Forms.ToolStripMenuItem panelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mtstr_Polaczenie;
         private System.Windows.Forms.GroupBox gbx_Polaczenie;
@@ -707,5 +864,18 @@
         private System.Windows.Forms.ComboBox cbx_interwal_zapisu;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.CheckBox cbx_szyfrowanie;
+        private System.Windows.Forms.GroupBox gbx_Plik;
+        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label lbl_zip_path;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.CheckBox cbx_czy_haslo;
+        private System.Windows.Forms.CheckBox cbx_zaznacz_pliki;
+        private System.Windows.Forms.Button btn_wybierz_pliki;
+        private System.Windows.Forms.Button btn_utworz;
+        private System.Windows.Forms.CheckedListBox clbx_lista_plikow;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox txt_haslo;
     }
 }
