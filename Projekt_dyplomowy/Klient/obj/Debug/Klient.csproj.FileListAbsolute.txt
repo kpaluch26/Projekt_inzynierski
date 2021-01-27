@@ -9,3 +9,4 @@ D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.cspro
 D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.exe
 D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.pdb
 D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.MainWindow.resources
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.WriteName.resources

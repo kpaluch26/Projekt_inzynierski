@@ -82,7 +82,7 @@
             this.txt_haslo = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.label17 = new System.Windows.Forms.Label();
+            this.lbl_wybierz_nazwe = new System.Windows.Forms.Label();
             this.lbl_zip_path = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
@@ -644,7 +644,7 @@
             this.gbx_Plik.Controls.Add(this.txt_haslo);
             this.gbx_Plik.Controls.Add(this.button1);
             this.gbx_Plik.Controls.Add(this.checkBox2);
-            this.gbx_Plik.Controls.Add(this.label17);
+            this.gbx_Plik.Controls.Add(this.lbl_wybierz_nazwe);
             this.gbx_Plik.Controls.Add(this.lbl_zip_path);
             this.gbx_Plik.Controls.Add(this.label15);
             this.gbx_Plik.Controls.Add(this.label14);
@@ -687,14 +687,15 @@
             this.checkBox2.Text = "Ustaw do wysłania";
             this.checkBox2.UseVisualStyleBackColor = true;
             // 
-            // label17
+            // lbl_wybierz_nazwe
             // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(554, 57);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(77, 20);
-            this.label17.TabIndex = 11;
-            this.label17.Text = "Wybierz...";
+            this.lbl_wybierz_nazwe.AutoSize = true;
+            this.lbl_wybierz_nazwe.Location = new System.Drawing.Point(554, 57);
+            this.lbl_wybierz_nazwe.Name = "lbl_wybierz_nazwe";
+            this.lbl_wybierz_nazwe.Size = new System.Drawing.Size(77, 20);
+            this.lbl_wybierz_nazwe.TabIndex = 11;
+            this.lbl_wybierz_nazwe.Text = "Wybierz...";
+            this.lbl_wybierz_nazwe.DoubleClick += new System.EventHandler(this.lbl_wybierz_nazwe_DoubleClick);
             // 
             // lbl_zip_path
             // 
@@ -866,7 +867,7 @@
         private System.Windows.Forms.CheckBox cbx_szyfrowanie;
         private System.Windows.Forms.GroupBox gbx_Plik;
         private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label lbl_wybierz_nazwe;
         private System.Windows.Forms.Label lbl_zip_path;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label14;

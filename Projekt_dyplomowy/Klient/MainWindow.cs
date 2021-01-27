@@ -237,6 +237,10 @@ namespace Klient
             //Plik
             gbx_Plik.Enabled = false;
             gbx_Plik.Visible = false;
+            cbx_czy_haslo.Checked = false;
+            txt_haslo.Enabled = false;
+            txt_haslo.Visible = false;
+            cbx_zaznacz_pliki.Checked = false;
         }
 
         private void ServerConnectionError()
@@ -429,11 +433,6 @@ namespace Klient
             gbx_Plik.Visible = true;
         }
 
-        private void cbx_zaznacz_pliki_CheckedChanged(object sender, EventArgs e)
-        {
-            
-        }
-
         private void cbx_zaznacz_pliki_Click(object sender, EventArgs e)
         {
             clbx_lista_plikow.SelectedIndex = -1;
@@ -511,6 +510,36 @@ namespace Klient
             if (fbd.ShowDialog() == DialogResult.OK) //jeśli wybrano ścieżkę 
             {
                 lbl_zip_path.Text = fbd.SelectedPath;//przypisanie nowej ścieżki do labela             
+            }
+        }
+
+        private void lbl_wybierz_nazwe_DoubleClick(object sender, EventArgs e)
+        {
+            if (lbl_wybierz_nazwe.Text != "Wybierz...")
+            {
+                WriteName wn = new WriteName(lbl_wybierz_nazwe.Text.Substring(0, lbl_wybierz_nazwe.Text.Length - 4));
+                wn.ShowDialog();
+                if (wn.zip_name == "")
+                {
+                    lbl_wybierz_nazwe.Text = "Wybierz...";
+                }
+                else
+                {
+                    lbl_wybierz_nazwe.Text = wn.zip_name + ".zip";
+                }
+            }
+            else
+            {
+                WriteName wn = new WriteName("");
+                wn.ShowDialog();
+                if (wn.zip_name == "")
+                {
+                    lbl_wybierz_nazwe.Text = "Wybierz...";
+                }
+                else
+                {
+                    lbl_wybierz_nazwe.Text = wn.zip_name + ".zip";
+                }
             }
         }
     }
