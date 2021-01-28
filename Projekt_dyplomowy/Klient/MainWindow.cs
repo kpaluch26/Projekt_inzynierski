@@ -10,6 +10,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
+using System.IO.Compression;
 
 namespace Klient
 {
@@ -53,7 +55,9 @@ namespace Klient
 
         private void MainWindow_Load(object sender, System.EventArgs e)
         {
-
+            //clbx_lista_plikow.AllowDrop = true;
+            //clbx_lista_plikow.DragDrop += clbx_lista_plikow_DragDrop;
+            //clbx_lista_plikow.DragEnter += clbx_lista_plikow_DragEnter;
         }
 
         private void btn_CONNECT_Click(object sender, EventArgs e)
@@ -162,7 +166,7 @@ namespace Klient
             gbx_Plik.Enabled = false;
             gbx_Plik.Visible = false;
             gbx_Ustawienia.Visible = true;
-            gbx_Ustawienia.Enabled = true;          
+            gbx_Ustawienia.Enabled = true;
         }
 
         private void rozłączToolStripMenuItem_Click(object sender, EventArgs e)
@@ -225,7 +229,7 @@ namespace Klient
             //Dane Użytkownika
             gbx_DaneUzytkownika.Enabled = true;
             cbx_czy_sekcja.Checked = true;
-            txt_Sekcja.Enabled = true;        
+            txt_Sekcja.Enabled = true;
             cbx_czy_wersja.Checked = true;
             txt_Wersja.Enabled = true;
             //Backup
@@ -241,6 +245,7 @@ namespace Klient
             txt_haslo.Enabled = false;
             txt_haslo.Visible = false;
             cbx_zaznacz_pliki.Checked = false;
+            btn_utworz.Enabled = false;
         }
 
         private void ServerConnectionError()
@@ -317,22 +322,22 @@ namespace Klient
                     MessageBox.Show("Nie wprowadzono wersji.", "Ustawienia");
                 }
             }
-            else 
+            else
             {
-                user.version = "";            
+                user.version = "";
             }
 
             lbl_ID.Text = user.ToString();
 
             //Ustawienia połączenia
-            if(lbl_path_polaczenie.Text == "Wybierz...")
+            if (lbl_path_polaczenie.Text == "Wybierz...")
             {
                 MessageBox.Show("Nie podano miejsca zapisu przychodzących plików.", "Ustawienia");
             }
 
             if (rbtn_backup_on.Checked == true)
             {
-                
+
             }
         }
 
@@ -357,7 +362,7 @@ namespace Klient
             if (fbd.ShowDialog() == DialogResult.OK) //jeśli wybrano ścieżkę 
             {
                 lbl_path_polaczenie.Text = fbd.SelectedPath;//przypisanie nowej ścieżki do labela             
-            }            
+            }
         }
 
         private void lbl_backup_workspace_DoubleClick(object sender, EventArgs e)
@@ -421,7 +426,7 @@ namespace Klient
         }
 
         private void mtstr_Plik_Click(object sender, EventArgs e)
-        {         
+        {
             //Ustawienia
             gbx_Ustawienia.Enabled = false;
             gbx_Ustawienia.Visible = false;
@@ -442,30 +447,34 @@ namespace Klient
                 for (int i = 0; i < clbx_lista_plikow.Items.Count; i++)
                 {
                     clbx_lista_plikow.SetItemChecked(i, true);
-                }               
+                }
             }
             else
             {
                 for (int i = 0; i < clbx_lista_plikow.Items.Count; i++)
                 {
                     clbx_lista_plikow.SetItemChecked(i, false);
-                }               
+                }
             }
+            CanCreateZip(0);
         }
 
         private void clbx_lista_plikow_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             int counter = 0;
+            int check = 0;
 
-            if(clbx_lista_plikow.SelectedIndex > -1)
+            if (clbx_lista_plikow.SelectedIndex > -1)
             {
-                if(clbx_lista_plikow.GetItemChecked(clbx_lista_plikow.SelectedIndex) == false && cbx_zaznacz_pliki.Checked == false)
+                if (clbx_lista_plikow.GetItemChecked(clbx_lista_plikow.SelectedIndex) == false) //&& cbx_zaznacz_pliki.Checked == false
                 {
                     counter++;
+                    check = 1;
                 }
-                if(clbx_lista_plikow.GetItemChecked(clbx_lista_plikow.SelectedIndex) == true && cbx_zaznacz_pliki.Checked == true)
+                if (clbx_lista_plikow.GetItemChecked(clbx_lista_plikow.SelectedIndex) == true) //&& cbx_zaznacz_pliki.Checked == true
                 {
                     counter--;
+                    check = -1;
                 }
                 for (int i = 0; i < clbx_lista_plikow.Items.Count; i++)
                 {
@@ -474,7 +483,7 @@ namespace Klient
                         counter++;
                     }
                 }
-                if (counter != 0 && counter == clbx_lista_plikow.Items.Count )
+                if (counter != 0 && counter == clbx_lista_plikow.Items.Count)
                 {
                     cbx_zaznacz_pliki.Checked = true;
                 }
@@ -483,15 +492,17 @@ namespace Klient
                     cbx_zaznacz_pliki.Checked = false;
                 }
             }
+            CanCreateZip(check);
+
         }
 
         private void cbx_czy_haslo_Click(object sender, EventArgs e)
         {
-            if(cbx_czy_haslo.Checked == true)
+            if (cbx_czy_haslo.Checked == true)
             {
                 txt_haslo.Enabled = true;
                 txt_haslo.Visible = true;
-                txt_haslo.PasswordChar = '*';                
+                txt_haslo.PasswordChar = '*';
             }
             else
             {
@@ -511,6 +522,7 @@ namespace Klient
             {
                 lbl_zip_path.Text = fbd.SelectedPath;//przypisanie nowej ścieżki do labela             
             }
+            CanCreateZip(0);
         }
 
         private void lbl_wybierz_nazwe_DoubleClick(object sender, EventArgs e)
@@ -541,6 +553,97 @@ namespace Klient
                     lbl_wybierz_nazwe.Text = wn.zip_name + ".zip";
                 }
             }
+            CanCreateZip(0);
+        }
+
+        private void btn_wybierz_pliki_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog(); //utworzenie okna do przeglądania plików
+            ofd.Filter = "all files (*.*)|*.*"; //ustawienie filtrów okna na dowolne pliki
+            ofd.FilterIndex = 1; //ustawienie domyślnego filtru
+            ofd.RestoreDirectory = true; //przywracanie wcześniej zamkniętego katalogu
+            ofd.Multiselect = true; //ustawienie możliwości wyboru wielu plików z poziomu okna
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                foreach (string file in ofd.FileNames)
+                {
+                    clbx_lista_plikow.Items.Add(file);
+                }
+                clbx_lista_plikow.HorizontalScrollbar = true;
+            }
+        }
+
+        private void btn_wyczysc_pliki_Click(object sender, EventArgs e)
+        {
+            clbx_lista_plikow.Items.Clear();
+            CanCreateZip(0);
+        }
+
+        private void clbx_lista_plikow_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyValue == 46 && clbx_lista_plikow.SelectedIndex > -1)
+            {
+                clbx_lista_plikow.Items.Remove(clbx_lista_plikow.SelectedItem);
+            }
+        }
+
+        private void clbx_lista_plikow_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
+        }
+
+        private void clbx_lista_plikow_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            foreach (string file in files)
+                clbx_lista_plikow.Items.Add(file);
+        }
+
+        private void btn_utworz_Click(object sender, EventArgs e)
+        {           
+            string password = null;
+            string filepath = lbl_zip_path.Text + "\\" + lbl_wybierz_nazwe.Text;
+
+            if (File.Exists(filepath)) //sprawdzanie czy archiwum o takiej nazwie istnieje
+            {
+                File.Delete(filepath); //usuwanie istniejącego archiwum
+            }
+
+            if (cbx_czy_haslo.Checked==true && txt_haslo.Text != "" && txt_haslo.Text != null)
+            {               
+               password = txt_haslo.Text;
+                
+                using (Ionic.Zip.ZipFile _zip = new Ionic.Zip.ZipFile()) //utworzenie archiwum
+                {
+                    foreach (string file in clbx_lista_plikow.CheckedItems)
+                    {                    
+                        _zip.Password = password; //dodanie hasła
+                        _zip.AddFile(file, ""); //dodanie pliku do archiwum
+                    }
+                    _zip.Save(filepath); //zapis archiwum
+                }
+            }
+            else
+            {
+                using (Ionic.Zip.ZipFile _zip = new Ionic.Zip.ZipFile()) //utworzenie archiwum
+                {
+                    foreach (string file in clbx_lista_plikow.CheckedItems)
+                    {
+                        _zip.AddFile(file, ""); //dodanie pliku do archiwum
+                    }
+                    _zip.Save(filepath); //zapis archiwum
+                }
+            }
+        }
+
+        private void CanCreateZip(int check)
+        {
+            if (clbx_lista_plikow.CheckedItems.Count + check > 0  && lbl_wybierz_nazwe.Text != "Wybierz..." && lbl_zip_path.Text != "Wybierz...")
+            {
+                btn_utworz.Enabled = true;
+            }
+            else btn_utworz.Enabled = false;
         }
     }
 }

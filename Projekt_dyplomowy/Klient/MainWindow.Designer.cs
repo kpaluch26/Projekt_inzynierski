@@ -80,7 +80,7 @@
             this.lbl_IP = new System.Windows.Forms.Label();
             this.gbx_Plik = new System.Windows.Forms.GroupBox();
             this.txt_haslo = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btn_wyczysc_pliki = new System.Windows.Forms.Button();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.lbl_wybierz_nazwe = new System.Windows.Forms.Label();
             this.lbl_zip_path = new System.Windows.Forms.Label();
@@ -642,7 +642,7 @@
             // gbx_Plik
             // 
             this.gbx_Plik.Controls.Add(this.txt_haslo);
-            this.gbx_Plik.Controls.Add(this.button1);
+            this.gbx_Plik.Controls.Add(this.btn_wyczysc_pliki);
             this.gbx_Plik.Controls.Add(this.checkBox2);
             this.gbx_Plik.Controls.Add(this.lbl_wybierz_nazwe);
             this.gbx_Plik.Controls.Add(this.lbl_zip_path);
@@ -668,14 +668,15 @@
             this.txt_haslo.Size = new System.Drawing.Size(157, 26);
             this.txt_haslo.TabIndex = 14;
             // 
-            // button1
+            // btn_wyczysc_pliki
             // 
-            this.button1.Location = new System.Drawing.Point(558, 300);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(105, 29);
-            this.button1.TabIndex = 13;
-            this.button1.Text = "Wyczyść";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btn_wyczysc_pliki.Location = new System.Drawing.Point(558, 300);
+            this.btn_wyczysc_pliki.Name = "btn_wyczysc_pliki";
+            this.btn_wyczysc_pliki.Size = new System.Drawing.Size(105, 29);
+            this.btn_wyczysc_pliki.TabIndex = 13;
+            this.btn_wyczysc_pliki.Text = "Wyczyść";
+            this.btn_wyczysc_pliki.UseVisualStyleBackColor = true;
+            this.btn_wyczysc_pliki.Click += new System.EventHandler(this.btn_wyczysc_pliki_Click);
             // 
             // checkBox2
             // 
@@ -755,6 +756,7 @@
             this.btn_wybierz_pliki.TabIndex = 4;
             this.btn_wybierz_pliki.Text = "Wybierz...";
             this.btn_wybierz_pliki.UseVisualStyleBackColor = true;
+            this.btn_wybierz_pliki.Click += new System.EventHandler(this.btn_wybierz_pliki_Click);
             // 
             // btn_utworz
             // 
@@ -764,11 +766,14 @@
             this.btn_utworz.TabIndex = 3;
             this.btn_utworz.Text = "Utwórz";
             this.btn_utworz.UseVisualStyleBackColor = true;
+            this.btn_utworz.Click += new System.EventHandler(this.btn_utworz_Click);
             // 
             // clbx_lista_plikow
             // 
+            this.clbx_lista_plikow.AllowDrop = true;
             this.clbx_lista_plikow.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.clbx_lista_plikow.FormattingEnabled = true;
+            this.clbx_lista_plikow.HorizontalScrollbar = true;
             this.clbx_lista_plikow.Items.AddRange(new object[] {
             "Plik tekstowy ustawiony z kolekcji",
             "kolejny do testowania zachowania checkboxa"});
@@ -777,6 +782,9 @@
             this.clbx_lista_plikow.Size = new System.Drawing.Size(518, 296);
             this.clbx_lista_plikow.TabIndex = 0;
             this.clbx_lista_plikow.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.clbx_lista_plikow_ItemCheck);
+            this.clbx_lista_plikow.DragDrop += new System.Windows.Forms.DragEventHandler(this.clbx_lista_plikow_DragDrop);
+            this.clbx_lista_plikow.DragEnter += new System.Windows.Forms.DragEventHandler(this.clbx_lista_plikow_DragEnter);
+            this.clbx_lista_plikow.KeyUp += new System.Windows.Forms.KeyEventHandler(this.clbx_lista_plikow_KeyUp);
             // 
             // MainWindow
             // 
@@ -876,7 +884,7 @@
         private System.Windows.Forms.Button btn_wybierz_pliki;
         private System.Windows.Forms.Button btn_utworz;
         private System.Windows.Forms.CheckedListBox clbx_lista_plikow;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btn_wyczysc_pliki;
         private System.Windows.Forms.TextBox txt_haslo;
     }
 }

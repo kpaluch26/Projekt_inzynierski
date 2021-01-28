@@ -39,7 +39,7 @@ namespace Klient
                 txt_nazwa_archiwum.Text = txt_nazwa_archiwum.Text.Substring(0, txt_nazwa_archiwum.Text.Length - 1);
                 txt_nazwa_archiwum.SelectionStart = txt_nazwa_archiwum.Text.Length;
             }
-            else{ MessageBox.Show(e.KeyValue.ToString()); }
+            //else{ MessageBox.Show(e.KeyValue.ToString()); }
         }
     }
 }
