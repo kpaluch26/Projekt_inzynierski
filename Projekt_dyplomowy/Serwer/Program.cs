@@ -504,7 +504,7 @@ namespace Serwer
             }
         }
 
-        private static void CreateZIP( bool _password) //funkcja do tworzenia archiwum zip
+        private static void CreateZIP(bool _password) //funkcja do tworzenia archiwum zip
         {
             OpenFileDialog ofd = new OpenFileDialog(); //utworzenie okna do przeglądania plików
             ofd.Filter = "all files (*.*)|*.*"; //ustawienie filtrów okna na dowolne pliki
