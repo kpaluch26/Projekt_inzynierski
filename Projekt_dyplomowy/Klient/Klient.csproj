@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Backup.cs" />
     <Compile Include="ConnectionWindow.cs">
       <SubType>Form</SubType>
     </Compile>

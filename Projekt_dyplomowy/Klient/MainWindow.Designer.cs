@@ -91,6 +91,7 @@
             this.btn_wybierz_pliki = new System.Windows.Forms.Button();
             this.btn_utworz = new System.Windows.Forms.Button();
             this.clbx_lista_plikow = new System.Windows.Forms.CheckedListBox();
+            this.txt_szyfr = new System.Windows.Forms.TextBox();
             this.sstr_belka.SuspendLayout();
             this.gbx_Ustawienia.SuspendLayout();
             this.gbx_Backup.SuspendLayout();
@@ -159,6 +160,7 @@
             // 
             // gbx_Backup
             // 
+            this.gbx_Backup.Controls.Add(this.txt_szyfr);
             this.gbx_Backup.Controls.Add(this.cbx_szyfrowanie);
             this.gbx_Backup.Controls.Add(this.label13);
             this.gbx_Backup.Controls.Add(this.cbx_interwal_zapisu);
@@ -252,9 +254,9 @@
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(31, 150);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(95, 20);
+            this.label12.Size = new System.Drawing.Size(97, 20);
             this.label12.TabIndex = 4;
-            this.label12.Text = "Szyfrowanie";
+            this.label12.Text = "Ustaw hasło";
             // 
             // rbtn_backup_on
             // 
@@ -262,7 +264,7 @@
             this.rbtn_backup_on.Location = new System.Drawing.Point(178, 30);
             this.rbtn_backup_on.Name = "rbtn_backup_on";
             this.rbtn_backup_on.Size = new System.Drawing.Size(71, 24);
-            this.rbtn_backup_on.TabIndex = 3;
+            this.rbtn_backup_on.TabIndex = 5;
             this.rbtn_backup_on.TabStop = true;
             this.rbtn_backup_on.Text = "Włącz";
             this.rbtn_backup_on.UseVisualStyleBackColor = true;
@@ -550,6 +552,8 @@
             // 
             // panelToolStripMenuItem
             // 
+            this.panelToolStripMenuItem.Checked = true;
+            this.panelToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Indeterminate;
             this.panelToolStripMenuItem.Name = "panelToolStripMenuItem";
             this.panelToolStripMenuItem.Size = new System.Drawing.Size(48, 24);
             this.panelToolStripMenuItem.Text = "Panel";
@@ -774,9 +778,6 @@
             this.clbx_lista_plikow.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.clbx_lista_plikow.FormattingEnabled = true;
             this.clbx_lista_plikow.HorizontalScrollbar = true;
-            this.clbx_lista_plikow.Items.AddRange(new object[] {
-            "Plik tekstowy ustawiony z kolekcji",
-            "kolejny do testowania zachowania checkboxa"});
             this.clbx_lista_plikow.Location = new System.Drawing.Point(30, 30);
             this.clbx_lista_plikow.Name = "clbx_lista_plikow";
             this.clbx_lista_plikow.Size = new System.Drawing.Size(518, 296);
@@ -786,6 +787,13 @@
             this.clbx_lista_plikow.DragEnter += new System.Windows.Forms.DragEventHandler(this.clbx_lista_plikow_DragEnter);
             this.clbx_lista_plikow.KeyUp += new System.Windows.Forms.KeyEventHandler(this.clbx_lista_plikow_KeyUp);
             // 
+            // txt_szyfr
+            // 
+            this.txt_szyfr.Location = new System.Drawing.Point(134, 147);
+            this.txt_szyfr.Name = "txt_szyfr";
+            this.txt_szyfr.Size = new System.Drawing.Size(100, 26);
+            this.txt_szyfr.TabIndex = 12;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -794,9 +802,9 @@
             this.ClientSize = new System.Drawing.Size(944, 441);
             this.Controls.Add(this.sstr_belka);
             this.Controls.Add(this.mstr_Menu);
-            this.Controls.Add(this.gbx_Plik);
             this.Controls.Add(this.gbx_Ustawienia);
             this.Controls.Add(this.gbx_Polaczenie);
+            this.Controls.Add(this.gbx_Plik);
             this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.MainMenuStrip = this.mstr_Menu;
             this.Name = "MainWindow";
@@ -886,5 +894,6 @@
         private System.Windows.Forms.CheckedListBox clbx_lista_plikow;
         private System.Windows.Forms.Button btn_wyczysc_pliki;
         private System.Windows.Forms.TextBox txt_haslo;
+        private System.Windows.Forms.TextBox txt_szyfr;
     }
 }

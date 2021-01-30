@@ -22,7 +22,7 @@ namespace Klient
         private NetworkStream ns = null;
         private static BackgroundWorker m_oBackgroundWorker = null; //wątek roboczy pracujacy w tle -> domyślnie niezainicjowany
         private User user = null;
-        private bool encrypetd = false;
+        private Backup backup = null;
 
         //private TcpClient SetClient //właściwość do odbioru klienta tcp
         //{
@@ -238,6 +238,8 @@ namespace Klient
             lbl_backup_zapis.Enabled = false;
             cbx_interwal_zapisu.Enabled = false;
             cbx_szyfrowanie.Enabled = false;
+            txt_szyfr.Enabled = false;
+            txt_szyfr.Visible = false;
             //Plik
             gbx_Plik.Enabled = false;
             gbx_Plik.Visible = false;
@@ -246,6 +248,7 @@ namespace Klient
             txt_haslo.Visible = false;
             cbx_zaznacz_pliki.Checked = false;
             btn_utworz.Enabled = false;
+            btn_wyczysc_pliki.Enabled = false;
         }
 
         private void ServerConnectionError()
@@ -258,86 +261,158 @@ namespace Klient
 
         private void btn_Potwierdz_Click(object sender, EventArgs e)
         {
-            string firstname, lastname, group, section, version;
+            try
+            {
+                string firstname, lastname, group, section, version;
 
-            if (user == null)
-            {
-                user = new User();
-            }
-
-            firstname = txt_Imie.Text.Trim();
-            if (firstname != null && firstname != "")
-            {
-                user.firstname = firstname;
-            }
-            else
-            {
-                MessageBox.Show("Nie wprowadzono imienia użytkownika.", "Ustawienia");
-            }
-            lastname = txt_Nazwisko.Text.Trim();
-            if (lastname != null && lastname != "")
-            {
-                user.lastname = lastname;
-            }
-            else
-            {
-                MessageBox.Show("Nie wprowadzono nazwiska użytkownika.", "Ustawienia");
-            }
-
-            group = txt_Grupa.Text.Trim();
-            if (group != null && group != "")
-            {
-                user.group = group;
-            }
-            else
-            {
-                MessageBox.Show("Nie wprowadzono grupy użytkownika.", "Ustawienia");
-            }
-
-            if (cbx_czy_sekcja.Checked == true)
-            {
-                section = txt_Sekcja.Text.Trim();
-                if (section != null && section != "")
+                if (user == null)
                 {
-                    user.section = section;
+                    user = new User();
+                }
+
+                firstname = txt_Imie.Text.Trim();
+                if (firstname != null && firstname != "")
+                {
+                    user.firstname = firstname;
                 }
                 else
                 {
-                    MessageBox.Show("Nie wprowadzono sekcji użytkownika.", "Ustawienia");
+                    MessageBox.Show("Nie wprowadzono imienia użytkownika.", "Ustawienia");
+                    throw new Exception();
                 }
-            }
-            else
-            {
-                user.section = "";
-            }
-            if (cbx_czy_wersja.Checked == true)
-            {
-                version = txt_Wersja.Text.Trim();
-                if (version != null && version != "")
+                lastname = txt_Nazwisko.Text.Trim();
+                if (lastname != null && lastname != "")
                 {
-                    user.version = version;
+                    user.lastname = lastname;
                 }
                 else
                 {
-                    MessageBox.Show("Nie wprowadzono wersji.", "Ustawienia");
+                    MessageBox.Show("Nie wprowadzono nazwiska użytkownika.", "Ustawienia");
+                    throw new Exception();
+                }
+
+                group = txt_Grupa.Text.Trim();
+                if (group != null && group != "")
+                {
+                    user.group = group;
+                }
+                else
+                {
+                    MessageBox.Show("Nie wprowadzono grupy użytkownika.", "Ustawienia");
+                    throw new Exception();
+                }
+
+                if (cbx_czy_sekcja.Checked == true)
+                {
+                    section = txt_Sekcja.Text.Trim();
+                    if (section != null && section != "")
+                    {
+                        user.section = section;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Nie wprowadzono sekcji użytkownika.", "Ustawienia");
+                        throw new Exception();
+                    }
+                }
+                else
+                {
+                    user.section = "";
+                }
+                if (cbx_czy_wersja.Checked == true)
+                {
+                    version = txt_Wersja.Text.Trim();
+                    if (version != null && version != "")
+                    {
+                        user.version = version;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Nie wprowadzono wersji.", "Ustawienia");
+                        throw new Exception();
+                    }
+                }
+                else
+                {
+                    user.version = "";
+                }
+
+                lbl_ID.Text = user.ToString();
+
+                //Ustawienia połączenia
+                if (lbl_path_polaczenie.Text == "Wybierz...")
+                {
+                    MessageBox.Show("Nie podano miejsca zapisu przychodzących plików.", "Ustawienia");
+                    throw new Exception();
+                }
+
+                //Ustawienia backupu
+                if (rbtn_backup_on.Checked == true)
+                {
+                    if (backup == null)
+                    {
+                        backup = new Backup();
+                    }
+
+                    switch (cbx_interwal_zapisu.SelectedIndex)
+                    {
+                        case 0:
+                            backup.savetime = 5;
+                            break;
+                        case 1:
+                            backup.savetime = 10;
+                            break;
+                        case 2:
+                            backup.savetime = 15;
+                            break;
+                        case 3:
+                            backup.savetime = 20;
+                            break;
+                        case 4:
+                            backup.savetime = 30;
+                            break;
+                        case 5:
+                            backup.savetime = 45;
+                            break;
+                        case 6:
+                            backup.savetime = 60;
+                            break;
+                    }
+
+                    if (lbl_backup_workspace.Text != "Wybierz...")
+                    {
+                        backup.workpath = lbl_backup_workspace.Text;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Nie wybrano miejsca pracy.", "Ustawienia");
+                        throw new Exception();
+                    }
+
+                    if (lbl_backup_zapis.Text != "Wybierz...")
+                    {
+                        backup.savepath = lbl_backup_zapis.Text;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Nie wybrano miejsca zapisu kopii.", "Ustawienia");
+                        throw new Exception();
+                    }
+
+                    if (cbx_szyfrowanie.Checked == true && txt_szyfr.TextLength >= 1)
+                    {
+                        backup.password = txt_szyfr.Text;
+                    }
+                    else
+                    {
+                        backup.password = "";
+                    }
                 }
             }
-            else
+            catch
             {
-                user.version = "";
-            }
-
-            lbl_ID.Text = user.ToString();
-
-            //Ustawienia połączenia
-            if (lbl_path_polaczenie.Text == "Wybierz...")
-            {
-                MessageBox.Show("Nie podano miejsca zapisu przychodzących plików.", "Ustawienia");
-            }
-
-            if (rbtn_backup_on.Checked == true)
-            {
-
+                user = null;
+                backup = null;
             }
         }
 
@@ -409,7 +484,15 @@ namespace Klient
         {
             if (cbx_szyfrowanie.Checked == true)
             {
-                encrypetd = true;
+                txt_szyfr.Enabled = true;
+                txt_szyfr.Visible = true;
+                txt_szyfr.PasswordChar = '*';
+            }
+            else
+            {
+                txt_szyfr.Enabled = false;
+                txt_szyfr.Visible = false;
+                txt_szyfr.Text = "";
             }
         }
 
@@ -571,6 +654,10 @@ namespace Klient
                     clbx_lista_plikow.Items.Add(file);
                 }
                 clbx_lista_plikow.HorizontalScrollbar = true;
+                if (btn_wyczysc_pliki.Enabled == false)
+                {
+                    btn_wyczysc_pliki.Enabled = true;
+                }
             }
         }
 
@@ -578,6 +665,7 @@ namespace Klient
         {
             clbx_lista_plikow.Items.Clear();
             CanCreateZip(0);
+            btn_wyczysc_pliki.Enabled = false;
         }
 
         private void clbx_lista_plikow_KeyUp(object sender, KeyEventArgs e)
@@ -598,6 +686,11 @@ namespace Klient
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
             foreach (string file in files)
                 clbx_lista_plikow.Items.Add(file);
+
+            if (btn_wyczysc_pliki.Enabled == false)
+            {
+                btn_wyczysc_pliki.Enabled = true;
+            }
         }
 
         private void btn_utworz_Click(object sender, EventArgs e)
@@ -609,32 +702,47 @@ namespace Klient
             {
                 File.Delete(filepath); //usuwanie istniejącego archiwum
             }
-
-            if (cbx_czy_haslo.Checked==true && txt_haslo.Text != "" && txt_haslo.Text != null)
-            {               
-               password = txt_haslo.Text;
-                
-                using (Ionic.Zip.ZipFile _zip = new Ionic.Zip.ZipFile()) //utworzenie archiwum
-                {
-                    foreach (string file in clbx_lista_plikow.CheckedItems)
-                    {                    
-                        _zip.Password = password; //dodanie hasła
-                        _zip.AddFile(file, ""); //dodanie pliku do archiwum
-                    }
-                    _zip.Save(filepath); //zapis archiwum
-                }
-            }
-            else
+            try
             {
-                using (Ionic.Zip.ZipFile _zip = new Ionic.Zip.ZipFile()) //utworzenie archiwum
+                if (cbx_czy_haslo.Checked == true && txt_haslo.Text != "" && txt_haslo.Text != null)
                 {
-                    foreach (string file in clbx_lista_plikow.CheckedItems)
+                    password = txt_haslo.Text;
+
+                    using (Ionic.Zip.ZipFile _zip = new Ionic.Zip.ZipFile()) //utworzenie archiwum
                     {
-                        _zip.AddFile(file, ""); //dodanie pliku do archiwum
+                        foreach (string file in clbx_lista_plikow.CheckedItems)
+                        {
+                            _zip.Password = password; //dodanie hasła
+                            _zip.AddFile(file, ""); //dodanie pliku do archiwum
+                        }
+                        _zip.Save(filepath); //zapis archiwum
                     }
-                    _zip.Save(filepath); //zapis archiwum
+                }
+                else
+                {
+                    using (Ionic.Zip.ZipFile _zip = new Ionic.Zip.ZipFile()) //utworzenie archiwum
+                    {
+                        foreach (string file in clbx_lista_plikow.CheckedItems)
+                        {
+                            _zip.AddFile(file, ""); //dodanie pliku do archiwum
+                        }
+                        _zip.Save(filepath); //zapis archiwum
+                    }
                 }
             }
+            catch (FileNotFoundException)
+            {
+                MessageBox.Show("Przynajmniej jeden wybrany plik zmienił ścieżke dostępu.", "Błąd tworzenia");
+            }
+            catch (ArgumentException)
+            {
+                MessageBox.Show("Nazwa archiwum zawiera niedozwolone znaki.", "Błąd tworzenia");
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
         }
 
         private void CanCreateZip(int check)
