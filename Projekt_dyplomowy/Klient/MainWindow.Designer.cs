@@ -35,6 +35,7 @@
             this.rozłączToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gbx_Ustawienia = new System.Windows.Forms.GroupBox();
             this.gbx_Backup = new System.Windows.Forms.GroupBox();
+            this.txt_szyfr = new System.Windows.Forms.TextBox();
             this.cbx_szyfrowanie = new System.Windows.Forms.CheckBox();
             this.label13 = new System.Windows.Forms.Label();
             this.cbx_interwal_zapisu = new System.Windows.Forms.ComboBox();
@@ -69,7 +70,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.mstr_Menu = new System.Windows.Forms.MenuStrip();
             this.mtstr_Plik = new System.Windows.Forms.ToolStripMenuItem();
-            this.panelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mtstr_Panel = new System.Windows.Forms.ToolStripMenuItem();
             this.mtstr_Polaczenie = new System.Windows.Forms.ToolStripMenuItem();
             this.mtstr_Ustawienia = new System.Windows.Forms.ToolStripMenuItem();
             this.gbx_Polaczenie = new System.Windows.Forms.GroupBox();
@@ -81,7 +82,7 @@
             this.gbx_Plik = new System.Windows.Forms.GroupBox();
             this.txt_haslo = new System.Windows.Forms.TextBox();
             this.btn_wyczysc_pliki = new System.Windows.Forms.Button();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.cbx_ustaw_archiwum = new System.Windows.Forms.CheckBox();
             this.lbl_wybierz_nazwe = new System.Windows.Forms.Label();
             this.lbl_zip_path = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
@@ -91,7 +92,14 @@
             this.btn_wybierz_pliki = new System.Windows.Forms.Button();
             this.btn_utworz = new System.Windows.Forms.Button();
             this.clbx_lista_plikow = new System.Windows.Forms.CheckedListBox();
-            this.txt_szyfr = new System.Windows.Forms.TextBox();
+            this.gbx_Panel = new System.Windows.Forms.GroupBox();
+            this.gbx_archiwum = new System.Windows.Forms.GroupBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.lbl_nazwa_pliku = new System.Windows.Forms.Label();
+            this.lbl_lokalizacja_pliku = new System.Windows.Forms.Label();
+            this.btn_zmien_archiwum = new System.Windows.Forms.Button();
+            this.btn_wyslij = new System.Windows.Forms.Button();
             this.sstr_belka.SuspendLayout();
             this.gbx_Ustawienia.SuspendLayout();
             this.gbx_Backup.SuspendLayout();
@@ -101,6 +109,8 @@
             this.mstr_Menu.SuspendLayout();
             this.gbx_Polaczenie.SuspendLayout();
             this.gbx_Plik.SuspendLayout();
+            this.gbx_Panel.SuspendLayout();
+            this.gbx_archiwum.SuspendLayout();
             this.SuspendLayout();
             // 
             // sstr_belka
@@ -178,6 +188,13 @@
             this.gbx_Backup.TabIndex = 3;
             this.gbx_Backup.TabStop = false;
             this.gbx_Backup.Text = "Backup";
+            // 
+            // txt_szyfr
+            // 
+            this.txt_szyfr.Location = new System.Drawing.Point(134, 147);
+            this.txt_szyfr.Name = "txt_szyfr";
+            this.txt_szyfr.Size = new System.Drawing.Size(100, 26);
+            this.txt_szyfr.TabIndex = 12;
             // 
             // cbx_szyfrowanie
             // 
@@ -531,7 +548,7 @@
             this.mstr_Menu.GripMargin = new System.Windows.Forms.Padding(0);
             this.mstr_Menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mtstr_Plik,
-            this.panelToolStripMenuItem,
+            this.mtstr_Panel,
             this.mtstr_Polaczenie,
             this.mtstr_Ustawienia});
             this.mstr_Menu.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
@@ -550,13 +567,14 @@
             this.mtstr_Plik.Text = "Plik";
             this.mtstr_Plik.Click += new System.EventHandler(this.mtstr_Plik_Click);
             // 
-            // panelToolStripMenuItem
+            // mtstr_Panel
             // 
-            this.panelToolStripMenuItem.Checked = true;
-            this.panelToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Indeterminate;
-            this.panelToolStripMenuItem.Name = "panelToolStripMenuItem";
-            this.panelToolStripMenuItem.Size = new System.Drawing.Size(48, 24);
-            this.panelToolStripMenuItem.Text = "Panel";
+            this.mtstr_Panel.Checked = true;
+            this.mtstr_Panel.CheckState = System.Windows.Forms.CheckState.Indeterminate;
+            this.mtstr_Panel.Name = "mtstr_Panel";
+            this.mtstr_Panel.Size = new System.Drawing.Size(48, 24);
+            this.mtstr_Panel.Text = "Panel";
+            this.mtstr_Panel.Click += new System.EventHandler(this.mtstr_Panel_Click);
             // 
             // mtstr_Polaczenie
             // 
@@ -647,7 +665,7 @@
             // 
             this.gbx_Plik.Controls.Add(this.txt_haslo);
             this.gbx_Plik.Controls.Add(this.btn_wyczysc_pliki);
-            this.gbx_Plik.Controls.Add(this.checkBox2);
+            this.gbx_Plik.Controls.Add(this.cbx_ustaw_archiwum);
             this.gbx_Plik.Controls.Add(this.lbl_wybierz_nazwe);
             this.gbx_Plik.Controls.Add(this.lbl_zip_path);
             this.gbx_Plik.Controls.Add(this.label15);
@@ -682,15 +700,15 @@
             this.btn_wyczysc_pliki.UseVisualStyleBackColor = true;
             this.btn_wyczysc_pliki.Click += new System.EventHandler(this.btn_wyczysc_pliki_Click);
             // 
-            // checkBox2
+            // cbx_ustaw_archiwum
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(558, 199);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(159, 24);
-            this.checkBox2.TabIndex = 12;
-            this.checkBox2.Text = "Ustaw do wysłania";
-            this.checkBox2.UseVisualStyleBackColor = true;
+            this.cbx_ustaw_archiwum.AutoSize = true;
+            this.cbx_ustaw_archiwum.Location = new System.Drawing.Point(558, 199);
+            this.cbx_ustaw_archiwum.Name = "cbx_ustaw_archiwum";
+            this.cbx_ustaw_archiwum.Size = new System.Drawing.Size(159, 24);
+            this.cbx_ustaw_archiwum.TabIndex = 12;
+            this.cbx_ustaw_archiwum.Text = "Ustaw do wysłania";
+            this.cbx_ustaw_archiwum.UseVisualStyleBackColor = true;
             // 
             // lbl_wybierz_nazwe
             // 
@@ -787,12 +805,88 @@
             this.clbx_lista_plikow.DragEnter += new System.Windows.Forms.DragEventHandler(this.clbx_lista_plikow_DragEnter);
             this.clbx_lista_plikow.KeyUp += new System.Windows.Forms.KeyEventHandler(this.clbx_lista_plikow_KeyUp);
             // 
-            // txt_szyfr
+            // gbx_Panel
             // 
-            this.txt_szyfr.Location = new System.Drawing.Point(134, 147);
-            this.txt_szyfr.Name = "txt_szyfr";
-            this.txt_szyfr.Size = new System.Drawing.Size(100, 26);
-            this.txt_szyfr.TabIndex = 12;
+            this.gbx_Panel.BackColor = System.Drawing.SystemColors.Control;
+            this.gbx_Panel.Controls.Add(this.btn_wyslij);
+            this.gbx_Panel.Controls.Add(this.gbx_archiwum);
+            this.gbx_Panel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.gbx_Panel.Location = new System.Drawing.Point(30, 24);
+            this.gbx_Panel.Name = "gbx_Panel";
+            this.gbx_Panel.Size = new System.Drawing.Size(880, 392);
+            this.gbx_Panel.TabIndex = 5;
+            this.gbx_Panel.TabStop = false;
+            this.gbx_Panel.Text = "Panel użytkownika";
+            // 
+            // gbx_archiwum
+            // 
+            this.gbx_archiwum.Controls.Add(this.btn_zmien_archiwum);
+            this.gbx_archiwum.Controls.Add(this.lbl_lokalizacja_pliku);
+            this.gbx_archiwum.Controls.Add(this.lbl_nazwa_pliku);
+            this.gbx_archiwum.Controls.Add(this.label17);
+            this.gbx_archiwum.Controls.Add(this.label16);
+            this.gbx_archiwum.Location = new System.Drawing.Point(7, 26);
+            this.gbx_archiwum.Name = "gbx_archiwum";
+            this.gbx_archiwum.Size = new System.Drawing.Size(433, 133);
+            this.gbx_archiwum.TabIndex = 0;
+            this.gbx_archiwum.TabStop = false;
+            this.gbx_archiwum.Text = "Archiwum";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(6, 30);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(61, 20);
+            this.label16.TabIndex = 1;
+            this.label16.Text = "Nazwa:";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(6, 60);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(91, 20);
+            this.label17.TabIndex = 2;
+            this.label17.Text = "Lokalizacja:";
+            // 
+            // lbl_nazwa_pliku
+            // 
+            this.lbl_nazwa_pliku.AutoSize = true;
+            this.lbl_nazwa_pliku.Location = new System.Drawing.Point(68, 30);
+            this.lbl_nazwa_pliku.Name = "lbl_nazwa_pliku";
+            this.lbl_nazwa_pliku.Size = new System.Drawing.Size(120, 20);
+            this.lbl_nazwa_pliku.TabIndex = 3;
+            this.lbl_nazwa_pliku.Text = "lbl_nazwa_pliku";
+            // 
+            // lbl_lokalizacja_pliku
+            // 
+            this.lbl_lokalizacja_pliku.AutoSize = true;
+            this.lbl_lokalizacja_pliku.Location = new System.Drawing.Point(103, 60);
+            this.lbl_lokalizacja_pliku.Name = "lbl_lokalizacja_pliku";
+            this.lbl_lokalizacja_pliku.Size = new System.Drawing.Size(141, 20);
+            this.lbl_lokalizacja_pliku.TabIndex = 4;
+            this.lbl_lokalizacja_pliku.Text = "lbl_lokalizacja pliku";
+            // 
+            // btn_zmien_archiwum
+            // 
+            this.btn_zmien_archiwum.Location = new System.Drawing.Point(312, 90);
+            this.btn_zmien_archiwum.Name = "btn_zmien_archiwum";
+            this.btn_zmien_archiwum.Size = new System.Drawing.Size(105, 29);
+            this.btn_zmien_archiwum.TabIndex = 5;
+            this.btn_zmien_archiwum.Text = "Zmień";
+            this.btn_zmien_archiwum.UseVisualStyleBackColor = true;
+            this.btn_zmien_archiwum.Click += new System.EventHandler(this.btn_zmien_archiwum_Click);
+            // 
+            // btn_wyslij
+            // 
+            this.btn_wyslij.Location = new System.Drawing.Point(769, 354);
+            this.btn_wyslij.Name = "btn_wyslij";
+            this.btn_wyslij.Size = new System.Drawing.Size(105, 29);
+            this.btn_wyslij.TabIndex = 1;
+            this.btn_wyslij.Text = "Wyślij";
+            this.btn_wyslij.UseVisualStyleBackColor = true;
+            this.btn_wyslij.Click += new System.EventHandler(this.btn_wyslij_Click);
             // 
             // MainWindow
             // 
@@ -805,6 +899,7 @@
             this.Controls.Add(this.gbx_Ustawienia);
             this.Controls.Add(this.gbx_Polaczenie);
             this.Controls.Add(this.gbx_Plik);
+            this.Controls.Add(this.gbx_Panel);
             this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.MainMenuStrip = this.mstr_Menu;
             this.Name = "MainWindow";
@@ -825,6 +920,9 @@
             this.gbx_Polaczenie.PerformLayout();
             this.gbx_Plik.ResumeLayout(false);
             this.gbx_Plik.PerformLayout();
+            this.gbx_Panel.ResumeLayout(false);
+            this.gbx_archiwum.ResumeLayout(false);
+            this.gbx_archiwum.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -838,7 +936,7 @@
         private System.Windows.Forms.MenuStrip mstr_Menu;
         private System.Windows.Forms.ToolStripMenuItem mtstr_Ustawienia;
         private System.Windows.Forms.ToolStripMenuItem mtstr_Plik;
-        private System.Windows.Forms.ToolStripMenuItem panelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mtstr_Panel;
         private System.Windows.Forms.ToolStripMenuItem mtstr_Polaczenie;
         private System.Windows.Forms.GroupBox gbx_Polaczenie;
         private System.Windows.Forms.Button btn_CONNECT;
@@ -882,7 +980,7 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.CheckBox cbx_szyfrowanie;
         private System.Windows.Forms.GroupBox gbx_Plik;
-        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.CheckBox cbx_ustaw_archiwum;
         private System.Windows.Forms.Label lbl_wybierz_nazwe;
         private System.Windows.Forms.Label lbl_zip_path;
         private System.Windows.Forms.Label label15;
@@ -895,5 +993,13 @@
         private System.Windows.Forms.Button btn_wyczysc_pliki;
         private System.Windows.Forms.TextBox txt_haslo;
         private System.Windows.Forms.TextBox txt_szyfr;
+        private System.Windows.Forms.GroupBox gbx_Panel;
+        private System.Windows.Forms.GroupBox gbx_archiwum;
+        private System.Windows.Forms.Button btn_wyslij;
+        private System.Windows.Forms.Button btn_zmien_archiwum;
+        private System.Windows.Forms.Label lbl_lokalizacja_pliku;
+        private System.Windows.Forms.Label lbl_nazwa_pliku;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label16;
     }
 }

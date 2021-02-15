@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.IO.Compression;
+using Serwer;
 
 namespace Klient
 {
@@ -23,6 +24,7 @@ namespace Klient
         private static BackgroundWorker m_oBackgroundWorker = null; //wątek roboczy pracujacy w tle -> domyślnie niezainicjowany
         private User user = null;
         private Backup backup = null;
+        private FileData file = null;
 
         //private TcpClient SetClient //właściwość do odbioru klienta tcp
         //{
@@ -98,7 +100,6 @@ namespace Klient
                     ns = client.GetStream();
                     byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(user.ToString());
                     ns.Write(bytesToSend, 0, bytesToSend.Length);
-
                     ns.Flush();
                 }
                 catch (SocketException x)
@@ -183,13 +184,20 @@ namespace Klient
             {
                 try
                 {
-                    if (client.Client.Poll(0, SelectMode.SelectRead)) //jeśli klient odpowiada
+                    if (client == null)
+                    {
+                        ns.Close();                       
+                        do_work = false;
+                        return;
+                    }
+                    else if (client.Client.Poll(0, SelectMode.SelectRead)) //jeśli klient odpowiada
                     {
                         byte[] buff = new byte[1]; //pomocniczy bufer
                         try
                         {
                             if (client.Client.Receive(buff, SocketFlags.Peek) == 0) //jeśli nagle przestał odpowiadać
                             {
+                                ns.Close();
                                 client.Client.Disconnect(true); //rozłącz klienta   
                                 this.Invoke(new MethodInvoker(delegate { ServerConnectionError(); }));
                             }
@@ -200,6 +208,7 @@ namespace Klient
                         }
                         catch (SocketException)
                         {
+                            ns.Close();
                             client.Close();
                             this.Invoke(new MethodInvoker(delegate { ServerConnectionError(); }));
                             do_work = false;
@@ -249,6 +258,10 @@ namespace Klient
             cbx_zaznacz_pliki.Checked = false;
             btn_utworz.Enabled = false;
             btn_wyczysc_pliki.Enabled = false;
+            //Panel
+            lbl_nazwa_pliku.Text = "Nie wybrano archiwum.";
+            lbl_lokalizacja_pliku.Text = "Nie wybrano archiwum.";
+            btn_zmien_archiwum.Text = "Wybierz";
         }
 
         private void ServerConnectionError()
@@ -519,6 +532,9 @@ namespace Klient
             //Plik
             gbx_Plik.Enabled = true;
             gbx_Plik.Visible = true;
+            //Panel
+            gbx_Panel.Enabled = false;
+            gbx_Panel.Visible = false;
         }
 
         private void cbx_zaznacz_pliki_Click(object sender, EventArgs e)
@@ -717,6 +733,10 @@ namespace Klient
                         }
                         _zip.Save(filepath); //zapis archiwum
                     }
+                    if (cbx_ustaw_archiwum.Checked)
+                    {
+                        file = new FileData(lbl_wybierz_nazwe.Text, lbl_zip_path.Text);
+                    }
                 }
                 else
                 {
@@ -727,6 +747,10 @@ namespace Klient
                             _zip.AddFile(file, ""); //dodanie pliku do archiwum
                         }
                         _zip.Save(filepath); //zapis archiwum
+                    }
+                    if (cbx_ustaw_archiwum.Checked)
+                    {
+                        file = new FileData(lbl_wybierz_nazwe.Text, lbl_zip_path.Text);
                     }
                 }
             }
@@ -752,6 +776,112 @@ namespace Klient
                 btn_utworz.Enabled = true;
             }
             else btn_utworz.Enabled = false;
+        }
+
+        private void mtstr_Panel_Click(object sender, EventArgs e)
+        {
+            //Ustawienia
+            gbx_Ustawienia.Enabled = false;
+            gbx_Ustawienia.Visible = false;
+            //Połączenie
+            gbx_Polaczenie.Enabled = false;
+            gbx_Polaczenie.Visible = false;
+            //Plik
+            gbx_Plik.Enabled = false;
+            gbx_Plik.Visible = false;
+            //Panel
+            gbx_Panel.Enabled = true;
+            gbx_Panel.Visible = true;
+
+            if(file!= null)
+            {
+                lbl_nazwa_pliku.Text = file.GetName();
+                lbl_lokalizacja_pliku.Text = file.GetAddress();
+                btn_zmien_archiwum.Text = "Zmień";
+            }
+            else
+            {
+                lbl_nazwa_pliku.Text = "Nie wybrano archiwum.";
+                lbl_lokalizacja_pliku.Text = "Nie wybrano archiwum.";
+                btn_zmien_archiwum.Text = "Wybierz";
+            }
+        }
+
+        private void btn_zmien_archiwum_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog(); //utworzenie okna do przeglądania plików
+            ofd.Filter = "zip files (*.zip*)|*.zip*"; //ustawienie filtrów okna na dowolne pliki
+            ofd.FilterIndex = 1; //ustawienie domyślnego filtru
+            ofd.RestoreDirectory = true; //przywracanie wcześniej zamkniętego katalogu
+            ofd.Multiselect = false; //ustawienie możliwości wyboru wielu plików z poziomu okna
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                file = new FileData(ofd.SafeFileName, ofd.FileName); //utworzenie pliku do wysłania
+                lbl_nazwa_pliku.Text = file.GetName();
+                lbl_lokalizacja_pliku.Text = file.GetAddress();
+                btn_zmien_archiwum.Text = "Zmień";
+            }
+        }
+
+        private void btn_wyslij_Click(object sender, EventArgs e)
+        {
+
+            // byte[] data = new byte[buffer_size]; //ustawienie rozmiaru bufera
+            //ProgressBar sending_status = new ProgressBar();
+            // long step = new FileInfo(file.GetAddress()).Length / 100;
+            // long status = 0;
+
+            if (file != null) //jeśli wybrany plik istnieje
+            {
+                this.Enabled = false;
+                int buffer_size = Convert.ToInt32(nup_bufor.Value);
+                SendingFileBar sfb = new SendingFileBar(client.GetStream(), file.GetName(), file.GetAddress(), buffer_size);
+                this.Enabled = true;
+            }
+
+            /*try
+            {
+                ns = client.GetStream(); //aktywacja strumienia
+                data = System.Text.Encoding.ASCII.GetBytes(file.GetName()); //zakodowanie nazwy pliku
+                ns.Write(data, 0, data.Length); //wysłanie nazwy pliku 
+                ns.Flush(); //zwolnienie strumienia
+                data = new byte[buffer_size]; //ustawienie rozmiaru bufera
+                using (var s = File.OpenRead(file.GetAddress())) //dopoki plik jest otwarty
+                {
+                    sending_status.Visible = true;
+                    sending_status.Minimum = 1;
+                    sending_status.Maximum = 100; // new FileInfo(file.GetAddress()).Length;
+                    sending_status.Value = 1;
+                    sending_status.Step = 1;
+
+                    int actually_read; //zmienna pomocnicza do odczytu rozmiaru
+                    while ((actually_read = s.Read(data, 0, buffer_size)) > 0) //dopóki w pliku sa dane
+                    {
+                        ns.Write(data, 0, buffer_size); //wyslanie danych z pliku
+                        status += actually_read;
+                        if(status > step)
+                        {
+                            sending_status.PerformStep();
+                            status = 0;
+                        }
+                    }
+                    ns.Flush(); //zwolnienie strumienia 
+                    sending_status.Value = 100;
+                    sending_status.Visible = false;
+                }
+                //System.Threading.Thread.Sleep(2000);
+                data = new byte[buffer_size]; //ustawienie rozmiaru bufera
+                data = System.Text.Encoding.ASCII.GetBytes(file.GetName());
+                ns.Write(data, 0, data.Length); //wysłanie nazwy pliku 
+                ns.Flush(); //zwolnienie strumienia        
+            }
+            catch (Exception x)
+            {
+                ns.Flush();
+                MessageBox.Show(x.ToString());
+            }*/
+
         }
     }
 }
