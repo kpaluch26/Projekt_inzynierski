@@ -721,7 +721,7 @@ namespace Serwer
                         int dec_data = stream.Read(data, 0, data.Length);//oczekiwanie na nazwę pliku klienta       
                         char[] chars = new char[dec_data]; //zmienna pomocnicza do odkodowania nazwy pliku
                         decoder.GetChars(data, 0, dec_data, chars, 0); //dekodowanie otrzymanej nazwy pliku
-                        client_hostname= new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej
+                        client_hostname = new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej
                         history.Add(server_history.ServerStartConnection(client_hostname)); //komunikat do historii
                         help = false; //wyłączenie właściwości nowego klienta
                     }
@@ -731,27 +731,40 @@ namespace Serwer
                         {
                             Directory.CreateDirectory(save_address); //utworzenie ścieżki dostępu z pliku konfiguracyjnego
                         }
-
+                        
+                        bool end_stream = false; //flaga informująca czy koniec pliku
                         stream = client.GetStream(); //określenie rodzaju połączenia na odbiór danych
                         int dec_data = stream.Read(data, 0, data.Length);//oczekiwanie na nazwę pliku klienta       
                         /* char[] chars = new char[dec_data]; //zmienna pomocnicza do odkodowania nazwy pliku
                         decoder.GetChars(data, 0, dec_data, chars, 0); //dekodowanie otrzymanej nazwy pliku
                         client_filename = new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej*/
-                        client_filename= System.Text.Encoding.ASCII.GetString(data, 0, dec_data); ;
-                        history.Add(server_history.ServerBeginReceive(client_hostname, client_filename)); //komunikat do historii
-                        FileStream filestream = new FileStream(save_address + @"\" + client_filename, FileMode.OpenOrCreate, FileAccess.Write); //utworzenie pliku do zapisu archiwum                        
-                        while ((receive_bytes = stream.Read(data, 0, data.Length)) > 0) //dopóki przychodzą dane
+                        client_filename = System.Text.Encoding.ASCII.GetString(data, 0, dec_data);
+                        if (client_filename != null && client_filename != "")
                         {
-                            filestream.Write(data, 0, receive_bytes); //kopiowanie danych do pliku
+                            history.Add(server_history.ServerBeginReceive(client_hostname, client_filename)); //komunikat do historii
+                            FileStream filestream = new FileStream(save_address + @"\" + client_filename, FileMode.OpenOrCreate, FileAccess.Write); //utworzenie pliku do zapisu archiwum                              
+                            //while ((receive_bytes = stream.Read(data, 0, data.Length)) > 0 && end_stream) //dopóki przychodzą dane                           
+                            while(!end_stream)
+                            {
+                                receive_bytes = stream.Read(data, 0, data.Length);
+                                string end_transfer = System.Text.Encoding.ASCII.GetString(data, 0, receive_bytes);
+                                if (client_filename == end_transfer)
+                                {                         
+                                    end_stream = true;
+                                }
+                                else
+                                {
+                                    filestream.Write(data, 0, receive_bytes); //kopiowanie danych do pliku
+                                }
+                            }
+                            filestream.Close(); //zamknięcie strumienia pliku    
+                            history.Add(server_history.ServerEndReceive(client_hostname, client_filename)); //komunikat do historii
+                            client_filename = null; //wyczyszczenie nazwy pliku       
                         }
-                        filestream.Close(); //zamknięcie strumienia pliku
-                        stream.Close(); //zakmnięcie strumienia połączenia
-                        history.Add(server_history.ServerEndReceive(client_hostname, client_filename)); //komunikat do historii
-                        client_filename = null; //wyczyszczenie nazwy pliku
                     }
                     else if (server_option == ServerOptions.send && !help) //jeśli (tryb pracy ustawiony na wysłanie i !nowy klient)
                     {
-                        if (file!=null) //jeśli wybrany plik istnieje
+                        if (file != null) //jeśli wybrany plik istnieje
                         {
                             /*Socket socket = client.Client; //przypisanie klienta do socketa
                             byte[] byData = System.Text.Encoding.ASCII.GetBytes(file.GetName()); //przygotowanie nazwy pliku do wysłania
@@ -780,7 +793,7 @@ namespace Serwer
                                 stream.Close(); //zamkniecie strumienia
                                 history.Add(server_history.ServerEndSend(client_hostname, file.GetName())); //komunikat do historii
                             }
-                            catch(Exception e)
+                            catch (Exception e)
                             {
                                 stream.Flush();
                                 stream.Close();
@@ -794,13 +807,13 @@ namespace Serwer
                         byte[] buff = new byte[1]; //pomocniczy bufer
                         if (client.Client.Receive(buff, SocketFlags.Peek) == 0) //jeśli nagle przestał odpowiadać
                         {
-                            client.Client.Disconnect(true); //rozłącz klienta
+                            client.Client.Disconnect(true); //rozłącz klienta                          
                             //history.Add(server_history.ServerEndConnection(client_hostname)); //komunikat do historii
                         }
                         else
                         {
                             throw new SocketException();
-                        }                        
+                        }
                     }
                 }
                 client.Close(); //zamknięcie klienta
