@@ -35,9 +35,10 @@ namespace Klient
         private void ProgressBar(NetworkStream client, string fn, string fa, int b)
         {
             byte[] data = new byte[b]; //ustawienie rozmiaru bufera
-            long step = new FileInfo(fa).Length / 100;
-            long status = 0;
-            this.Show();            
+            long step = (new FileInfo(fa).Length / b) + 2;            
+            //long status = 0;
+            this.Show();
+            //lbl_wyslane.Update();
             try
             {
                 ns = client; //aktywacja strumienia
@@ -49,29 +50,26 @@ namespace Klient
                 {
                     sending_status.Visible = true;
                     sending_status.Minimum = 1;
-                    sending_status.Maximum = 100; // new FileInfo(file.GetAddress()).Length;
+                    sending_status.Maximum = System.Convert.ToInt32(step); // new FileInfo(file.GetAddress()).Length;
                     sending_status.Value = 1;
                     sending_status.Step = 1;
 
                     int actually_read; //zmienna pomocnicza do odczytu rozmiaru
                     while ((actually_read = s.Read(data, 0, b)) > 0) //dopóki w pliku sa dane
                     {
-                        ns.Write(data, 0, b); //wyslanie danych z pliku
-                        status += actually_read;
-                        if (status > step)
-                        {
-                            sending_status.PerformStep();
-                            status = 0;
-                        }
+                        ns.Write(data, 0, b); //wyslanie danych z pliku                                                
+                        sending_status.PerformStep();
+                        //status += actually_read;                        
+                        //lbl_wyslane.Text = status.ToString();
+                        //lbl_wyslane.Update();
                     }
                     ns.Flush(); //zwolnienie strumienia 
-                    sending_status.Value = 100;
                 }
-                //System.Threading.Thread.Sleep(2000);
                 data = new byte[b]; //ustawienie rozmiaru bufera
                 data = System.Text.Encoding.ASCII.GetBytes(fn);
                 ns.Write(data, 0, data.Length); //wysłanie nazwy pliku 
-                ns.Flush(); //zwolnienie strumienia                  
+                sending_status.PerformStep();
+                ns.Flush(); //zwolnienie strumienia       
             }
             catch (Exception x)
             {
@@ -81,6 +79,7 @@ namespace Klient
             finally
             {
                 this.Close();
+                System.Threading.Thread.Sleep(3000);
             }
             
         }
