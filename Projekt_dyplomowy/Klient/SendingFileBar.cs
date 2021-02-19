@@ -15,33 +15,33 @@ namespace Klient
 {
     public partial class SendingFileBar : Form
     {
-        private NetworkStream ns = null;
+        /*private NetworkStream ns = null;
         private string fn;
         private string fa;
-        private int b;
+        private int b;*/
 
-        public SendingFileBar(NetworkStream _ns,string _fn, string _fa, int _b)
+        public SendingFileBar(NetworkStream _ns,string _fn, string _fa, int _b, long _s)
         {
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterScreen;           
             InitializeComponent();
-            ns = _ns;
+            /*ns = _ns;
             fn = _fn;
             fa = _fa;
-            b = _b;
-            ProgressBar(ns, fn, fa, b);
+            b = _b;*/
+            ProgressBar(_ns, _fn, _fa, _b, _s);
         }
 
-        private void ProgressBar(NetworkStream client, string fn, string fa, int b)
+        private void ProgressBar(NetworkStream ns, string fn, string fa, int b, long _s)
         {
             byte[] data = new byte[b]; //ustawienie rozmiaru bufera
-            long step = (new FileInfo(fa).Length / b) + 2;            
+            long step = (_s / b) + 2;            
             //long status = 0;
             this.Show();
             //lbl_wyslane.Update();
             try
             {
-                ns = client; //aktywacja strumienia
+                //ns = client; //aktywacja strumienia
                 data = System.Text.Encoding.ASCII.GetBytes(fn); //zakodowanie nazwy pliku
                 ns.Write(data, 0, data.Length); //wysłanie nazwy pliku 
                 ns.Flush(); //zwolnienie strumienia

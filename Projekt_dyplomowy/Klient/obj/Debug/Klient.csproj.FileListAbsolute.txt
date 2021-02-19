@@ -15,3 +15,4 @@ D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\bin\Debug\DotNetZip.pd
 D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\bin\Debug\DotNetZip.xml
 D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.csproj.CopyComplete
 D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.SendingFileBar.resources
+D:\PROJEKTY\Projekt_inżynierski\Projekt_dyplomowy\Klient\obj\Debug\Klient.ReceivingFileBar.resources

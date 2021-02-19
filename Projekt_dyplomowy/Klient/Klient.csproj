@@ -76,6 +76,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReceivingFileBar.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReceivingFileBar.Designer.cs">
+      <DependentUpon>ReceivingFileBar.cs</DependentUpon>
+    </Compile>
     <Compile Include="SendingFileBar.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -99,6 +105,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReceivingFileBar.resx">
+      <DependentUpon>ReceivingFileBar.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SendingFileBar.resx">
       <DependentUpon>SendingFileBar.cs</DependentUpon>

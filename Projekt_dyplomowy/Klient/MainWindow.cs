@@ -186,11 +186,10 @@ namespace Klient
                 {
                     if (client == null)
                     {
-                        ns.Close();                       
-                        do_work = false;
-                        return;
+                        ns.Close();
+                        throw new Exception();
                     }
-                    else if (client.Client.Poll(0, SelectMode.SelectRead)) //jeśli klient odpowiada
+                    /*else if (client.Client.Poll(0, SelectMode.SelectRead)) //jeśli klient odpowiada
                     {
                         byte[] buff = new byte[1]; //pomocniczy bufer
                         try
@@ -199,21 +198,55 @@ namespace Klient
                             {
                                 ns.Close();
                                 client.Client.Disconnect(true); //rozłącz klienta   
-                                this.Invoke(new MethodInvoker(delegate { ServerConnectionError(); }));
+                                //this.Invoke(new MethodInvoker(delegate { ServerConnectionError(); }));
                             }
                             else
                             {
                                 throw new SocketException();
-                            }
-                        }
+                            }                           
+                        }                     
                         catch (SocketException)
                         {
                             ns.Close();
                             client.Close();
-                            this.Invoke(new MethodInvoker(delegate { ServerConnectionError(); }));
+                            //this.Invoke(new MethodInvoker(delegate { ServerConnectionError(); }));
                             do_work = false;
                             return;
                         }
+                    }*/
+                    else
+                    {
+                        NetworkStream stream = client.GetStream();
+                        int dec_data;
+                        int buffer_size = Convert.ToInt32(nup_bufor.Value);
+                        byte[] data = new byte[buffer_size]; //ustawienie rozmiaru bufera
+                        try
+                        {
+                            while (!client.Client.Poll(0, SelectMode.SelectRead))
+                            {
+                                dec_data = stream.Read(data, 0, data.Length);
+                                string receive = System.Text.Encoding.ASCII.GetString(data, 0, dec_data);
+                                if (receive == "receive")
+                                {
+                                    this.Invoke(new MethodInvoker(delegate { ReceiveFileEnable(stream); }));
+                                }
+                            }
+                            if(client.Client.Poll(0, SelectMode.SelectRead))
+                            {
+                                throw new IOException();
+                            }
+                        }
+                        catch (IOException)
+                        {
+                            ns.Close();
+                            if (client != null)
+                            {
+                                client.Close();
+                                this.Invoke(new MethodInvoker(delegate { ServerConnectionError(); }));
+                            }
+                            else
+                                throw new Exception();
+                        }                       
                     }
                 }
                 catch
@@ -230,6 +263,7 @@ namespace Klient
             mtstr_Polaczenie.Enabled = true;
             //status belka
             tssl_label.Visible = false;
+            tssl_label.Text = "Połączenie aktywne";
             //przycisk belka
             tssb_Rozlacz.Visible = false;
             tssb_Rozlacz.Enabled = false;
@@ -241,6 +275,8 @@ namespace Klient
             txt_Sekcja.Enabled = true;
             cbx_czy_wersja.Checked = true;
             txt_Wersja.Enabled = true;
+            //Ustawienia Połączenie
+            gbx_Ustawienia_polaczenia.Enabled = true;
             //Backup
             rbtn_backup_off.Checked = true;
             lbl_backup_workspace.Enabled = false;
@@ -270,6 +306,14 @@ namespace Klient
             tssb_Rozlacz.Image = Klient.Properties.Resources.Status_ERROR;
             MessageBox.Show("Błąd po stronie serwera. Połączenie zostało nagle przerwane.", "Połączenie");
             SetDefaultOption();
+        }
+
+        private void ReceiveFileEnable(NetworkStream stream)
+        {
+            this.Enabled = false;
+            int buffer_size = Convert.ToInt32(nup_bufor.Value);
+            ReceivingFileBar sfb = new ReceivingFileBar(stream, buffer_size, lbl_path_polaczenie.Text);
+            this.Enabled = true;
         }
 
         private void btn_Potwierdz_Click(object sender, EventArgs e)
@@ -735,7 +779,7 @@ namespace Klient
                     }
                     if (cbx_ustaw_archiwum.Checked)
                     {
-                        file = new FileData(lbl_wybierz_nazwe.Text, lbl_zip_path.Text);
+                        file = new FileData(lbl_wybierz_nazwe.Text, lbl_zip_path.Text, new FileInfo(lbl_zip_path.Text).Length);
                     }
                 }
                 else
@@ -750,7 +794,7 @@ namespace Klient
                     }
                     if (cbx_ustaw_archiwum.Checked)
                     {
-                        file = new FileData(lbl_wybierz_nazwe.Text, lbl_zip_path.Text);
+                        file = new FileData(lbl_wybierz_nazwe.Text, lbl_zip_path.Text, new FileInfo(lbl_zip_path.Text).Length);
                     }
                 }
             }
@@ -817,7 +861,7 @@ namespace Klient
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                file = new FileData(ofd.SafeFileName, ofd.FileName); //utworzenie pliku do wysłania
+                file = new FileData(ofd.SafeFileName, ofd.FileName, new FileInfo(ofd.FileName).Length); //utworzenie pliku do wysłania
                 lbl_nazwa_pliku.Text = file.GetName();
                 lbl_lokalizacja_pliku.Text = file.GetAddress();
                 btn_zmien_archiwum.Text = "Zmień";
@@ -836,7 +880,7 @@ namespace Klient
             {
                 this.Enabled = false;
                 int buffer_size = Convert.ToInt32(nup_bufor.Value);
-                SendingFileBar sfb = new SendingFileBar(client.GetStream(), file.GetName(), file.GetAddress(), buffer_size);
+                SendingFileBar sfb = new SendingFileBar(client.GetStream(), file.GetName(), file.GetAddress(), buffer_size, file.GetFileSize());
                 this.Enabled = true;
             }
 
