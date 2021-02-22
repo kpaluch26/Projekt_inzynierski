@@ -684,7 +684,7 @@ namespace Serwer
 
             if(ofd.ShowDialog() == DialogResult.OK) //jeśli wybrano plik
             {
-                file = new FileData(ofd.SafeFileName, ofd.FileName); //utworzenie pliku do wysłania
+                file = new FileData(ofd.SafeFileName, ofd.FileName, new FileInfo(ofd.FileName).Length); //utworzenie pliku do wysłania
             }
             else
             {
@@ -706,148 +706,195 @@ namespace Serwer
             string client_filename = null; //zmienna do identyfikacji nazwy pliku
             bool help = true; //zmienna omocnicza określająca czy nowy klient się podłączył
 
-            try
+            while (client.Connected) //dopóki klient podłączony
             {
-                while (client.Connected) //dopóki klient podłączony
+                try
                 {
-                    if (server_option != ServerOptions.wait && help) //jeśli !(tryb pracy ustawiony na nasłuchiwanie i nowy klient)
+                    while (client.Connected) //dopóki klient podłączony
                     {
-                        client.Close(); //zamknij klienta
-                    }
-                    else if (server_option == ServerOptions.wait && help) //jeśli (tryb pracy ustawiony na nasłuchiwanie i nowy klient)
-                    {
-                        updateCounterOfActiveUsers(true); //aktualizacja aktywnych użytkowników
-                        stream = client.GetStream(); //określenie rodzaju połączenia na odbiór danych
-                        int dec_data = stream.Read(data, 0, data.Length);//oczekiwanie na nazwę pliku klienta       
-                        char[] chars = new char[dec_data]; //zmienna pomocnicza do odkodowania nazwy pliku
-                        decoder.GetChars(data, 0, dec_data, chars, 0); //dekodowanie otrzymanej nazwy pliku
-                        client_hostname = new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej
-                        history.Add(server_history.ServerStartConnection(client_hostname)); //komunikat do historii
-                        help = false; //wyłączenie właściwości nowego klienta
-                    }
-                    else if (server_option == ServerOptions.receive && !help) //sprawdzanie czy serwer jest ustawiony na odbiór plików
-                    {
-                        if (Directory.Exists(save_address) == false) //sprawdzanie czy ścieżka dostępu z pliku konfiguracyjnego istnieje
+                        if (server_option != ServerOptions.wait && help) //jeśli !(tryb pracy ustawiony na nasłuchiwanie i nowy klient)
                         {
-                            Directory.CreateDirectory(save_address); //utworzenie ścieżki dostępu z pliku konfiguracyjnego
+                            client.Close(); //zamknij klienta
                         }
-
-                        int dec_data; //zmienna do odbierania nazwy pliku
-                        byte[] buff = new byte[1]; //pomocniczy bufer
-                        bool end_stream = false; //flaga informująca czy koniec pliku
-                        stream = client.GetStream(); //określenie rodzaju połączenia na odbiór danych
-                        while ((dec_data = stream.Read(data, 0, data.Length)) > 0) //oczekiwanie na nazwę pliku klienta
+                        else if (server_option == ServerOptions.wait && help) //jeśli (tryb pracy ustawiony na nasłuchiwanie i nowy klient)
                         {
-                            /* char[] chars = new char[dec_data]; //zmienna pomocnicza do odkodowania nazwy pliku
+                            updateCounterOfActiveUsers(true); //aktualizacja aktywnych użytkowników
+                            stream = client.GetStream(); //określenie rodzaju połączenia na odbiór danych
+                            int dec_data = stream.Read(data, 0, data.Length);//oczekiwanie na nazwę pliku klienta       
+                            char[] chars = new char[dec_data]; //zmienna pomocnicza do odkodowania nazwy pliku
                             decoder.GetChars(data, 0, dec_data, chars, 0); //dekodowanie otrzymanej nazwy pliku
-                            client_filename = new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej*/                     
-                            client_filename = System.Text.Encoding.ASCII.GetString(data, 0, dec_data);
-                            if (client_filename != null && client_filename != "")
+                            client_hostname = new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej
+                            history.Add(server_history.ServerStartConnection(client_hostname)); //komunikat do historii
+                            help = false; //wyłączenie właściwości nowego klienta
+                        }
+                        else if (server_option == ServerOptions.receive && !help) //sprawdzanie czy serwer jest ustawiony na odbiór plików
+                        {
+                            if (Directory.Exists(save_address) == false) //sprawdzanie czy ścieżka dostępu z pliku konfiguracyjnego istnieje
                             {
-                                history.Add(server_history.ServerBeginReceive(client_hostname, client_filename)); //komunikat do historii
-                                FileStream filestream = new FileStream(save_address + @"\" + client_filename, FileMode.OpenOrCreate, FileAccess.Write); //utworzenie pliku do zapisu archiwum                              
-                                //while ((receive_bytes = stream.Read(data, 0, data.Length)) > 0 && !end_stream) //dopóki przychodzą dane                           
-                                while (!end_stream)
-                                {
-                                    receive_bytes = stream.Read(data, 0, data.Length);
-                                    if (client.Client.Receive(buff, SocketFlags.Peek) == 0) //jeśli nagle przestał odpowiadać
-                                    {
-                                        throw new SocketException();
-                                    }
-                                    string end_transfer = System.Text.Encoding.ASCII.GetString(data, 0, receive_bytes);
-                                    if (client_filename == end_transfer)
-                                    {
-                                        end_stream = true;
-                                    }
-                                    else
-                                    {
-                                        filestream.Write(data, 0, receive_bytes); //kopiowanie danych do pliku
-                                    }
-                                }
-                                filestream.Close(); //zamknięcie strumienia pliku    
-                                history.Add(server_history.ServerEndReceive(client_hostname, client_filename)); //komunikat do historii
-                                client_filename = null; //wyczyszczenie nazwy pliku  
-                                end_stream = false; //przywrócenie flagi na wartość domyślną
+                                Directory.CreateDirectory(save_address); //utworzenie ścieżki dostępu z pliku konfiguracyjnego
                             }
-                        }
-                        if (client.Client.Receive(buff, SocketFlags.Peek) == 0) //jeśli nagle przestał odpowiadać
-                        {
-                            client.Client.Disconnect(true); //rozłącz klienta                          
-                        }
-                    }
-                    else if (server_option == ServerOptions.send && !help) //jeśli (tryb pracy ustawiony na wysłanie i !nowy klient)
-                    {
-                        if (file != null) //jeśli wybrany plik istnieje
-                        {
-                            /*Socket socket = client.Client; //przypisanie klienta do socketa
-                            byte[] byData = System.Text.Encoding.ASCII.GetBytes(file.GetName()); //przygotowanie nazwy pliku do wysłania
-                            socket.Send(byData); //wysłanie nazwy pliku
-                            Thread.Sleep(1000); //krótkie uśpienie
-                            socket.SendFile(file.GetAddress()); //wysłanie pliku
-                            socket.Close(); //zamknięcie socketu
-                            server_option = ServerOptions.locked; //ustawienie trybu pracy serwera na domyślny*/
+
                             try
                             {
-                                stream = client.GetStream(); //aktywacja strumienia
-                                data = System.Text.Encoding.ASCII.GetBytes(file.GetName()); //zakodowanie nazwy pliku
-                                stream.Write(data, 0, data.Length); //wysłanie nazwy pliku 
-                                stream.Flush(); //zwolnienie strumienia
-                                data = new byte[buffer_size]; //ustawienie rozmiaru bufera
-                                history.Add(server_history.ServerStartSend(client_hostname, file.GetName())); //komunikat do historii
-                                using (var s = File.OpenRead(file.GetAddress())) //dopoki plik jest otwarty
+                                int dec_data; //zmienna do odbierania nazwy pliku
+                                byte[] buff = new byte[1]; //pomocniczy bufer
+                                bool end_stream = false; //flaga informująca czy koniec pliku
+                                stream = client.GetStream(); //określenie rodzaju połączenia na odbiór danych
+                                stream.ReadTimeout = 2000;
+                                while (!end_stream && ((dec_data = stream.Read(data, 0, data.Length)) > 0))//oczekiwanie na nazwę pliku klienta
                                 {
-                                    int actually_read; //zmienna pomocnicza do odczytu rozmiaru
-                                    while ((actually_read = s.Read(data, 0, buffer_size)) > 0) //dopóki w pliku sa dane
+                                    /* char[] chars = new char[dec_data]; //zmienna pomocnicza do odkodowania nazwy pliku
+                                    decoder.GetChars(data, 0, dec_data, chars, 0); //dekodowanie otrzymanej nazwy pliku
+                                    client_filename = new System.String(chars); //przypisanie odkodowanej nazwy do nowej zmiennej*/
+                                    client_filename = System.Text.Encoding.ASCII.GetString(data, 0, dec_data);
+                                    if (client_filename != null && client_filename != "")
                                     {
-                                        stream.Write(data, 0, actually_read); //wyslanie danych z pliku
+                                        history.Add(server_history.ServerBeginReceive(client_hostname, client_filename)); //komunikat do historii
+                                        FileStream filestream = new FileStream(save_address + @"\" + client_filename, FileMode.OpenOrCreate, FileAccess.Write); //utworzenie pliku do zapisu archiwum                              
+                                        //while ((receive_bytes = stream.Read(data, 0, data.Length)) > 0 && !end_stream) //dopóki przychodzą dane                           
+                                        while (!end_stream)
+                                        {
+
+                                            if (client.Client.Receive(buff, SocketFlags.Peek) == 0) //jeśli nagle przestał odpowiadać
+                                            {
+                                                throw new SocketException();
+                                            }
+                                            receive_bytes = stream.Read(data, 0, data.Length);
+                                            string end_transfer = System.Text.Encoding.ASCII.GetString(data, 0, receive_bytes);
+                                            if (client_filename == end_transfer)
+                                            {
+                                                end_stream = true;
+                                            }
+                                            else
+                                            {
+                                                filestream.Write(data, 0, receive_bytes); //kopiowanie danych do pliku
+                                            }
+                                        }
+                                        filestream.Close(); //zamknięcie strumienia pliku    
+                                        history.Add(server_history.ServerEndReceive(client_hostname, client_filename)); //komunikat do historii
+                                        client_filename = null; //wyczyszczenie nazwy pliku  
+                                        //end_stream = false; //przywrócenie flagi na wartość domyślną
+                                        //server_option = ServerOptions.locked; //przywrócenie flagi na wartość domyślną
                                     }
                                 }
-                                stream.Flush(); //zwolnienie strumienia
-                                stream.Close(); //zamkniecie strumienia
-                                history.Add(server_history.ServerEndSend(client_hostname, file.GetName())); //komunikat do historii
+                                //if (client.Client.Receive(buff, SocketFlags.Peek) == 0) //jeśli nagle przestał odpowiadać
+                                //{
+                                //    client.Client.Disconnect(true); //rozłącz klienta                          
+                                //}
                             }
-                            catch (Exception e)
+                            catch (IOException)
                             {
-                                stream.Flush();
-                                stream.Close();
-                                history.Add(server_history.ServerTransferError(client_hostname, file.GetName())); //komunikat do historii
-                                throw new SocketException();
+                                //co 2 sekundy sprawdza czy użytkownik nie zmienił opcji serwera
+                                if (client.Client.Receive(buff, SocketFlags.Peek) == 0) //jeśli nagle przestał odpowiadać
+                                {
+                                    throw new SocketException();
+                                }
                             }
+                        }
+                        else if (server_option == ServerOptions.send && !help) //jeśli (tryb pracy ustawiony na wysłanie i !nowy klient)
+                        {
+                            if (file != null) //jeśli wybrany plik istnieje
+                            {
+                                /*Socket socket = client.Client; //przypisanie klienta do socketa
+                                byte[] byData = System.Text.Encoding.ASCII.GetBytes(file.GetName()); //przygotowanie nazwy pliku do wysłania
+                                socket.Send(byData); //wysłanie nazwy pliku
+                                Thread.Sleep(1000); //krótkie uśpienie
+                                socket.SendFile(file.GetAddress()); //wysłanie pliku
+                                socket.Close(); //zamknięcie socketu
+                                server_option = ServerOptions.locked; //ustawienie trybu pracy serwera na domyślny*/
+                                try
+                                {
+                                    stream = client.GetStream(); //aktywacja strumienia
+                                    data = System.Text.Encoding.ASCII.GetBytes("receive"); //zakodowanie chęci wysłania pliku
+                                    stream.Write(data, 0, data.Length); //wysłanie chęci
+                                    stream.Flush(); //zwolnienie strumienia
+                                    data = new byte[buffer_size]; //ustawienie rozmiaru bufera
+                                    receive_bytes = stream.Read(data, 0, data.Length);
+                                    if ("start" == System.Text.Encoding.ASCII.GetString(data, 0, receive_bytes))
+                                    {
+                                        data = new byte[buffer_size]; //ustawienie rozmiaru bufera
+                                        data = System.Text.Encoding.ASCII.GetBytes(file.GetName()); //zakodowanie nazwy pliku
+                                        stream.Write(data, 0, data.Length); //wysłanie nazwy pliku
+                                        stream.Flush(); //zwolnienie strumienia
+                                        Thread.Sleep(100);
+                                        data = new byte[buffer_size]; //ustawienie rozmiaru bufera
+                                        data = System.Text.Encoding.ASCII.GetBytes(file.GetFileSize().ToString()); //zakodowanie rozmiaru pliku
+                                        stream.Write(data, 0, data.Length); //wysłanie rozmiaru pliku
+                                        stream.Flush(); //zwolnienie strumienia
+                                        Thread.Sleep(100);
+                                        data = new byte[buffer_size]; //ustawienie rozmiaru bufera
+                                        history.Add(server_history.ServerStartSend(client_hostname, file.GetName())); //komunikat do historii
+                                        using (var s = File.OpenRead(file.GetAddress())) //dopoki plik jest otwarty
+                                        {
+                                            int actually_read; //zmienna pomocnicza do odczytu rozmiaru
+                                            while ((actually_read = s.Read(data, 0, buffer_size)) > 0) //dopóki w pliku sa dane
+                                            {
+                                                stream.Write(data, 0, actually_read); //wyslanie danych z pliku
+                                            }
+                                        }
+                                        stream.Flush(); //zwolnienie strumienia
+                                        Thread.Sleep(100);
+                                        data = new byte[buffer_size]; //ustawienie rozmiaru bufera
+                                        data = System.Text.Encoding.ASCII.GetBytes(file.GetName()); //zakodowanie nazwy pliku
+                                        stream.Write(data, 0, data.Length); //wysłanie nazwy pliku
+                                        stream.Flush(); //zwolnienie strumienia
+                                                        //stream.Close(); //zamkniecie strumienia
+                                        history.Add(server_history.ServerEndSend(client_hostname, file.GetName())); //komunikat do historii
+                                        server_option = ServerOptions.locked;
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    stream.Flush();
+                                    //stream.Close();
+                                    history.Add(server_history.ServerTransferError(client_hostname, file.GetName())); //komunikat do historii
+                                    throw new SocketException();
+                                }
+                            }
+                        }
+                        else if (client.Client.Poll(0, SelectMode.SelectRead)) //jeśli klient odpowiada
+                        {
+                            byte[] buff = new byte[1]; //pomocniczy bufer
+                            if (client.Client.Receive(buff, SocketFlags.Peek) == 0) //jeśli nagle przestał odpowiadać
+                            {
+                                client.Client.Disconnect(true); //rozłącz klienta                          
+                                //history.Add(server_history.ServerEndConnection(client_hostname)); //komunikat do historii
+                            }
+                            /*else
+                            {
+                                throw new SocketException();
+                            }*/
                         }
                     }
-                    else if (client.Client.Poll(0, SelectMode.SelectRead)) //jeśli klient odpowiada
+                    client.Close(); //zamknięcie klienta
+                    updateCounterOfActiveUsers(false); //aktualizacja aktywnych użytkowników
+                    history.Add(server_history.ServerEndConnection(client_hostname)); //komunikat do historii
+                }
+                catch (SocketException sx)
+                {
+                    client.Client.ReceiveTimeout = 3000;
+                    if (!client.Client.Poll(0, SelectMode.SelectRead))
                     {
-                        byte[] buff = new byte[1]; //pomocniczy bufer
-                        if (client.Client.Receive(buff, SocketFlags.Peek) == 0) //jeśli nagle przestał odpowiadać
-                        {
-                            client.Client.Disconnect(true); //rozłącz klienta                          
-                            //history.Add(server_history.ServerEndConnection(client_hostname)); //komunikat do historii
-                        }
-                        /*else
-                        {
-                            throw new SocketException();
-                        }*/
+                        client.Client.ReceiveTimeout = 0;
+                    }
+                    else
+                    {
+                        client.Close(); //zamknięcie klienta
+                        updateCounterOfActiveUsers(false); //aktualizacja aktywnych użytkowników
+                        history.Add(server_history.ServerConnectionError(client_hostname)); //komunikat do historii
+                                                                                            //Console.WriteLine(sx.ToString());
                     }
                 }
-                client.Close(); //zamknięcie klienta
-                updateCounterOfActiveUsers(false); //aktualizacja aktywnych użytkowników
-                history.Add(server_history.ServerEndConnection(client_hostname)); //komunikat do historii
-            }
-            catch (SocketException)
-            {
-                client.Close(); //zamknięcie klienta
-                updateCounterOfActiveUsers(false); //aktualizacja aktywnych użytkowników
-                history.Add(server_history.ServerConnectionError(client_hostname)); //komunikat do historii
-            }
-            catch (IOException)
-            {
-                history.Add(server_history.ServerTransferError(client_hostname, client_filename)); //komunikat do historii
-                client.Close(); //zamknięcie klienta
-                updateCounterOfActiveUsers(false); //aktualizacja aktywnych użytkowników
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e); //komunikat o błędzie
+                catch (IOException)
+                {
+                    history.Add(server_history.ServerTransferError(client_hostname, client_filename)); //komunikat do historii
+                    client.Close(); //zamknięcie klienta
+                    updateCounterOfActiveUsers(false); //aktualizacja aktywnych użytkowników
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e); //komunikat o błędzie
+                }
             }
         }
 
