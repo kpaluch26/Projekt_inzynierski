@@ -37,11 +37,11 @@ namespace Klient
             // 
             this.prb_receiving_status.BackColor = System.Drawing.SystemColors.ControlDark;
             this.prb_receiving_status.ForeColor = System.Drawing.Color.Chartreuse;
-            this.prb_receiving_status.Location = new System.Drawing.Point(62, 35);
+            this.prb_receiving_status.Location = new System.Drawing.Point(125, 50);
             this.prb_receiving_status.Margin = new System.Windows.Forms.Padding(0);
             this.prb_receiving_status.Minimum = 1;
             this.prb_receiving_status.Name = "prb_receiving_status";
-            this.prb_receiving_status.Size = new System.Drawing.Size(170, 30);
+            this.prb_receiving_status.Size = new System.Drawing.Size(150, 30);
             this.prb_receiving_status.Step = 1;
             this.prb_receiving_status.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.prb_receiving_status.TabIndex = 1;
@@ -51,7 +51,7 @@ namespace Klient
             // 
             this.lbl_file_name.AutoSize = true;
             this.lbl_file_name.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lbl_file_name.Location = new System.Drawing.Point(3, 9);
+            this.lbl_file_name.Location = new System.Drawing.Point(20, 25);
             this.lbl_file_name.Name = "lbl_file_name";
             this.lbl_file_name.Size = new System.Drawing.Size(111, 16);
             this.lbl_file_name.TabIndex = 2;
@@ -62,12 +62,14 @@ namespace Klient
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(294, 74);
+            this.ClientSize = new System.Drawing.Size(394, 94);
             this.ControlBox = false;
             this.Controls.Add(this.lbl_file_name);
             this.Controls.Add(this.prb_receiving_status);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Location = new System.Drawing.Point(25, 25);
             this.Name = "ReceivingFileBar";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.ResumeLayout(false);
             this.PerformLayout();
 

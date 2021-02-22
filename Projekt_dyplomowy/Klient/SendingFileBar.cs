@@ -23,7 +23,7 @@ namespace Klient
         public SendingFileBar(NetworkStream _ns,string _fn, string _fa, int _b, long _s)
         {
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.StartPosition = FormStartPosition.CenterScreen;           
+            this.StartPosition = FormStartPosition.Manual;           
             InitializeComponent();
             /*ns = _ns;
             fn = _fn;
@@ -38,6 +38,8 @@ namespace Klient
             long step = (_s / b) + 2;            
             //long status = 0;
             this.Show();
+            lbl_file_name.Text += " " + fn;
+            lbl_file_name.Update();
             //lbl_wyslane.Update();
             try
             {
@@ -78,8 +80,9 @@ namespace Klient
             }
             finally
             {
-                this.Close();
+                sending_status.PerformStep();
                 System.Threading.Thread.Sleep(3000);
+                this.Close();
             }
             
         }

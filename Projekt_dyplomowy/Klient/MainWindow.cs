@@ -7,7 +7,6 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Net;
-using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
@@ -158,6 +157,8 @@ namespace Klient
             gbx_Plik.Visible = false;
             gbx_Polaczenie.Visible = true;
             gbx_Polaczenie.Enabled = true;
+            gbx_Panel.Enabled = false;
+            gbx_Panel.Visible = false;
         }
 
         private void mtstr_Ustawienia_Click(object sender, EventArgs e)
@@ -168,6 +169,8 @@ namespace Klient
             gbx_Plik.Visible = false;
             gbx_Ustawienia.Visible = true;
             gbx_Ustawienia.Enabled = true;
+            gbx_Panel.Enabled = false;
+            gbx_Panel.Visible = false;
         }
 
         private void rozłączToolStripMenuItem_Click(object sender, EventArgs e)
@@ -189,31 +192,31 @@ namespace Klient
                         ns.Close();
                         throw new Exception();
                     }
-                    /*else if (client.Client.Poll(0, SelectMode.SelectRead)) //jeśli klient odpowiada
-                    {
-                        byte[] buff = new byte[1]; //pomocniczy bufer
-                        try
-                        {
-                            if (client.Client.Receive(buff, SocketFlags.Peek) == 0) //jeśli nagle przestał odpowiadać
-                            {
-                                ns.Close();
-                                client.Client.Disconnect(true); //rozłącz klienta   
-                                //this.Invoke(new MethodInvoker(delegate { ServerConnectionError(); }));
-                            }
-                            else
-                            {
-                                throw new SocketException();
-                            }                           
-                        }                     
-                        catch (SocketException)
-                        {
-                            ns.Close();
-                            client.Close();
-                            //this.Invoke(new MethodInvoker(delegate { ServerConnectionError(); }));
-                            do_work = false;
-                            return;
-                        }
-                    }*/
+                    //else if (client.Client.Poll(0, SelectMode.SelectRead)) //jeśli klient odpowiada
+                    //{
+                    //    byte[] buff = new byte[1]; //pomocniczy bufer
+                    //    try
+                    //    {
+                    //        if (client.Client.Receive(buff, SocketFlags.Peek) == 0) //jeśli nagle przestał odpowiadać
+                    //        {
+                    //            ns.Close();
+                    //            client.Client.Disconnect(true); //rozłącz klienta   
+                    //            //this.Invoke(new MethodInvoker(delegate { ServerConnectionError(); }));
+                    //        }
+                    //        else
+                    //        {
+                    //            throw new SocketException();
+                    //        }                           
+                    //    }                     
+                    //    catch (SocketException)
+                    //    {
+                    //        ns.Close();
+                    //        client.Close();
+                    //        //this.Invoke(new MethodInvoker(delegate { ServerConnectionError(); }));
+                    //        do_work = false;
+                    //        return;
+                    //    }
+                    //}
                     else
                     {
                         NetworkStream stream = client.GetStream();
@@ -231,7 +234,12 @@ namespace Klient
                                     this.Invoke(new MethodInvoker(delegate { ReceiveFileEnable(stream); }));
                                 }
                             }
-                            if(client.Client.Poll(0, SelectMode.SelectRead))
+                            client.Client.ReceiveTimeout = 3000;
+                            if (!client.Client.Poll(0, SelectMode.SelectRead))
+                            {
+                                client.Client.ReceiveTimeout = 0;
+                            }
+                            else
                             {
                                 throw new IOException();
                             }

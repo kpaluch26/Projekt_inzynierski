@@ -93,13 +93,13 @@
             this.btn_utworz = new System.Windows.Forms.Button();
             this.clbx_lista_plikow = new System.Windows.Forms.CheckedListBox();
             this.gbx_Panel = new System.Windows.Forms.GroupBox();
-            this.gbx_archiwum = new System.Windows.Forms.GroupBox();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.lbl_nazwa_pliku = new System.Windows.Forms.Label();
-            this.lbl_lokalizacja_pliku = new System.Windows.Forms.Label();
-            this.btn_zmien_archiwum = new System.Windows.Forms.Button();
             this.btn_wyslij = new System.Windows.Forms.Button();
+            this.gbx_archiwum = new System.Windows.Forms.GroupBox();
+            this.btn_zmien_archiwum = new System.Windows.Forms.Button();
+            this.lbl_lokalizacja_pliku = new System.Windows.Forms.Label();
+            this.lbl_nazwa_pliku = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
             this.sstr_belka.SuspendLayout();
             this.gbx_Ustawienia.SuspendLayout();
             this.gbx_Backup.SuspendLayout();
@@ -818,66 +818,6 @@
             this.gbx_Panel.TabStop = false;
             this.gbx_Panel.Text = "Panel użytkownika";
             // 
-            // gbx_archiwum
-            // 
-            this.gbx_archiwum.Controls.Add(this.btn_zmien_archiwum);
-            this.gbx_archiwum.Controls.Add(this.lbl_lokalizacja_pliku);
-            this.gbx_archiwum.Controls.Add(this.lbl_nazwa_pliku);
-            this.gbx_archiwum.Controls.Add(this.label17);
-            this.gbx_archiwum.Controls.Add(this.label16);
-            this.gbx_archiwum.Location = new System.Drawing.Point(7, 26);
-            this.gbx_archiwum.Name = "gbx_archiwum";
-            this.gbx_archiwum.Size = new System.Drawing.Size(433, 133);
-            this.gbx_archiwum.TabIndex = 0;
-            this.gbx_archiwum.TabStop = false;
-            this.gbx_archiwum.Text = "Archiwum";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(6, 30);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(61, 20);
-            this.label16.TabIndex = 1;
-            this.label16.Text = "Nazwa:";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(6, 60);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(91, 20);
-            this.label17.TabIndex = 2;
-            this.label17.Text = "Lokalizacja:";
-            // 
-            // lbl_nazwa_pliku
-            // 
-            this.lbl_nazwa_pliku.AutoSize = true;
-            this.lbl_nazwa_pliku.Location = new System.Drawing.Point(68, 30);
-            this.lbl_nazwa_pliku.Name = "lbl_nazwa_pliku";
-            this.lbl_nazwa_pliku.Size = new System.Drawing.Size(120, 20);
-            this.lbl_nazwa_pliku.TabIndex = 3;
-            this.lbl_nazwa_pliku.Text = "lbl_nazwa_pliku";
-            // 
-            // lbl_lokalizacja_pliku
-            // 
-            this.lbl_lokalizacja_pliku.AutoSize = true;
-            this.lbl_lokalizacja_pliku.Location = new System.Drawing.Point(103, 60);
-            this.lbl_lokalizacja_pliku.Name = "lbl_lokalizacja_pliku";
-            this.lbl_lokalizacja_pliku.Size = new System.Drawing.Size(141, 20);
-            this.lbl_lokalizacja_pliku.TabIndex = 4;
-            this.lbl_lokalizacja_pliku.Text = "lbl_lokalizacja pliku";
-            // 
-            // btn_zmien_archiwum
-            // 
-            this.btn_zmien_archiwum.Location = new System.Drawing.Point(312, 90);
-            this.btn_zmien_archiwum.Name = "btn_zmien_archiwum";
-            this.btn_zmien_archiwum.Size = new System.Drawing.Size(105, 29);
-            this.btn_zmien_archiwum.TabIndex = 5;
-            this.btn_zmien_archiwum.Text = "Zmień";
-            this.btn_zmien_archiwum.UseVisualStyleBackColor = true;
-            this.btn_zmien_archiwum.Click += new System.EventHandler(this.btn_zmien_archiwum_Click);
-            // 
             // btn_wyslij
             // 
             this.btn_wyslij.Location = new System.Drawing.Point(769, 354);
@@ -888,6 +828,66 @@
             this.btn_wyslij.UseVisualStyleBackColor = true;
             this.btn_wyslij.Click += new System.EventHandler(this.btn_wyslij_Click);
             // 
+            // gbx_archiwum
+            // 
+            this.gbx_archiwum.Controls.Add(this.btn_zmien_archiwum);
+            this.gbx_archiwum.Controls.Add(this.lbl_lokalizacja_pliku);
+            this.gbx_archiwum.Controls.Add(this.lbl_nazwa_pliku);
+            this.gbx_archiwum.Controls.Add(this.label17);
+            this.gbx_archiwum.Controls.Add(this.label16);
+            this.gbx_archiwum.Location = new System.Drawing.Point(7, 26);
+            this.gbx_archiwum.Name = "gbx_archiwum";
+            this.gbx_archiwum.Size = new System.Drawing.Size(756, 133);
+            this.gbx_archiwum.TabIndex = 0;
+            this.gbx_archiwum.TabStop = false;
+            this.gbx_archiwum.Text = "Archiwum";
+            // 
+            // btn_zmien_archiwum
+            // 
+            this.btn_zmien_archiwum.Location = new System.Drawing.Point(637, 90);
+            this.btn_zmien_archiwum.Name = "btn_zmien_archiwum";
+            this.btn_zmien_archiwum.Size = new System.Drawing.Size(105, 29);
+            this.btn_zmien_archiwum.TabIndex = 5;
+            this.btn_zmien_archiwum.Text = "Zmień";
+            this.btn_zmien_archiwum.UseVisualStyleBackColor = true;
+            this.btn_zmien_archiwum.Click += new System.EventHandler(this.btn_zmien_archiwum_Click);
+            // 
+            // lbl_lokalizacja_pliku
+            // 
+            this.lbl_lokalizacja_pliku.AutoSize = true;
+            this.lbl_lokalizacja_pliku.Location = new System.Drawing.Point(103, 60);
+            this.lbl_lokalizacja_pliku.Name = "lbl_lokalizacja_pliku";
+            this.lbl_lokalizacja_pliku.Size = new System.Drawing.Size(141, 20);
+            this.lbl_lokalizacja_pliku.TabIndex = 4;
+            this.lbl_lokalizacja_pliku.Text = "lbl_lokalizacja pliku";
+            // 
+            // lbl_nazwa_pliku
+            // 
+            this.lbl_nazwa_pliku.AutoSize = true;
+            this.lbl_nazwa_pliku.Location = new System.Drawing.Point(68, 30);
+            this.lbl_nazwa_pliku.Name = "lbl_nazwa_pliku";
+            this.lbl_nazwa_pliku.Size = new System.Drawing.Size(120, 20);
+            this.lbl_nazwa_pliku.TabIndex = 3;
+            this.lbl_nazwa_pliku.Text = "lbl_nazwa_pliku";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(6, 60);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(91, 20);
+            this.label17.TabIndex = 2;
+            this.label17.Text = "Lokalizacja:";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(6, 30);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(61, 20);
+            this.label16.TabIndex = 1;
+            this.label16.Text = "Nazwa:";
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -896,10 +896,10 @@
             this.ClientSize = new System.Drawing.Size(944, 441);
             this.Controls.Add(this.sstr_belka);
             this.Controls.Add(this.mstr_Menu);
+            this.Controls.Add(this.gbx_Panel);
             this.Controls.Add(this.gbx_Ustawienia);
             this.Controls.Add(this.gbx_Polaczenie);
             this.Controls.Add(this.gbx_Plik);
-            this.Controls.Add(this.gbx_Panel);
             this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.MainMenuStrip = this.mstr_Menu;
             this.Name = "MainWindow";

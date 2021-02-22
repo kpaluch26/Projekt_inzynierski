@@ -17,7 +17,7 @@ namespace Klient
         public ReceivingFileBar(NetworkStream _ns, int _b, string _p)
         {
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.StartPosition = FormStartPosition.CenterScreen;
+            this.StartPosition = FormStartPosition.Manual;
             InitializeComponent();
             ProgressBar(_ns, _b, _p);
         }
@@ -66,6 +66,7 @@ namespace Klient
                             if (filename == end_transfer)
                             {
                                 end_stream = true;
+                                prb_receiving_status.PerformStep();
                             }
                             else
                             {
@@ -83,6 +84,7 @@ namespace Klient
             }
             finally
             {
+                prb_receiving_status.PerformStep();
                 System.Threading.Thread.Sleep(3000);
                 this.Close();
             }

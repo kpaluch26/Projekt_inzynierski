@@ -74,7 +74,7 @@ namespace Klient
                 this.Close();
                 ns.Flush();
             }
-            catch(SocketException x)
+            catch(SocketException)
             {
                 MessageBox.Show("Serwer odmawia nawiązania połączenia. Możliwe, że wprowadzono błędne dane serwera lub serwer pracuje w trybie uniemożliwiającym nawiązanie połączenia.",
                     "Odmowa nawiązania połączenia.");
